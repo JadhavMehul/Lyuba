@@ -1,15 +1,13 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
-import React, { useState } from "react";
-import PinkButton from '@components/global/PinkButton'
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
+import React from 'react'
+import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
 import { navigate } from '@utils/NavigationUtils';
-import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
-import BirthdayPicker from '@components/global/BirthdayPicker';
 import TextComponent from '@components/global/TextComponent';
+import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 
-const registerScreen2 = () => {
-    const [birthday, setBirthday] = useState<Date | null>(null);
+const registerScreen3 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -35,23 +33,12 @@ const registerScreen2 = () => {
                             Enter Your Details
                         </TextComponent>
                         <TextComponent style={styles.title2}>
-                            Please enter your birthdate.
+                        Please select your gender.
                         </TextComponent>
                         <View style={{ height: 16 }}>
 
                         </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Date of Birth
-                        </TextComponent>
-                        <BirthdayPicker
 
-                            value={birthday}
-                            onChange={setBirthday}
-                            themeColor="#FF7F7F"
-                        // minimumYear={1900}
-                        // maximumYear={2025}
-                        // placeholder="dd/mm/yyyy"
-                        />
 
                     </View>
                 </View>
@@ -59,8 +46,8 @@ const registerScreen2 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen3')}
-                        disabled={!birthday}
+                        onPress={() => navigate('')}
+                        // disabled={!birthday}
                         style={[
                             styles.shadowpink,
                         ]}
@@ -74,7 +61,7 @@ const registerScreen2 = () => {
     )
 }
 
-export default registerScreen2
+export default registerScreen3
 
 
 
@@ -132,4 +119,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
+    disabledButton: {
+        backgroundColor: '#FAB9B9',
+    }
 })

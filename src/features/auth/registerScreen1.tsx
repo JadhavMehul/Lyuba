@@ -15,8 +15,8 @@ const registerScreen1 = () => {
 
     const isDisabled = firstName.trim().length === 0;
 
-    const [birthday, setBirthday] = useState<Date | null>(null);
-   
+
+
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -70,15 +70,7 @@ const registerScreen1 = () => {
 
 
 
-                            <BirthdayPicker
-                        
-                                    value={birthday}
-                                    onChange={setBirthday}
-                                    themeColor="#FF7F7F"
-                                    // minimumYear={1900}
-                                    // maximumYear={2025}
-                                    // placeholder="dd/mm/yyyy"
-                                />
+
 
 
 
@@ -86,12 +78,12 @@ const registerScreen1 = () => {
                     </View>
                 </View>
                 <View style={styles.buttonsection}>
-                <PinkButton
+                    <PinkButton
                         text="Next"
                         onPress={() => navigate('registerScreen2')}
                         style={[
                             styles.shadowpink,
-                            isDisabled ? styles.disabledButton : {},
+
                         ]}
                         disabled={isDisabled}
                     />
@@ -185,7 +177,5 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.Poppins_Medium_500,
         color: '#FF6F61',
     },
-    disabledButton: {
-                backgroundColor: '#FAB9B9',
-    }
+
 })

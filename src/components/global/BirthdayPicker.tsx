@@ -1,3 +1,4 @@
+import { Fonts } from "@utils/Constants";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
@@ -120,7 +121,7 @@ export default function BirthdayPicker(props: BirthdayPickerProps) {
   const {
     value = null,
     onChange,
-    themeColor = "#FF7F7F",
+    themeColor = "#FFB6C1",
     placeholder = "dd/mm/yyyy",
     disabled = false,
     minimumYear = now.getFullYear() - 100,
@@ -186,7 +187,7 @@ export default function BirthdayPicker(props: BirthdayPickerProps) {
         disabled={disabled}
         style={[
           styles.inputShell,
-          { borderColor: themeColor, opacity: disabled ? 0.6 : 1 },
+          { opacity: disabled ? 0.6 : 1 },
         ]}
       >
         <Text style={[styles.inputText, { color: value ? "#111" : "#999" }]}>
@@ -241,9 +242,18 @@ export default function BirthdayPicker(props: BirthdayPickerProps) {
 
 const styles = StyleSheet.create({
   inputShell: {
-    height: 48,
-    borderWidth: 2,
+    fontSize: 16,
+    fontFamily: Fonts.Poppins_Regular_400,
+    color: '#000000',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#FFB6C1',
     borderRadius: 12,
+    shadowColor: "#FF7F7F",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
     paddingHorizontal: 14,
     justifyContent: "center",
     backgroundColor: "#FFF",
@@ -276,13 +286,13 @@ const styles = StyleSheet.create({
   headerBtnText: { fontSize: 15, color: "#444" },
   wheelsRow: {
     flexDirection: "row",
-    width: "100%",           // 👈 make row take full width
+    width: "100%",           
     paddingHorizontal: 12,
     paddingBottom: 8,
     gap: 12,
   },
   wheelCol: {
-    flex: 1,                 // 👈 each column shares width equally
+    flex: 1,                
     alignItems: "center",
   },
   colLabel: {

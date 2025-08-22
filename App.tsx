@@ -7,6 +7,7 @@ import WelcomeScreen from '@features/welcome_screens/WelcomeScreen';
 import loginScreen from '@features/auth/loginScreen';
 import registerScreen1 from '@features/auth/registerScreen1';
 import registerScreen2 from '@features/auth/registerScreen2';
+import registerScreen3 from '@features/auth/registerScreen3';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const App = () => {
         <Stack.Screen name="loginScreen" component={loginScreen}/>
         <Stack.Screen name="registerScreen1" component={registerScreen1}/>
         <Stack.Screen name="registerScreen2" component={registerScreen2}/>
+        <Stack.Screen name="registerScreen3" component={registerScreen3}/>
 
         
 
