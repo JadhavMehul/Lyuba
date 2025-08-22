@@ -7,12 +7,15 @@ import { Fonts } from '@utils/Constants'
 import { goBack } from "@utils/NavigationUtils";
 import PinkButton from '@components/global/PinkButton'
 import { navigate } from '@utils/NavigationUtils';
+import BirthdayPicker from '@components/global/BirthdayPicker';
 
 const registerScreen1 = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
 
     const isDisabled = firstName.trim().length === 0;
+
+    const [birthday, setBirthday] = useState<Date | null>(null);
    
     return (
         <View style={styles.container}>
@@ -66,6 +69,16 @@ const registerScreen1 = () => {
                         />
 
 
+
+                            <BirthdayPicker
+                        
+                                    value={birthday}
+                                    onChange={setBirthday}
+                                    themeColor="#FF7F7F"
+                                    // minimumYear={1900}
+                                    // maximumYear={2025}
+                                    // placeholder="dd/mm/yyyy"
+                                />
 
 
 
