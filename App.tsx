@@ -5,6 +5,8 @@ import { navigationRef } from '@utils/NavigationUtils'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from '@features/welcome_screens/WelcomeScreen';
 import loginScreen from '@features/auth/loginScreen';
+import registerScreen1 from '@features/auth/registerScreen1';
+import registerScreen2 from '@features/auth/registerScreen2';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +16,10 @@ const App = () => {
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen}/>
         <Stack.Screen name="loginScreen" component={loginScreen}/>
+        <Stack.Screen name="registerScreen1" component={registerScreen1}/>
+        <Stack.Screen name="registerScreen2" component={registerScreen2}/>
+
+        
 
       </Stack.Navigator>
       

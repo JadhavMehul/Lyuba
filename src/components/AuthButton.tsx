@@ -13,7 +13,7 @@ type AuthButtonProps = {
 
 const AuthButton = ({ text, icon, onPress, style, textStyle }: AuthButtonProps) => {
   return (
-    <TouchableOpacity style={[styles.authButton, style]} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity style={[styles.authButton, style]} onPress={onPress} activeOpacity={0.3}>
       <Image source={icon} style={styles.icon} resizeMode="contain" />
       <TextComponent style={[styles.text, textStyle]}>{text}</TextComponent>
     </TouchableOpacity>

@@ -5,16 +5,18 @@ import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from "react-
 type PinkButtonProps = {
   text: string;
   onPress: () => void;
-  style?: ViewStyle;       
+  style?: ViewStyle | ViewStyle[];    
   textStyle?: TextStyle;   
+  disabled?: boolean;
 };
 
-const PinkButton = ({ text, onPress, style, textStyle }: PinkButtonProps) => {
+const PinkButton = ({ text, onPress, style, textStyle,disabled }: PinkButtonProps) => {
   return (
     <TouchableOpacity
       style={[styles.button, style]}
       onPress={onPress}
       activeOpacity={0.7}
+      disabled={disabled} 
     >
       <Text style={[styles.text, textStyle]}>{text}</Text>
     </TouchableOpacity>
