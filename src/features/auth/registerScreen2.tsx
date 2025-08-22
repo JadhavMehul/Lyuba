@@ -117,13 +117,13 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.Poppins_Light_300,
         fontSize: 16,
         color: '#666666',
-        textAlign: 'center',
+        textAlign: 'left',
     },
     title1: {
         fontFamily: Fonts.Poppins_Bold_700,
         fontSize: 28,
         color: '#000000',
-        textAlign: 'center',
+        textAlign: 'left',
     },
     shadowpink: {
         shadowColor: "#FF6F61",

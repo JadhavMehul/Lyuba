@@ -46,7 +46,7 @@ const registerScreen3 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('')}
+                        onPress={() => navigate('registerScreen5')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -104,13 +104,13 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.Poppins_Light_300,
         fontSize: 16,
         color: '#666666',
-        textAlign: 'center',
+        textAlign: 'left',
     },
     title1: {
         fontFamily: Fonts.Poppins_Bold_700,
         fontSize: 28,
         color: '#000000',
-        textAlign: 'center',
+        textAlign: 'left',
     },
     shadowpink: {
         shadowColor: "#FF6F61",
@@ -119,7 +119,5 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
-    disabledButton: {
-        backgroundColor: '#FAB9B9',
-    }
+    
 })
