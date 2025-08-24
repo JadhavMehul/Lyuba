@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
   StyleSheet,
   TextStyle,
   StyleProp,
+  Modal,
+  Pressable,
+  findNodeHandle,
+  UIManager,
 } from "react-native";
 import { Fonts } from "@utils/Constants";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -28,13 +31,40 @@ export default function DropdownField({
   style,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+  const [openAbove, setOpenAbove] = useState(false);
+  const buttonRef = useRef<View>(null);
+
+  const toggleDropdown = () => {
+    if (buttonRef.current) {
+      const handle = findNodeHandle(buttonRef.current);
+      if (handle) {
+        UIManager.measureInWindow(handle, (x, y, width, height) => {
+          // Check available space below
+          const screenHeight = Dimensions.get("window").height;
+          const spaceBelow = screenHeight - (y + height);
+          const shouldOpenAbove = spaceBelow < 200; // if less than 200px below, open upwards
+
+          setDropdownPos({ x, y, width, height });
+          setOpenAbove(shouldOpenAbove);
+          setOpen(!open);
+        });
+      }
+    }
+  };
 
   return (
-    <View style={{ width: "100%" }}>
+    <>
       {/* Input-like button */}
       <TouchableOpacity
+        ref={buttonRef}
         style={[styles.input, style]}
-        onPress={() => setOpen(!open)}
+        onPress={toggleDropdown}
         activeOpacity={0.8}
       >
         <TextComponent style={[styles.text, !value && { color: "grey" }]}>
@@ -47,14 +77,32 @@ export default function DropdownField({
         />
       </TouchableOpacity>
 
-      {/* Dropdown list */}
-      {open && (
-        <View style={styles.dropdown}>
-          <FlatList
-            data={options}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => (
+      {/* Dropdown modal */}
+      <Modal visible={open} transparent animationType="none">
+        {/* Full-screen overlay for outside clicks */}
+        <Pressable style={styles.overlay} onPress={() => setOpen(false)}>
+          {/* Empty Pressable just to capture outside clicks */}
+        </Pressable>
+
+        {/* Dropdown positioned relative to button */}
+        <View
+          style={[
+            styles.dropdown,
+            {
+              position: "absolute",
+              top: openAbove
+                ? dropdownPos.y - 180 - 6 // open above
+                : dropdownPos.y + dropdownPos.height + 6, // open below
+              left: dropdownPos.x,
+              width: dropdownPos.width,
+              maxHeight: 180,
+            },
+          ]}
+        >
+          <ScrollView nestedScrollEnabled style={{ maxHeight: 180 }}>
+            {options.map((item, index) => (
               <TouchableOpacity
+                key={index}
                 style={[
                   styles.option,
                   index === options.length - 1 && { borderBottomWidth: 0 },
@@ -66,18 +114,19 @@ export default function DropdownField({
               >
                 <TextComponent style={styles.optionText}>{item}</TextComponent>
               </TouchableOpacity>
-            )}
-          />
+            ))}
+          </ScrollView>
         </View>
-      )}
-    </View>
+      </Modal>
+    </>
   );
 }
+
+import { Dimensions } from "react-native";
 
 const styles = StyleSheet.create({
   input: {
     backgroundColor: "#fff",
-    // width: "100%",
     fontSize: 16,
     fontFamily: Fonts.Poppins_Regular_400,
     color: "#000000",
@@ -93,6 +142,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    zIndex: 10,
   },
   text: {
     fontSize: 16,
@@ -104,10 +154,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFB6C1",
     borderRadius: 12,
-    marginTop: 6,
-    maxHeight: 180,
     elevation: 6,
-    zIndex: 99999,
+    zIndex: 9999,
   },
   option: {
     padding: 14,
@@ -118,5 +166,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: Fonts.Poppins_Regular_400,
     color: "#000",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "transparent",
   },
 });
