@@ -33,7 +33,7 @@ const registerScreen6 = () => {
                             Enter Your Details
                         </TextComponent>
                         <TextComponent style={styles.title2}>
-                        Please enter your personal details.
+                            Please enter your personal details.
                         </TextComponent>
                         <View style={{ height: 16 }}>
 
@@ -46,7 +46,7 @@ const registerScreen6 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('InterestsScreen')}
+                        onPress={() => navigate('registerScreen7')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -119,5 +119,5 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
-    
+
 })

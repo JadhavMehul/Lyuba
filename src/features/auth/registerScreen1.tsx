@@ -8,6 +8,7 @@ import { goBack } from "@utils/NavigationUtils";
 import PinkButton from '@components/global/PinkButton'
 import { navigate } from '@utils/NavigationUtils';
 import BirthdayPicker from '@components/global/BirthdayPicker';
+import DropdownField from '@components/global/DropdownField';
 
 const registerScreen1 = () => {
     const [firstName, setFirstName] = useState("");
@@ -67,6 +68,10 @@ const registerScreen1 = () => {
                             value={lastName}
                             onChangeText={setLastName}
                         />
+
+                        
+
+
 
 
 

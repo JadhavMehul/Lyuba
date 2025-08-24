@@ -10,6 +10,8 @@ import registerScreen2 from '@features/auth/registerScreen2';
 import registerScreen3 from '@features/auth/registerScreen3';
 import registerScreen5 from '@features/auth/registerScreen5';
 import registerScreen6 from '@features/auth/registerScreen6';
+import RadarAnimation from '@features/auth/RadarAnimation';
+import registerScreen7 from '@features/auth/registerScreen7';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +26,9 @@ const App = () => {
         <Stack.Screen name="registerScreen3" component={registerScreen3}/>
         <Stack.Screen name="registerScreen5" component={registerScreen5}/>
         <Stack.Screen name="registerScreen6" component={registerScreen6}/>
+        <Stack.Screen name="registerScreen7" component={registerScreen7}/>
+
+        <Stack.Screen name="RadarAnimation" component={RadarAnimation}/>
 
         
 
