@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   image: {
-    backgroundColor: "yellow",
     width: screenWidth * 0.45,
     height: screenWidth * 0.45,
   },

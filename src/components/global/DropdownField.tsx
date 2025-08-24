@@ -41,33 +41,33 @@ export default function DropdownField({
           {value || placeholder}
         </TextComponent>
         <Icon
-  name={open ? "chevron-up" : "chevron-down"}
-  size={18}
-  color="grey"
-/>
+          name={open ? "chevron-up" : "chevron-down"}
+          size={18}
+          color="grey"
+        />
       </TouchableOpacity>
 
       {/* Dropdown list */}
       {open && (
         <View style={styles.dropdown}>
           <FlatList
-  data={options}
-  keyExtractor={(item, index) => index.toString()}
-  renderItem={({ item, index }) => (
-    <TouchableOpacity
-      style={[
-        styles.option,
-        index === options.length - 1 && { borderBottomWidth: 0 },
-      ]}
-      onPress={() => {
-        onSelect(item);
-        setOpen(false);
-      }}
-    >
-      <TextComponent style={styles.optionText}>{item}</TextComponent>
-    </TouchableOpacity>
-  )}
-/>
+            data={options}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                style={[
+                  styles.option,
+                  index === options.length - 1 && { borderBottomWidth: 0 },
+                ]}
+                onPress={() => {
+                  onSelect(item);
+                  setOpen(false);
+                }}
+              >
+                <TextComponent style={styles.optionText}>{item}</TextComponent>
+              </TouchableOpacity>
+            )}
+          />
         </View>
       )}
     </View>
@@ -77,7 +77,7 @@ export default function DropdownField({
 const styles = StyleSheet.create({
   input: {
     backgroundColor: "#fff",
-    width: "100%",
+    // width: "100%",
     fontSize: 16,
     fontFamily: Fonts.Poppins_Regular_400,
     color: "#000000",

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState } from "react";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import InputField from '@components/global/InputField'
@@ -36,6 +36,9 @@ const registerScreen1 = () => {
 
 
                         </View>
+                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+
+                        
                         <View style={{ height: 16 }}>
 
                         </View>
@@ -68,6 +71,7 @@ const registerScreen1 = () => {
                             value={lastName}
                             onChangeText={setLastName}
                         />
+                        
 
                         
 
@@ -79,7 +83,7 @@ const registerScreen1 = () => {
 
 
 
-
+</ScrollView>
                     </View>
                 </View>
                 <View style={styles.buttonsection}>

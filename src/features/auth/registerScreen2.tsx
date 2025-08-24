@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native'
 import React, { useState } from "react";
 import PinkButton from '@components/global/PinkButton'
 import { goBack } from "@utils/NavigationUtils";
@@ -28,6 +28,7 @@ const registerScreen2 = () => {
 
 
                         </View>
+                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                         <View style={{ height: 16 }}>
 
                         </View>
@@ -52,6 +53,7 @@ const registerScreen2 = () => {
                         // maximumYear={2025}
                         // placeholder="dd/mm/yyyy"
                         />
+                    </ScrollView>
 
                     </View>
                 </View>

@@ -30,105 +30,52 @@ const registerScreen7 = () => {
 
 
                         </View>
-                        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-
-                        
-                        <View style={{ height: 16 }}>
-
-                        </View>
-                        <TextComponent style={styles.title1}>
-                            Enter Your Details
-                        </TextComponent>
-                        <TextComponent style={styles.title2}>
-                            Please enter your educational and professional details.
-                        </TextComponent>
-                        <View style={{ height: 16 }}>
-
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Working
-                        </TextComponent>
-                        <InputField
-                            placeholder=" Working"
-
-                        />
-                        <View style={{ height: 20 }}>
-
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Profession
-                        </TextComponent>
-                        <InputField
-                            placeholder="Profession"
-                        /><View style={{ height: 20 }}>
-
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Education
-                        </TextComponent>
-                        <DropdownField
-                            options={["Apple", "Banana", "Mango", "Orange"]}
-                            placeholder="Select a fruit"
-                            value={selectedValue}
-                            onSelect={(val) => setSelectedValue(val)}
-                        />
-
-                        <View style={{ height: 20 }}>
-
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Education
-                        </TextComponent>
-                        <DropdownField
-                            options={["Apple", "Banana", "Mango", "Orange"]}
-                            placeholder="Select a fruit"
-                            value={selectedValue}
-                            onSelect={(val) => setSelectedValue(val)}
-                        />
+                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
 
 
-                        <View style={{ height: 20 }}>
+                            <View style={{ height: 16 }}>
 
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Education
-                        </TextComponent>
-                        <DropdownField
-                            options={["Apple", "Banana", "Mango", "Orange"]}
-                            placeholder="Select a fruit"
-                            value={selectedValue}
-                            onSelect={(val) => setSelectedValue(val)}
-                        />
+                            </View>
+                            <TextComponent style={styles.title1}>
+                                Enter Your Details
+                            </TextComponent>
+                            <TextComponent style={styles.title2}>
+                                Please enter your educational and professional details.
+                            </TextComponent>
+                            <View style={{ height: 16 }}>
+
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Working
+                            </TextComponent>
+                            <InputField
+                                placeholder=" Working"
+
+                            />
+                            <View style={{ height: 20 }}>
+
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Profession
+                            </TextComponent>
+                            <InputField
+                                placeholder="Profession"
+                            />
+                            <View style={{ height: 20 }}>
+
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Education
+                            </TextComponent>
+                            <DropdownField
+                                options={["Apple", "Banana", "Mango", "Orange"]}
+                                placeholder="Select a fruit"
+                                value={selectedValue}
+                                onSelect={(val) => setSelectedValue(val)}
+                            />
 
 
-                        <View style={{ height: 20 }}>
-
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Education
-                        </TextComponent>
-                        <DropdownField
-                            options={["Apple", "Banana", "Mango", "Orange"]}
-                            placeholder="Select a fruit"
-                            value={selectedValue}
-                            onSelect={(val) => setSelectedValue(val)}
-                        />
-
-
-                        <View style={{ height: 20 }}>
-
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Education2
-                        </TextComponent>
-                        <DropdownField
-                            options={["Apple", "Banana", "Mango", "Orange"]}
-                            placeholder="Select a fruit"
-                            value={selectedValue}
-                            onSelect={(val) => setSelectedValue(val)}
-                        />
-
-</ScrollView>
+                        </ScrollView>
 
                     </View>
                 </View>
