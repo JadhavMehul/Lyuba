@@ -7,7 +7,7 @@ import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 
-const registerScreen3 = () => {
+const registerScreen4_2 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -30,14 +30,22 @@ const registerScreen3 = () => {
 
                         </View>
                         <TextComponent style={styles.title1}>
-                            Enter Your Details
+                            Fetching Location
                         </TextComponent>
                         <TextComponent style={styles.title2}>
-                        Please select your gender.
+                            Unable to fetch location please turn on location permission.
                         </TextComponent>
                         <View style={{ height: 16 }}>
 
                         </View>
+                        <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center',  width: '100%' }}>
+                            <Image
+                                source={require("@assets/icons/noloc.png")}
+                                style={styles.pin}
+                                resizeMode="contain"
+                            />
+                        </View>
+
 
 
                     </View>
@@ -46,7 +54,7 @@ const registerScreen3 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen4')}
+                        onPress={() => navigate('registerScreen5')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -61,7 +69,7 @@ const registerScreen3 = () => {
     )
 }
 
-export default registerScreen3
+export default registerScreen4_2
 
 
 
@@ -119,5 +127,9 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
-    
+    pin: {
+        width: 80,
+        height: 80,
+    },
+
 })

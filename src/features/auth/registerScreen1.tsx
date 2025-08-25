@@ -36,44 +36,41 @@ const registerScreen1 = () => {
 
 
                         </View>
-                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                        <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
 
-                        
-                        <View style={{ height: 16 }}>
 
-                        </View>
+                            <View style={{ height: 16 }}>
 
-                        <TextComponent style={styles.title1}>
-                            Enter Your Details
-                        </TextComponent>
-                        <TextComponent style={styles.title2}>
-                            Please enter your first and last name.
-                        </TextComponent>
-                        <View style={{ height: 16 }}>
+                            </View>
 
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            First Name
-                        </TextComponent>
-                        <InputField
-                            placeholder="Enter your first name"
-                            value={firstName}
-                            onChangeText={setFirstName}
-                        />
-                        <View style={{ height: 20 }}>
+                            <TextComponent style={styles.title1}>
+                                Enter Your Details
+                            </TextComponent>
+                            <TextComponent style={styles.title2}>
+                                Please enter your first and last name.
+                            </TextComponent>
+                            <View style={{ height: 16 }}>
 
-                        </View>
-                        <TextComponent style={styles.inputtitle}>
-                            Last Name
-                        </TextComponent>
-                        <InputField
-                            placeholder="Enter your Last name"
-                            value={lastName}
-                            onChangeText={setLastName}
-                        />
-                        
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                First Name
+                            </TextComponent>
+                            <InputField
+                                placeholder="Enter your first name"
+                                value={firstName}
+                                onChangeText={setFirstName}
+                            />
+                            <View style={{ height: 20 }}>
 
-                        
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Last Name
+                            </TextComponent>
+                            <InputField
+                                placeholder="Enter your Last name"
+                                value={lastName}
+                                onChangeText={setLastName}
+                            />
 
 
 
@@ -83,7 +80,10 @@ const registerScreen1 = () => {
 
 
 
-</ScrollView>
+
+
+
+                        </ScrollView>
                     </View>
                 </View>
                 <View style={styles.buttonsection}>

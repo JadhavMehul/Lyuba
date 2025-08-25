@@ -6,8 +6,9 @@ import { navigate } from '@utils/NavigationUtils';
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
+import InputField from '@components/global/InputField';
 
-const registerScreen3 = () => {
+const registerScreen4_1 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -30,14 +31,30 @@ const registerScreen3 = () => {
 
                         </View>
                         <TextComponent style={styles.title1}>
-                            Enter Your Details
+                            Fetching Location
                         </TextComponent>
                         <TextComponent style={styles.title2}>
-                        Please select your gender.
+                            Please wait while we fetch your current location.
                         </TextComponent>
                         <View style={{ height: 16 }}>
 
                         </View>
+                       
+                        <TextComponent style={styles.inputtitle}>
+                            City
+                        </TextComponent>
+                        <InputField
+                            placeholder="City"
+                        />
+                        <View style={{ height: 20 }}>
+
+                        </View>
+                        <TextComponent style={styles.inputtitle}>
+                            Pincode
+                        </TextComponent>
+                        <InputField
+                            placeholder="Pincode"
+                        />
 
 
                     </View>
@@ -46,7 +63,7 @@ const registerScreen3 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen4')}
+                        onPress={() => navigate('registerScreen4_2')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -61,7 +78,7 @@ const registerScreen3 = () => {
     )
 }
 
-export default registerScreen3
+export default registerScreen4_1
 
 
 
@@ -119,5 +136,5 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
-    
+
 })
