@@ -1,14 +1,50 @@
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native'
+import React, { useEffect } from 'react'
 import TextComponent from '@components/global/TextComponent'
 import { Fonts } from '@utils/Constants'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import AuthButton from '@components/AuthButton'
 import { navigate } from '@utils/NavigationUtils';
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const { width: screenWidth } = Dimensions.get("window");
 
-const loginScreen = () => {
+const LoginScreen = () => {
+
+  useEffect(() => {
+    // Optional: check Google Play services
+    GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true }).catch(() => {
+      // Device may not have Play Services; handle gracefully
+    });
+  }, []);
+
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const signInResult = (await GoogleSignin.signIn()) as {
+        data?: { idToken?: string; accessToken?: string };
+      };
+
+      // v13+ returns tokens inside signInResult.data
+      const idToken = signInResult.data?.idToken;
+      const accessToken = signInResult.data?.accessToken ?? undefined;
+
+      if (!idToken) {
+        Alert.alert('Google Sign-In failed', 'No ID token received.');
+        return;
+      }
+      console.log(idToken);
+      
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken, accessToken);
+      await auth().signInWithCredential(googleCredential);
+      // User is now signed in with Firebase
+    } catch (e: any) {
+      Alert.alert('Google Sign-In error', e?.message ?? String(e));
+    }
+  };
+
   return (
     <View style={styles.container}>
       <CustomSafeAreaView>
@@ -35,7 +71,7 @@ const loginScreen = () => {
               <AuthButton
                 text="Google"
                 icon={require("@assets/icons/google.png")}
-                onPress={() => navigate('registerScreen1')}
+                onPress={signInWithGoogle}
               />
 
               <AuthButton
@@ -73,7 +109,7 @@ const loginScreen = () => {
   )
 }
 
-export default loginScreen
+export default LoginScreen;
 
 
 const styles = StyleSheet.create({
