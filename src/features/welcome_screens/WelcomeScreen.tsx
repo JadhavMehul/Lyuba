@@ -49,7 +49,7 @@ const WelcomeScreen = () => {
     if (currentIndex < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      navigate('loginScreen')
+      navigate('LoginScreen')
     }
   };
 
