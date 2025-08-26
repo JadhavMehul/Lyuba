@@ -1,13 +1,18 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
 import { navigate } from '@utils/NavigationUtils';
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
+import Icon from "react-native-vector-icons/FontAwesome";
+import SelectableOption from '@components/global/SelectableOption';
 
 const registerScreen3 = () => {
+    const [selectedOption, setSelectedOption] = useState<string>("");
+
+    
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -33,11 +38,40 @@ const registerScreen3 = () => {
                             Enter Your Details
                         </TextComponent>
                         <TextComponent style={styles.title2}>
-                        Please select your gender.
+                            Please select your gender.
                         </TextComponent>
                         <View style={{ height: 16 }}>
 
                         </View>
+
+                        <View style={styles.containerfirst}>
+                            <SelectableOption
+                                label="Male"
+                                value="male"
+                                selectedOption={selectedOption}
+                                onPress={setSelectedOption}
+                                defaultIcon={require("@assets/icons/maleb.png")}
+                                selectedIcon={require("@assets/icons/femaleb.png")}
+                            />
+
+                            <SelectableOption
+                                label="Female"
+                                value="female"
+                                selectedOption={selectedOption}
+                                onPress={setSelectedOption}
+                                defaultIcon={require("@assets/icons/maleb.png")}
+                                selectedIcon={require("@assets/icons/femaleb.png")}
+                            />
+                            <SelectableOption
+                                label="Others"
+                                value="others"
+                                selectedOption={selectedOption}
+                                onPress={setSelectedOption}
+                                defaultIcon={require("@assets/icons/maleb.png")}
+                                selectedIcon={require("@assets/icons/femaleb.png")}
+                            />
+                        </View>
+
 
 
                     </View>
@@ -47,7 +81,7 @@ const registerScreen3 = () => {
                     <PinkButton
                         text="Next"
                         onPress={() => navigate('registerScreen4')}
-                        // disabled={!birthday}
+                        disabled={!selectedOption}
                         style={[
                             styles.shadowpink,
                         ]}
@@ -71,6 +105,64 @@ export default registerScreen3
 
 const styles = StyleSheet.create({
 
+    maincontent: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+    },
+    containername: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        padding: 16,
+    },
+    gendertext: {
+        fontSize: 28,
+        fontWeight: '700',
+    },
+    containerfirst: {
+        justifyContent: 'center',
+        gap: 16,
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+
+        marginHorizontal: 24,
+        marginBottom: 16,
+    },
+    option: {
+        minWidth: 140,
+        height: 150,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#FFB6C1',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    selectedOption: {
+        borderColor: '#FFB6C1',
+        backgroundColor: '#FFE3E8',
+        shadowColor: "#FF7F7F",
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 8,
+    },
+    text: {
+        fontSize: 14,
+        fontFamily: Fonts.Poppins_Medium_500,
+    },
+    selectedText: {
+        color: '#FF7F7F',
+    },
+    buttonContainer: {
+        position: 'absolute',
+        width: '100%',
+        paddingHorizontal: 24,
+        paddingVertical: 24,
+        bottom: 0,
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+
     container: {
         flex: 1,
         backgroundColor: "#fff",
@@ -89,6 +181,10 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
 
+    },
+    image2: {
+        width: 100,
+        height: 100,
     },
     buttonsection: {
         paddingHorizontal: 24,
@@ -119,5 +215,5 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
-    
+
 })
