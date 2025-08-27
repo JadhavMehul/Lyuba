@@ -8,7 +8,7 @@ import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import DropdownField from '@components/global/DropdownField';
 
-const registerScreen6 = () => {
+const RegisterScreen6 = () => {
     const [selectedFeet, setSelectedFeet] = useState<string | undefined>();
     const [selectedInch, setSelectedInch] = useState<string | undefined>();
     const [selectedLooking, setSelectedLooking] = useState<string | undefined>();
@@ -193,7 +193,7 @@ const registerScreen6 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen7')}
+                        onPress={() => navigate('RegisterScreen7')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -208,7 +208,7 @@ const registerScreen6 = () => {
     )
 }
 
-export default registerScreen6
+export default RegisterScreen6
 
 
 

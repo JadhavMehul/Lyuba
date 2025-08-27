@@ -8,7 +8,7 @@ import BirthdayPicker from '@components/global/BirthdayPicker';
 import TextComponent from '@components/global/TextComponent';
 import { Fonts } from '@utils/Constants';
 
-const registerScreen2 = () => {
+const RegisterScreen2 = () => {
     const [birthday, setBirthday] = useState<Date | null>(null);
     return (
         <View style={styles.container}>
@@ -61,7 +61,7 @@ const registerScreen2 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen3')}
+                        onPress={() => navigate('RegisterScreen3')}
                         disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -76,7 +76,7 @@ const registerScreen2 = () => {
     )
 }
 
-export default registerScreen2
+export default RegisterScreen2
 
 
 

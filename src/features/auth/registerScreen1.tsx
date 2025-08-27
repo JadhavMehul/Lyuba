@@ -10,7 +10,7 @@ import { navigate } from '@utils/NavigationUtils';
 import BirthdayPicker from '@components/global/BirthdayPicker';
 import DropdownField from '@components/global/DropdownField';
 
-const registerScreen1 = () => {
+const RegisterScreen1 = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
 
@@ -104,7 +104,7 @@ const registerScreen1 = () => {
     )
 }
 
-export default registerScreen1
+export default RegisterScreen1
 
 
 const styles = StyleSheet.create({

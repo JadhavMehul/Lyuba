@@ -29,7 +29,7 @@ const INTERESTS = [
 
 ];
 
-const registerScreen5 = () => {
+const RegisterScreen5 = () => {
 
     const [selected, setSelected] = useState<string[]>([]);
 
@@ -101,7 +101,7 @@ const registerScreen5 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen6')}
+                        onPress={() => navigate('RegisterScreen6')}
                         disabled={selected.length < 3}
                         style={[
                             styles.shadowpink,
@@ -116,7 +116,7 @@ const registerScreen5 = () => {
     )
 }
 
-export default registerScreen5
+export default RegisterScreen5
 
 
 

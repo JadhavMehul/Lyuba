@@ -4,15 +4,15 @@ import { navigationRef } from '@utils/NavigationUtils'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from '@features/welcome_screens/WelcomeScreen';
 import LoginScreen from '@features/auth/LoginScreen';
-import registerScreen1 from '@features/auth/registerScreen1';
-import registerScreen2 from '@features/auth/registerScreen2';
-import registerScreen3 from '@features/auth/registerScreen3';
-import registerScreen5 from '@features/auth/registerScreen5';
-import registerScreen6 from '@features/auth/registerScreen6';
-import registerScreen7 from '@features/auth/registerScreen7';
-import registerScreen4 from '@features/auth/registerScreen4';
-import registerScreen4_1 from '@features/auth/registerScreen4_1';
-import registerScreen4_2 from '@features/auth/registerScreen4_2';
+import RegisterScreen1 from '@features/auth/RegisterScreen1';
+import RegisterScreen2 from '@features/auth/RegisterScreen2';
+import RegisterScreen3 from '@features/auth/RegisterScreen3';
+import RegisterScreen5 from '@features/auth/RegisterScreen5';
+import RegisterScreen6 from '@features/auth/RegisterScreen6';
+import RegisterScreen7 from '@features/auth/RegisterScreen7';
+import RegisterScreen4 from '@features/auth/RegisterScreen4';
+import RegisterScreen4_1 from '@features/auth/RegisterScreen4_1';
+import RegisterScreen4_2 from '@features/auth/RegisterScreen4_2';
 
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -40,13 +40,13 @@ const App = () => {
       if (u) {
         navigationRef.current?.reset({
           index: 0,
-          routes: [{ name: "registerScreen1" }],
+          routes: [{ name: "RegisterScreen1" }],
         });
         // subscribeToTopic(); // Uncomment if you have this function
       } else {
         navigationRef.current?.reset({
           index: 0,
-          routes: [{ name: "loginScreen" }],
+          routes: [{ name: "LoginScreen" }],
         });
       }
     });
@@ -60,19 +60,16 @@ const App = () => {
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen}/>
-        <Stack.Screen name="loginScreen" component={LoginScreen}/>
-        <Stack.Screen name="registerScreen1" component={registerScreen1}/>
-        <Stack.Screen name="registerScreen2" component={registerScreen2}/>
-        <Stack.Screen name="registerScreen3" component={registerScreen3}/>
-        <Stack.Screen name="registerScreen4" component={registerScreen4}/>
-        <Stack.Screen name="registerScreen4_1" component={registerScreen4_1}/>
-        <Stack.Screen name="registerScreen4_2" component={registerScreen4_2}/>
-        <Stack.Screen name="registerScreen5" component={registerScreen5}/>
-        <Stack.Screen name="registerScreen6" component={registerScreen6}/>
-        <Stack.Screen name="registerScreen7" component={registerScreen7}/>
-
-        
-
+        <Stack.Screen name="LoginScreen" component={LoginScreen}/>
+        <Stack.Screen name="RegisterScreen1" component={RegisterScreen1}/>
+        <Stack.Screen name="RegisterScreen2" component={RegisterScreen2}/>
+        <Stack.Screen name="RegisterScreen3" component={RegisterScreen3}/>
+        <Stack.Screen name="RegisterScreen4" component={RegisterScreen4}/>
+        <Stack.Screen name="RegisterScreen4_1" component={RegisterScreen4_1}/>
+        <Stack.Screen name="RegisterScreen4_2" component={RegisterScreen4_2}/>
+        <Stack.Screen name="RegisterScreen5" component={RegisterScreen5}/>
+        <Stack.Screen name="RegisterScreen6" component={RegisterScreen6}/>
+        <Stack.Screen name="RegisterScreen7" component={RegisterScreen7}/>
       </Stack.Navigator>
       
     </NavigationContainer>

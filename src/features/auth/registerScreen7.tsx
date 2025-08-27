@@ -9,7 +9,7 @@ import { Fonts } from '@utils/Constants';
 import InputField from '@components/global/InputField';
 import DropdownField from '@components/global/DropdownField';
 
-const registerScreen7 = () => {
+const RegisterScreen7 = () => {
 
     const [selectedValue, setSelectedValue] = useState<string | undefined>();
     return (
@@ -98,7 +98,7 @@ const registerScreen7 = () => {
     )
 }
 
-export default registerScreen7
+export default RegisterScreen7
 
 
 

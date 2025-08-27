@@ -7,7 +7,7 @@ import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 
-const registerScreen4_2 = () => {
+const RegisterScreen4_2 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -54,7 +54,7 @@ const registerScreen4_2 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen5')}
+                        onPress={() => navigate('RegisterScreen5')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -69,7 +69,7 @@ const registerScreen4_2 = () => {
     )
 }
 
-export default registerScreen4_2
+export default RegisterScreen4_2
 
 
 

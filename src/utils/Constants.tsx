@@ -1,12 +1,32 @@
 export enum Colors {
-    primary = '#FDCC00',
-    primary_light = '#ffe141',
-    secondary = '#490D83',
-    text = '#363636',
-    disabled = '#9197a6',
-    border = "#d0d4dc",
-    backgroundSecondary = '#f5f6fb'
+  // Primary
+  pink = '#FFC0CB',
+  light_pink = '#FFB6C1',
+  soft_pink = '#FFE3E8',
+
+  // Secondary
+  light_blue = '#ADD8E6',
+  sky_blue = '#B3D4FC',
+
+  // Success
+  mint_green = '#B2F2BB',
+  pale_teal = '#C2F0E2',
+
+  // Text
+  dark = '#333333',
+  light = '#666666',
+  black = '#000000',
+  white = '#FFFFFF',
+
+  // Accent
+  coral = '#FF6F61',
+  soft_red = '#FF7F7F',
+
+  // Background
+  ivory = '#FFF8F0',
+  cream = '#FAF9F6',
 }
+
 export enum Fonts {
     Poppins_Thin_100 = 'Poppins-Thin',
     Poppins_Thin_Italic_100 = 'Poppins-ThinItalic',

@@ -83,7 +83,7 @@ const FetchingLocationAnimation = () => {
     );
 };
 
-const registerScreen4 = () => {
+const RegisterScreen4 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -125,7 +125,7 @@ const registerScreen4 = () => {
                 <View style={styles.buttonsection}>
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen4_1')}
+                        onPress={() => navigate('RegisterScreen4_1')}
                         style={[styles.shadowpink]}
                     />
                 </View>
@@ -134,7 +134,7 @@ const registerScreen4 = () => {
     )
 }
 
-export default registerScreen4;
+export default RegisterScreen4;
 
 const styles = StyleSheet.create({
     container: {
