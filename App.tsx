@@ -16,6 +16,7 @@ import RegisterScreen4_2 from '@features/auth/RegisterScreen4_2';
 
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import HomeScreen from '@features/home_screen/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,7 +41,7 @@ const App = () => {
       if (u) {
         navigationRef.current?.reset({
           index: 0,
-          routes: [{ name: "RegisterScreen1" }],
+          routes: [{ name: "HomeScreen" }],
         });
         // subscribeToTopic(); // Uncomment if you have this function
       } else {
@@ -49,6 +50,9 @@ const App = () => {
           routes: [{ name: "LoginScreen" }],
         });
       }
+
+    
+
     });
 
     return () => unsubscribe(); // Cleanup subscription on unmount
@@ -70,6 +74,7 @@ const App = () => {
         <Stack.Screen name="RegisterScreen5" component={RegisterScreen5}/>
         <Stack.Screen name="RegisterScreen6" component={RegisterScreen6}/>
         <Stack.Screen name="RegisterScreen7" component={RegisterScreen7}/>
+        <Stack.Screen name="HomeScreen" component={HomeScreen}/>
       </Stack.Navigator>
       
     </NavigationContainer>

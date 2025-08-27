@@ -9,6 +9,9 @@ import PinkButton from '@components/global/PinkButton'
 import { navigate } from '@utils/NavigationUtils';
 import BirthdayPicker from '@components/global/BirthdayPicker';
 import DropdownField from '@components/global/DropdownField';
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
 
 const RegisterScreen1 = () => {
     const [firstName, setFirstName] = useState("");
@@ -16,6 +19,26 @@ const RegisterScreen1 = () => {
 
     const isDisabled = firstName.trim().length === 0;
 
+    const logout = async () => {
+        try {
+            // 1️⃣ Sign out from Firebase
+            await auth().signOut();
+
+            // 2️⃣ Sign out from Google if still connected
+            const currentUser = await GoogleSignin.getCurrentUser();
+            if (currentUser) {
+                await GoogleSignin.signOut();
+            }
+
+            console.log("User logged out successfully");
+
+            // 3️⃣ (Optional) Navigate back to Login screen
+            navigate("LoginScreen");
+
+        } catch (error) {
+            console.error("Logout error: ", error);
+        }
+    };
 
 
     return (
@@ -89,7 +112,7 @@ const RegisterScreen1 = () => {
                 <View style={styles.buttonsection}>
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('registerScreen2')}
+                        onPress={logout}
                         style={[
                             styles.shadowpink,
 

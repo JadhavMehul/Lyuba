@@ -34,14 +34,70 @@ const LoginScreen = () => {
         Alert.alert('Google Sign-In failed', 'No ID token received.');
         return;
       }
-      console.log(idToken);
-      
 
       const googleCredential = auth.GoogleAuthProvider.credential(idToken, accessToken);
-      await auth().signInWithCredential(googleCredential);
-      // User is now signed in with Firebase
+      const userCredential = await auth().signInWithCredential(googleCredential);
+      const firebaseUser = userCredential.user;
+
+      // Get Firebase ID token
+      const firebaseIdToken = await firebaseUser.getIdToken();
+
+      console.log("idToken: ", firebaseIdToken);
+      
+      // const api = "http://10.0.2.2:3000/test";
+      // try {
+      //   console.log(1);
+      //   const response = await fetch(api); // default is GET
+      //   console.log(2);
+      //   const data = await response.text(); // or .json() if your endpoint returns JSON
+      //   console.log(3);
+      //   console.log(data);
+      //   console.log(4);
+      // } catch (error) {
+      //   console.error("Network request failed:", error);
+      // }
+
+      // Send to backend 
+      const api = "http://10.0.2.2:3000/api/auth/social";
+      const res = await fetch(api, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: firebaseIdToken }),
+      });
+      const data = await res.json();
+
+      if (res.status === 201) {
+        Alert.alert("Welcome!", "New user registered");
+        navigate("RegisterScreen1"); // New user → register flow
+      } else if (res.status === 200) {
+        Alert.alert("Welcome back!", "Login successful");
+        navigate("HomeScreen"); // Existing user → main app
+      } else {
+        Alert.alert("Auth error", data?.error ?? "Unknown error");
+      }
     } catch (e: any) {
       Alert.alert('Google Sign-In error', e?.message ?? String(e));
+    }
+  };
+
+  const logout = async () => {
+    try {
+        // 1️⃣ Sign out from Firebase
+        await auth().signOut();
+
+        // 2️⃣ Sign out from Google if still connected
+        const currentUser = await GoogleSignin.getCurrentUser();
+        if (currentUser) {
+            await GoogleSignin.signOut();
+        }
+
+        console.log("User logged out successfully");
+
+        // 3️⃣ (Optional) Navigate back to Login screen
+        navigate("LoginScreen");
+
+    } catch (error) {
+        console.error("Logout error: ", error);
     }
   };
 
@@ -77,7 +133,7 @@ const LoginScreen = () => {
               <AuthButton
                 text="Facebook"
                 icon={require("@assets/icons/facebook.png")}
-                onPress={() => navigate('registerScreen1')}
+                onPress={logout}
               />
 
             </View>
