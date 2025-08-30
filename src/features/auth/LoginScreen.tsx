@@ -71,7 +71,11 @@ const LoginScreen = () => {
         navigate("RegisterScreen1"); // New user → register flow
       } else if (res.status === 200) {
         Alert.alert("Welcome back!", "Login successful");
-        navigate("HomeScreen"); // Existing user → main app
+        if (data.response.profileComplete === true) {
+          navigate("HomeScreen"); // Existing user → main app
+        } else {
+          navigate("RegisterScreen1"); // Existing user but data incomplete → register flow
+        }
       } else {
         Alert.alert("Auth error", data?.error ?? "Unknown error");
       }

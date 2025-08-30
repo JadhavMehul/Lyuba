@@ -17,6 +17,7 @@ import RegisterScreen4_2 from '@features/auth/RegisterScreen4_2';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import HomeScreen from '@features/home_screen/HomeScreen';
+import { ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,30 +36,30 @@ const App = () => {
     // 2️⃣ Subscribe to auth state changes
     const unsubscribe = auth().onAuthStateChanged(u => {
       setUser(u);
-      if (initializing) setInitializing(false);
 
-      // 3️⃣ Navigate based on user login status
-      if (u) {
-        navigationRef.current?.reset({
-          index: 0,
-          routes: [{ name: "HomeScreen" }],
-        });
-        // subscribeToTopic(); // Uncomment if you have this function
+      if (initializing) {
+        // First time: just finish initializing, don't navigate yet
+        setInitializing(false);
       } else {
-        navigationRef.current?.reset({
-          index: 0,
-          routes: [{ name: "LoginScreen" }],
-        });
+        // After first run: navigate based on auth state
+        if (u) {
+          navigationRef.current?.reset({
+            index: 0,
+            routes: [{ name: "HomeScreen" }],
+          });
+        } else {
+          navigationRef.current?.reset({
+            index: 0,
+            routes: [{ name: "LoginScreen" }],
+          });
+        }
       }
-
-    
-
     });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
-  }, []);
+    return () => unsubscribe();
+  }, [initializing]);
 
-  if (initializing) return null;
+  if (initializing) return <ActivityIndicator size={'large'} />;
 
   return (
     <NavigationContainer ref={navigationRef}>
