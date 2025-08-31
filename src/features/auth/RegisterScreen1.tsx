@@ -11,34 +11,31 @@ import BirthdayPicker from '@components/global/BirthdayPicker';
 import DropdownField from '@components/global/DropdownField';
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { RouteProp, useRoute } from '@react-navigation/native';
 
+type UserData = {
+  uid: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  photoURL: string | null;
+  provider: string;
+};
 
 const RegisterScreen1 = () => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
+    console.log(userData);
+    
+    const [firstName, setFirstName] = useState(userData.firstName || "");
+    const [lastName, setLastName] = useState(userData.lastName || "");
 
     const isDisabled = firstName.trim().length === 0;
 
-    const logout = async () => {
-        try {
-            // 1️⃣ Sign out from Firebase
-            await auth().signOut();
-
-            // 2️⃣ Sign out from Google if still connected
-            const currentUser = await GoogleSignin.getCurrentUser();
-            if (currentUser) {
-                await GoogleSignin.signOut();
-            }
-
-            console.log("User logged out successfully");
-
-            // 3️⃣ (Optional) Navigate back to Login screen
-            navigate("LoginScreen");
-
-        } catch (error) {
-            console.error("Logout error: ", error);
-        }
-    };
+    const nextScreen = () => {
+        navigate("RegisterScreen2", {userData: {...userData, firstName, lastName}});
+    }    
 
 
     return (
@@ -95,24 +92,13 @@ const RegisterScreen1 = () => {
                                 onChangeText={setLastName}
                             />
 
-
-
-
-
-
-
-
-
-
-
-
                         </ScrollView>
                     </View>
                 </View>
                 <View style={styles.buttonsection}>
                     <PinkButton
                         text="Next"
-                        onPress={logout}
+                        onPress={nextScreen}
                         style={[
                             styles.shadowpink,
 

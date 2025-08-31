@@ -7,9 +7,32 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import BirthdayPicker from '@components/global/BirthdayPicker';
 import TextComponent from '@components/global/TextComponent';
 import { Fonts } from '@utils/Constants';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+
+type UserData = {
+  uid: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  photoURL: string | null;
+  provider: string;
+};
+
 
 const RegisterScreen2 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
     const [birthday, setBirthday] = useState<Date | null>(null);
+
+    const nextScreen = () => {
+        console.log(birthday);
+        
+        navigate("RegisterScreen3", {userData: {...userData, birthday}});
+    }   
+
+
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -61,7 +84,7 @@ const RegisterScreen2 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen3')}
+                        onPress={nextScreen}
                         disabled={!birthday}
                         style={[
                             styles.shadowpink,

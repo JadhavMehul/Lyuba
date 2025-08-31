@@ -43,19 +43,6 @@ const LoginScreen = () => {
       const firebaseIdToken = await firebaseUser.getIdToken();
 
       console.log("idToken: ", firebaseIdToken);
-      
-      // const api = "http://10.0.2.2:3000/test";
-      // try {
-      //   console.log(1);
-      //   const response = await fetch(api); // default is GET
-      //   console.log(2);
-      //   const data = await response.text(); // or .json() if your endpoint returns JSON
-      //   console.log(3);
-      //   console.log(data);
-      //   console.log(4);
-      // } catch (error) {
-      //   console.error("Network request failed:", error);
-      // }
 
       // Send to backend 
       const api = "http://10.0.2.2:3000/api/auth/social";
@@ -65,11 +52,13 @@ const LoginScreen = () => {
         body: JSON.stringify({ idToken: firebaseIdToken }),
       });
       const data = await res.json();
+      console.log(data);
+      
 
-      if (res.status === 201) {
+      if (data.response.profileComplete === false) {
         Alert.alert("Welcome!", "New user registered");
-        navigate("RegisterScreen1"); // New user → register flow
-      } else if (res.status === 200) {
+        navigate("RegisterScreen1", {userData: data.response.user}); // New user → register flow
+      } else if (data.response.profileComplete === true) {
         Alert.alert("Welcome back!", "Login successful");
         if (data.response.profileComplete === true) {
           navigate("HomeScreen"); // Existing user → main app

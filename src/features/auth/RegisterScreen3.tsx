@@ -8,8 +8,21 @@ import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import Icon from "react-native-vector-icons/FontAwesome";
 import SelectableOption from '@components/global/SelectableOption';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+type UserData = {
+  uid: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  photoURL: string | null;
+  provider: string;
+};
 
 const RegisterScreen3 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
     const [selectedOption, setSelectedOption] = useState<string>("");
 
     

@@ -34,7 +34,7 @@ const App = () => {
     });
 
     // 2️⃣ Subscribe to auth state changes
-    const unsubscribe = auth().onAuthStateChanged(u => {
+    const unsubscribe = auth().onAuthStateChanged(async (u) => {
       setUser(u);
 
       if (initializing) {
@@ -43,14 +43,39 @@ const App = () => {
       } else {
         // After first run: navigate based on auth state
         if (u) {
-          navigationRef.current?.reset({
-            index: 0,
-            routes: [{ name: "HomeScreen" }],
-          });
+          try {
+            const idToken = await u.getIdToken()
+
+            const res = await fetch('http://10.0.2.2:3000/api/auth/authenticateUser', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ idToken }),
+            })
+
+            const data = await res.json()
+
+            if (data?.response.profileComplete === true) {
+              navigationRef.current?.reset({
+                index: 0,
+                routes: [{ name: 'HomeScreen' }],
+              })
+            } else {
+              navigationRef.current?.reset({
+                index: 0,
+                routes: [{ name: 'RegisterScreen1', params: { userData: data.response.user } }],
+              })
+            }
+          } catch (error) {
+            console.log('Profile check failed:', error)
+            navigationRef.current?.reset({
+              index: 0,
+              routes: [{ name: 'LoginScreen' }],
+            })
+          }
         } else {
           navigationRef.current?.reset({
             index: 0,
-            routes: [{ name: "LoginScreen" }],
+            routes: [{ name: "WelcomeScreen" }],
           });
         }
       }
