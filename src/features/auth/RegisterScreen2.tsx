@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PinkButton from '@components/global/PinkButton'
 import { goBack } from "@utils/NavigationUtils";
 import { navigate } from '@utils/NavigationUtils';
@@ -26,12 +26,18 @@ const RegisterScreen2 = () => {
 
     const [birthday, setBirthday] = useState<Date | null>(null);
 
-    const nextScreen = () => {
-        console.log(birthday);
-        
-        navigate("RegisterScreen3", {userData: {...userData, birthday}});
-    }   
 
+    function pad2(n: number) {
+        return n < 10 ? `0${n}` : String(n);
+    }
+
+    const nextScreen = () => {
+        let birthdate = ""
+        if (birthday) {
+            birthdate = (`${pad2(birthday.getDate())}/${pad2(birthday.getMonth() + 1)}/${birthday.getFullYear()}`);
+        }
+        navigate("RegisterScreen3", {userData: {...userData, birthdate}});
+    }   
 
     return (
         <View style={styles.container}>

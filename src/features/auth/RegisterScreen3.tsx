@@ -16,6 +16,7 @@ type UserData = {
   firstName: string | null;
   lastName: string | null;
   photoURL: string | null;
+  birthdate: string | null;
   provider: string;
 };
 
@@ -25,6 +26,10 @@ const RegisterScreen3 = () => {
 
     const [selectedOption, setSelectedOption] = useState<string>("");
 
+    const nextScreen = () => {
+        let gender = selectedOption;
+        navigate("RegisterScreen4", {userData: {...userData, gender}});
+    }   
     
     return (
         <View style={styles.container}>
@@ -93,7 +98,7 @@ const RegisterScreen3 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen4')}
+                        onPress={nextScreen}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
