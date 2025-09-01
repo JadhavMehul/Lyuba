@@ -45,8 +45,9 @@ const App = () => {
         if (u) {
           try {
             const idToken = await u.getIdToken()
-
-            const res = await fetch('http://10.0.2.2:3000/api/auth/authenticateUser', {
+            // const api = 'http://10.0.2.2:3000/api/auth/authenticateUser';
+            const api = 'http://192.168.117.133:3000/api/auth/authenticateUser';
+            const res = await fetch(api, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ idToken }),

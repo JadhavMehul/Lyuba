@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
+import { View, TouchableOpacity, StyleSheet, Image } from 'react-native'
 import React, { useState } from 'react';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
@@ -6,7 +6,6 @@ import { navigate } from '@utils/NavigationUtils';
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
-import Icon from "react-native-vector-icons/FontAwesome";
 import SelectableOption from '@components/global/SelectableOption';
 import { RouteProp, useRoute } from '@react-navigation/native';
 

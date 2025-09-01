@@ -1,89 +1,57 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions, Animated, Easing } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions, Animated, Easing, Platform, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack, navigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
+import LocationAnimation from '@components/auth_components/LocationAnimation';
+import Geolocation from 'react-native-geolocation-service';
 
-const { width } = Dimensions.get("window");
-const circleSizes = [width * 0.4, width * 0.6, width * 0.8]; // responsive sizes
-
-const FetchingLocationAnimation = () => {
-    const vals = useRef(circleSizes.map(() => new Animated.Value(0))).current;
-
-    useEffect(() => {
-        let cancelled = false;
-
-        const stepMs = 300;   // delay between circles turning pink
-        const paintMs = 400;  // duration grey -> pink
-        const firstDelay = 1000; // wait before first circle turns pink
-
-        const start = () => {
-            const toPink = Animated.stagger(
-                stepMs,
-                vals.map(v =>
-                    Animated.timing(v, {
-                        toValue: 1,
-                        duration: paintMs,
-                        easing: Easing.out(Easing.quad),
-                        useNativeDriver: false,
-                    })
-                )
-            );
-
-            Animated.sequence([
-                Animated.delay(firstDelay),
-                toPink,
-                Animated.delay(400),
-            ]).start(({ finished }) => {
-                if (finished && !cancelled) {
-                    vals.forEach(v => v.setValue(0)); // reset instantly
-                    start(); // loop again
-                }
-            });
-        };
-
-        start();
-        return () => {
-            cancelled = true;
-            vals.forEach(v => v.stopAnimation());
-        };
-    }, [vals]);
-
-    return (
-        <View style={styles.animationContainer}>
-            {circleSizes.map((size, i) => {
-                const borderColor = vals[i].interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ["#B3B3B3", "#FF7A86"], // grey -> pink
-                });
-                return (
-                    <Animated.View
-                        key={i}
-                        style={[
-                            styles.circle,
-                            {
-                                width: size,
-                                height: size,
-                                borderRadius: size / 2,
-                                borderColor,
-                            },
-                        ]}
-                    />
-                );
-            })}
-            {/* <View style={styles.pin} /> */}
-            <Image
-                source={require("@assets/icons/loc.png")}
-                style={styles.pin}
-                resizeMode="contain"
-            />
-        </View>
-    );
-};
 
 const RegisterScreen4 = () => {
+
+    async function requestLocationPermission(): Promise<boolean> {
+        if (Platform.OS !== 'android') return true;
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Location Permission',
+                    message: 'This app needs access to your location to get city and pincode.',
+                    buttonPositive: 'OK',
+                }
+            );
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn('Permission error', err);
+            return false;
+        }
+    }
+
+    const getPosition = async () => {
+        const hasPermission = await requestLocationPermission();
+        if (!hasPermission) {
+            console.warn('Location permission not granted');
+            return;
+        }
+
+        Geolocation.getCurrentPosition(
+            (position) => {
+                console.log('Coords:', position.coords);
+            },
+            (error) => {
+                console.log('Error:', error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    };
+
+    useEffect(() => {
+        getPosition();
+    }, []);
+
+
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -111,15 +79,14 @@ const RegisterScreen4 = () => {
                         </TextComponent>
 
                         {/* <View style={{ height: 32 }} /> */}
-                        <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center',  width: '100%' }}>
-                             {/* 🔥 Animation here */}
-                        <FetchingLocationAnimation />
+                        <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                            <LocationAnimation />
                         </View>
-                       
+
                     </View>
                 </View>
 
-                
+
 
                 {/* Bottom Button */}
                 <View style={styles.buttonsection}>
@@ -185,22 +152,5 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
 
-    // Animation styles
-    animationContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "stretch",
-        // marginTop: -100,
-    },
-    circle: {
-        position: "absolute",
-        borderWidth: 8,
-    },
-    pin: {
-        width: 53,
-        height: 67,
-        // borderRadius: 7,
-        // backgroundColor: "#FF7A86",
-    },
+
 });

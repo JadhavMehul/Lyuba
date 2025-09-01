@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import TextComponent from '@components/global/TextComponent'
 import { Fonts } from '@utils/Constants'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
-import AuthButton from '@components/AuthButton'
+import AuthButton from '@components/auth_components/AuthButton'
 import { navigate } from '@utils/NavigationUtils';
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -45,7 +45,8 @@ const LoginScreen = () => {
       console.log("idToken: ", firebaseIdToken);
 
       // Send to backend 
-      const api = "http://10.0.2.2:3000/api/auth/social";
+      // const api = "http://10.0.2.2:3000/api/auth/social";
+      const api = "http://192.168.117.133:3000/api/auth/social";
       const res = await fetch(api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
