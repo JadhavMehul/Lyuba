@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 10,
   },
   wheelText: { fontSize: 18, color: "#666" },
   centerHighlight: {

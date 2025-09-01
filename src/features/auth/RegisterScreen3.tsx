@@ -69,7 +69,7 @@ const RegisterScreen3 = () => {
                                 selectedOption={selectedOption}
                                 onPress={setSelectedOption}
                                 defaultIcon={require("@assets/icons/maleb.png")}
-                                selectedIcon={require("@assets/icons/femaleb.png")}
+                                selectedIcon={require("@assets/icons/malepink.png")}
                             />
 
                             <SelectableOption
@@ -77,7 +77,7 @@ const RegisterScreen3 = () => {
                                 value="female"
                                 selectedOption={selectedOption}
                                 onPress={setSelectedOption}
-                                defaultIcon={require("@assets/icons/maleb.png")}
+                                defaultIcon={require("@assets/icons/femaleblack.png")}
                                 selectedIcon={require("@assets/icons/femaleb.png")}
                             />
                             <SelectableOption
@@ -85,8 +85,8 @@ const RegisterScreen3 = () => {
                                 value="others"
                                 selectedOption={selectedOption}
                                 onPress={setSelectedOption}
-                                defaultIcon={require("@assets/icons/maleb.png")}
-                                selectedIcon={require("@assets/icons/femaleb.png")}
+                                defaultIcon={require("@assets/icons/othersblack.png")}
+                                selectedIcon={require("@assets/icons/otherspink.png")}
                             />
                         </View>
 

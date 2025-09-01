@@ -19,6 +19,7 @@ const RegisterScreen6 = () => {
     const [selectedSign, setSelectedSign] = useState<string | undefined>();
     const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
     const [selectedKids, setSelectedKids] = useState<string | undefined>();
+    const [selectedGender, setSelectedGender] = useState<string | undefined>();
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -37,7 +38,7 @@ const RegisterScreen6 = () => {
 
 
                         </View>
-                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                        <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
 
 
                             <View style={{ height: 16 }}>
@@ -81,7 +82,7 @@ const RegisterScreen6 = () => {
                                 Looking For
                             </TextComponent>
                             <DropdownField
-                                options={["Serious relationship", "Casual relationship", "Figuring out","Dont want to say"]}
+                                options={["Serious relationship", "Casual relationship", "Figuring out", "Dont want to say"]}
                                 placeholder="Looking for"
                                 value={selectedLooking}
                                 onSelect={(val) => setSelectedLooking(val)}
@@ -97,7 +98,7 @@ const RegisterScreen6 = () => {
                                         Smoking
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Yes ", "No", "Sometimes","Dont want to say"]}
+                                        options={["Yes ", "No", "Sometimes", "Dont want to say"]}
                                         placeholder="Smoking"
                                         value={selectedSmoking}
                                         onSelect={(val) => setSelectedSmoking(val)}
@@ -108,7 +109,7 @@ const RegisterScreen6 = () => {
                                         Drinking
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Yes ", "No", "Sometimes","Dont want to say"]}
+                                        options={["Yes ", "No", "Sometimes", "Dont want to say"]}
                                         placeholder="Drinking"
                                         value={selectedDrinking}
                                         onSelect={(val) => setSelectedDrinking(val)}
@@ -130,32 +131,32 @@ const RegisterScreen6 = () => {
                             />
                             <View style={{ height: 20 }}>
 
-</View>
-<TextComponent style={styles.inputtitle}>
-    Religion
-</TextComponent>
-<DropdownField
-    options={["Christianity", "Islam", "Hinduism", "Buddhism", "Sikhism", "Judaism", "Jainism", "Baha'i Faith", "Confucianism", "Taoism", "Shinto", "Chinese Folk Religion", "Animism/Adivasi", "No Religion"
-]}
-    placeholder="Religion"
-    value={selectedReligion}
-    onSelect={(val) => setSelectedReligion(val)}
-/>
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Religion
+                            </TextComponent>
+                            <DropdownField
+                                options={["Christianity", "Islam", "Hinduism", "Buddhism", "Sikhism", "Judaism", "Jainism", "Baha'i Faith", "Confucianism", "Taoism", "Shinto", "Chinese Folk Religion", "Animism/Adivasi", "No Religion"
+                                ]}
+                                placeholder="Religion"
+                                value={selectedReligion}
+                                onSelect={(val) => setSelectedReligion(val)}
+                            />
 
-                        <View style={{ height: 20 }}>
+                            <View style={{ height: 20 }}>
 
-</View>
-<TextComponent style={styles.inputtitle}>
-    Sun sign
-</TextComponent>
-<DropdownField
-    options={["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]}
-    placeholder="Sun sign"
-    value={selectedSign}
-    onSelect={(val) => setSelectedSign(val)}
-/>    
-<View style={{ height: 20 }}>
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Sun sign
+                            </TextComponent>
+                            <DropdownField
+                                options={["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+                                ]}
+                                placeholder="Sun sign"
+                                value={selectedSign}
+                                onSelect={(val) => setSelectedSign(val)}
+                            />
+                            <View style={{ height: 20 }}>
 
                             </View>
 
@@ -177,7 +178,7 @@ const RegisterScreen6 = () => {
                                         Kids
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Yes ", "No", "Want", "Don't want","Dont want to say"]}
+                                        options={["Yes ", "No", "Want", "Don't want", "Dont want to say"]}
                                         placeholder="Kids"
                                         value={selectedKids}
                                         onSelect={(val) => setSelectedKids(val)}
@@ -185,6 +186,18 @@ const RegisterScreen6 = () => {
                                 </View>
 
                             </View>
+                            <View style={{ height: 20 }}>
+
+                            </View>
+                            <TextComponent style={styles.inputtitle}>
+                                Gender Preference
+                            </TextComponent>
+                            <DropdownField
+                                options={["Male", "Female", "Both"]}
+                                placeholder="Gender preference"
+                                value={selectedGender}
+                                onSelect={(val) => setSelectedGender(val)}
+                            />
 
                         </ScrollView>
                     </View>
