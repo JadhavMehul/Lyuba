@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
 import React, { useState } from "react";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
@@ -6,12 +6,9 @@ import { navigate } from '@utils/NavigationUtils';
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
-import InputField from '@components/global/InputField';
-import DropdownField from '@components/global/DropdownField';
+import PhotoBody from '@components/global/PhotoBody';
 
-const RegisterScreen7 = () => {
-
-    const [selectedValue, setSelectedValue] = useState<string | undefined>();
+const RegisterScreen8 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -30,52 +27,30 @@ const RegisterScreen7 = () => {
 
 
                         </View>
-                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                        <View style={{ height: 16 }}>
 
+                        </View>
+                        <TextComponent style={styles.title1}>
+                            Upload Pictures
+                        </TextComponent>
+                        <TextComponent style={styles.title2}>
+                            Please upload your pictures
+                        </TextComponent>
+                        <View style={{ height: 16 }}>
 
-                            <View style={{ height: 16 }}>
+                        </View>
 
+                        <View style={styles.uploadphotosection}>
+                            <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
+                            <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} />
+                            <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
+                            <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} />
+                            <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
+                            <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} />
                             </View>
-                            <TextComponent style={styles.title1}>
-                                Enter Your Details
-                            </TextComponent>
-                            <TextComponent style={styles.title2}>
-                                Please enter your educational and professional details.
-                            </TextComponent>
-                            <View style={{ height: 16 }}>
-
-                            </View>
-                            <TextComponent style={styles.inputtitle}>
-                                Working
-                            </TextComponent>
-                            <InputField
-                                placeholder=" Working"
-
-                            />
-                            <View style={{ height: 20 }}>
-
-                            </View>
-                            <TextComponent style={styles.inputtitle}>
-                                Profession
-                            </TextComponent>
-                            <InputField
-                                placeholder="Profession"
-                            />
-                            <View style={{ height: 20 }}>
-
-                            </View>
-                            <TextComponent style={styles.inputtitle}>
-                                Education
-                            </TextComponent>
-                            <DropdownField
-                                options={["Apple", "Banana", "Mango", "Orange"]}
-                                placeholder="Select a fruit"
-                                value={selectedValue}
-                                onSelect={(val) => setSelectedValue(val)}
-                            />
 
 
-                        </ScrollView>
+
 
                     </View>
                 </View>
@@ -83,7 +58,7 @@ const RegisterScreen7 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen8')}
+                        onPress={() => navigate('InterestsScreen')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
@@ -98,7 +73,7 @@ const RegisterScreen7 = () => {
     )
 }
 
-export default RegisterScreen7
+export default RegisterScreen8
 
 
 
@@ -122,11 +97,7 @@ const styles = StyleSheet.create({
     backcon: {
         paddingVertical: 8,
     },
-    image: {
-        width: 24,
-        height: 24,
 
-    },
     buttonsection: {
         paddingHorizontal: 24,
         paddingVertical: 12,
@@ -156,5 +127,20 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 8,
     },
+    image: {
+        width: 24,
+        height: 24,
+
+    },
+
+    uploadphotosection: {
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        gap: 24,
+        width: '100%',
+        // backgroundColor: 'red',
+        justifyContent: 'center',
+    }
+
 
 })
