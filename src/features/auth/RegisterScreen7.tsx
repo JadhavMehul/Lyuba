@@ -8,8 +8,42 @@ import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import InputField from '@components/global/InputField';
 import DropdownField from '@components/global/DropdownField';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+type PersonalData = {
+    feet: string | null;
+    inch: string | null;
+    looking: string | null;
+    smoking: string | null;
+    drinking: string | null;
+    workout: string | null;
+    religion: string;
+    sign: string | null;
+    status: string | null;
+    kids: string | null;
+    genderPreference: string;
+};
+
+type UserData = {
+    uid: string;
+    email: string;
+    firstName: string;
+    lastName: string | null;
+    photoURL: string | null;
+    birthdate: string;
+    gender: string;
+    city: string;
+    pincode: string | null;
+    interests: string[];
+    personalData: PersonalData;
+    provider: string;
+};
 
 const RegisterScreen7 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
+    console.log(userData);
 
     const [selectedValue, setSelectedValue] = useState<string | undefined>();
     return (
@@ -30,7 +64,7 @@ const RegisterScreen7 = () => {
 
 
                         </View>
-                        <ScrollView style={{ width: '100%'}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                        <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
 
 
                             <View style={{ height: 16 }}>

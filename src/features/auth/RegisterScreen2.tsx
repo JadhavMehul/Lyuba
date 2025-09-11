@@ -12,8 +12,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 
 type UserData = {
   uid: string;
-  email: string | null;
-  firstName: string | null;
+  email: string;
+  firstName: string;
   lastName: string | null;
   photoURL: string | null;
   provider: string;

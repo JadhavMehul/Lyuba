@@ -1,30 +1,68 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native'
 import React, { useState } from "react";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
-import { goBack } from "@utils/NavigationUtils";
-import { navigate } from '@utils/NavigationUtils';
+import { goBack, navigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import DropdownField from '@components/global/DropdownField';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+type UserData = {
+    uid: string;
+    email: string;
+    firstName: string;
+    lastName: string | null;
+    photoURL: string | null;
+    birthdate: string;
+    gender: string;
+    city: string;
+    pincode: string | null;
+    interests: string[];
+    provider: string;
+};
 
 const RegisterScreen6 = () => {
-    const [selectedFeet, setSelectedFeet] = useState<string | undefined>();
-    const [selectedInch, setSelectedInch] = useState<string | undefined>();
-    const [selectedLooking, setSelectedLooking] = useState<string | undefined>();
-    const [selectedSmoking, setSelectedSmoking] = useState<string | undefined>();
-    const [selectedDrinking, setSelectedDrinking] = useState<string | undefined>();
-    const [selectedWorkout, setSelectedWorkout] = useState<string | undefined>();
-    const [selectedReligion, setSelectedReligion] = useState<string | undefined>();
-    const [selectedSign, setSelectedSign] = useState<string | undefined>();
-    const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
-    const [selectedKids, setSelectedKids] = useState<string | undefined>();
-    const [selectedGender, setSelectedGender] = useState<string | undefined>();
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
+    console.log(userData);
+
+    const [personalData, setPersonalData] = useState({
+        feet: "",
+        inch: "",
+        looking: "",
+        smoking: "",
+        drinking: "",
+        workout: "",
+        religion: "",
+        sign: "",
+        status: "",
+        kids: "",
+        genderPreference: "",
+    });
+
+    const updatePersonalData = (field: string, value: string) => {
+        setPersonalData((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
+    const nextScreen = () => {
+
+        if (!personalData.genderPreference || !personalData.religion) {
+            Alert.alert("Select Details", "Please select both Gender Preference and Religion before proceeding.");
+            return;
+        }
+
+        navigate("RegisterScreen7", { userData: { ...userData, personalData: personalData } });
+    }
+
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
                 <View style={{ flex: 1 }}>
-
                     <View style={styles.inner_container}>
                         <View style={styles.backcon}>
                             <TouchableOpacity onPress={goBack}>
@@ -33,204 +71,187 @@ const RegisterScreen6 = () => {
                                     style={styles.image}
                                     resizeMode="contain"
                                 />
-
                             </TouchableOpacity>
-
-
                         </View>
-                        <ScrollView style={{ width: '100%' }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
 
-
-                            <View style={{ height: 16 }}>
-
-                            </View>
+                        <ScrollView
+                            style={{ width: "100%" }}
+                            showsVerticalScrollIndicator={false}
+                            showsHorizontalScrollIndicator={false}
+                        >
+                            <View style={{ height: 16 }} />
                             <TextComponent style={styles.title1}>
                                 Enter Your Details
                             </TextComponent>
                             <TextComponent style={styles.title2}>
                                 Please enter your personal details.
                             </TextComponent>
-                            <View style={{ height: 16 }}>
 
-                            </View>
+                            <View style={{ height: 16 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Height
                             </TextComponent>
                             <View style={styles.rowcon}>
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: "48%" }}>
                                     <DropdownField
                                         options={["4 Feet", "5 Feet", "6 Feet", "7 Feet"]}
                                         placeholder="Feet"
-                                        value={selectedFeet}
-                                        onSelect={(val) => setSelectedFeet(val)}
+                                        value={personalData.feet}
+                                        onSelect={(val) => updatePersonalData("feet", val)}
                                     />
                                 </View>
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: "48%" }}>
                                     <DropdownField
-                                        options={["0 Inch", "1 Inch", "2 Inch", "3 Inch", "4 Inch", "5 Inch", "6 Inch", "7 Inch", "8 Inch", "9 Inch", "10 Inch", "11 Inch"]}
+                                        options={[
+                                            "0 Inch", "1 Inch", "2 Inch", "3 Inch", "4 Inch",
+                                            "5 Inch", "6 Inch", "7 Inch", "8 Inch", "9 Inch",
+                                            "10 Inch", "11 Inch",
+                                        ]}
                                         placeholder="Inch"
-                                        value={selectedInch}
-                                        onSelect={(val) => setSelectedInch(val)}
+                                        value={personalData.inch}
+                                        onSelect={(val) => updatePersonalData("inch", val)}
                                     />
                                 </View>
-
                             </View>
-                            <View style={{ height: 20 }}>
 
-                            </View>
+                            <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Looking For
                             </TextComponent>
                             <DropdownField
-                                options={["Serious relationship", "Casual relationship", "Figuring out", "Dont want to say"]}
+                                options={[
+                                    "Serious relationship",
+                                    "Casual relationship",
+                                    "Figuring out",
+                                    "Dont want to say",
+                                ]}
                                 placeholder="Looking for"
-                                value={selectedLooking}
-                                onSelect={(val) => setSelectedLooking(val)}
+                                value={personalData.looking}
+                                onSelect={(val) => updatePersonalData("looking", val)}
                             />
-                            <View style={{ height: 20 }}>
 
-                            </View>
-
+                            <View style={{ height: 20 }} />
                             <View style={styles.rowcon}>
-                                <View style={{ width: '48%' }}>
-
+                                <View style={{ width: "48%" }}>
                                     <TextComponent style={styles.inputtitle}>
                                         Smoking
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Yes ", "No", "Sometimes", "Dont want to say"]}
+                                        options={["Yes", "No", "Sometimes", "Dont want to say"]}
                                         placeholder="Smoking"
-                                        value={selectedSmoking}
-                                        onSelect={(val) => setSelectedSmoking(val)}
+                                        value={personalData.smoking}
+                                        onSelect={(val) => updatePersonalData("smoking", val)}
                                     />
                                 </View>
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: "48%" }}>
                                     <TextComponent style={styles.inputtitle}>
                                         Drinking
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Yes ", "No", "Sometimes", "Dont want to say"]}
+                                        options={["Yes", "No", "Sometimes", "Dont want to say"]}
                                         placeholder="Drinking"
-                                        value={selectedDrinking}
-                                        onSelect={(val) => setSelectedDrinking(val)}
+                                        value={personalData.drinking}
+                                        onSelect={(val) => updatePersonalData("drinking", val)}
                                     />
                                 </View>
-
                             </View>
-                            <View style={{ height: 20 }}>
 
-                            </View>
+                            <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Workout
                             </TextComponent>
                             <DropdownField
                                 options={["Active", "Inactive", "Sometimes"]}
                                 placeholder="Workout"
-                                value={selectedWorkout}
-                                onSelect={(val) => setSelectedWorkout(val)}
+                                value={personalData.workout}
+                                onSelect={(val) => updatePersonalData("workout", val)}
                             />
-                            <View style={{ height: 20 }}>
 
-                            </View>
+                            <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Religion
                             </TextComponent>
                             <DropdownField
-                                options={["Christianity", "Islam", "Hinduism", "Buddhism", "Sikhism", "Judaism", "Jainism", "Baha'i Faith", "Confucianism", "Taoism", "Shinto", "Chinese Folk Religion", "Animism/Adivasi", "No Religion"
+                                options={[
+                                    "Christianity", "Islam", "Hinduism", "Buddhism", "Sikhism",
+                                    "Judaism", "Jainism", "Baha'i Faith", "Confucianism", "Taoism",
+                                    "Shinto", "Chinese Folk Religion", "Animism/Adivasi", "No Religion",
                                 ]}
                                 placeholder="Religion"
-                                value={selectedReligion}
-                                onSelect={(val) => setSelectedReligion(val)}
+                                value={personalData.religion}
+                                onSelect={(val) => updatePersonalData("religion", val)}
                             />
 
-                            <View style={{ height: 20 }}>
-
-                            </View>
+                            <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Sun sign
                             </TextComponent>
                             <DropdownField
-                                options={["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+                                options={[
+                                    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+                                    "Libra", "Scorpio", "Sagittarius", "Capricorn",
+                                    "Aquarius", "Pisces",
                                 ]}
                                 placeholder="Sun sign"
-                                value={selectedSign}
-                                onSelect={(val) => setSelectedSign(val)}
+                                value={personalData.sign}
+                                onSelect={(val) => updatePersonalData("sign", val)}
                             />
-                            <View style={{ height: 20 }}>
 
-                            </View>
-
+                            <View style={{ height: 20 }} />
                             <View style={styles.rowcon}>
-                                <View style={{ width: '48%' }}>
-
+                                <View style={{ width: "48%" }}>
                                     <TextComponent style={styles.inputtitle}>
-                                        Martial Status
+                                        Marital Status
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Married ", "Unmarried", "Dont want to say"]}
-                                        placeholder="Martial Status"
-                                        value={selectedStatus}
-                                        onSelect={(val) => setSelectedStatus(val)}
+                                        options={["Married", "Unmarried", "Dont want to say"]}
+                                        placeholder="Marital Status"
+                                        value={personalData.status}
+                                        onSelect={(val) => updatePersonalData("status", val)}
                                     />
                                 </View>
-                                <View style={{ width: '48%' }}>
+                                <View style={{ width: "48%" }}>
                                     <TextComponent style={styles.inputtitle}>
                                         Kids
                                     </TextComponent>
                                     <DropdownField
-                                        options={["Yes ", "No", "Want", "Don't want", "Dont want to say"]}
+                                        options={["Yes", "No", "Want", "Don't want", "Dont want to say"]}
                                         placeholder="Kids"
-                                        value={selectedKids}
-                                        onSelect={(val) => setSelectedKids(val)}
+                                        value={personalData.kids}
+                                        onSelect={(val) => updatePersonalData("kids", val)}
                                     />
                                 </View>
-
                             </View>
-                            <View style={{ height: 20 }}>
 
-                            </View>
+                            <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Gender Preference
                             </TextComponent>
                             <DropdownField
                                 options={["Male", "Female", "Both"]}
                                 placeholder="Gender preference"
-                                value={selectedGender}
-                                onSelect={(val) => setSelectedGender(val)}
+                                value={personalData.genderPreference}
+                                onSelect={(val) => updatePersonalData("genderPreference", val)}
                             />
-
                         </ScrollView>
                     </View>
                 </View>
-                <View style={styles.buttonsection}>
 
+                <View style={styles.buttonsection}>
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen7')}
-                        // disabled={!birthday}
-                        style={[
-                            styles.shadowpink,
-                        ]}
+                        onPress={nextScreen}
+                        style={[styles.shadowpink]}
                     />
-
                 </View>
             </CustomSafeAreaView>
-
-
         </View>
-    )
-}
+    );
+};
 
-export default RegisterScreen6
-
-
-
-
-
-
+export default RegisterScreen6;
 
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
         backgroundColor: "#fff",
@@ -248,7 +269,6 @@ const styles = StyleSheet.create({
     image: {
         width: 24,
         height: 24,
-
     },
     buttonsection: {
         paddingHorizontal: 24,
@@ -257,20 +277,20 @@ const styles = StyleSheet.create({
     inputtitle: {
         fontFamily: Fonts.Poppins_Medium_500,
         fontSize: 16,
-        color: '#000000',
+        color: "#000000",
         marginBottom: 10,
     },
     title2: {
         fontFamily: Fonts.Poppins_Light_300,
         fontSize: 16,
-        color: '#666666',
-        textAlign: 'left',
+        color: "#666666",
+        textAlign: "left",
     },
     title1: {
         fontFamily: Fonts.Poppins_Bold_700,
         fontSize: 28,
-        color: '#000000',
-        textAlign: 'left',
+        color: "#000000",
+        textAlign: "left",
     },
     shadowpink: {
         shadowColor: "#FF6F61",
@@ -280,9 +300,8 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     rowcon: {
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between'
+        flexDirection: "row",
+        width: "100%",
+        justifyContent: "space-between",
     },
-
-})
+});

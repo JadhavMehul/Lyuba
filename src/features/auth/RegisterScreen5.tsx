@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native'
 import React, { useState } from "react";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
@@ -7,7 +7,21 @@ import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import Icon from "react-native-vector-icons/FontAwesome";
+import { RouteProp, useRoute } from '@react-navigation/native';
 
+
+type UserData = {
+  uid: string;
+  email: string;
+  firstName: string;
+  lastName: string | null;
+  photoURL: string | null;
+  birthdate: string;
+  gender: string;
+  city: string;
+  pincode: string | null;
+  provider: string;
+};
 
 const INTERESTS = [
     { id: "1", label: "Movie", icon: "film" },
@@ -30,16 +44,27 @@ const INTERESTS = [
 ];
 
 const RegisterScreen5 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
 
     const [selected, setSelected] = useState<string[]>([]);
 
-    const toggle = (id: string) => {
-        if (selected.includes(id)) {
-            setSelected(selected.filter((x) => x !== id));
+    const toggle = (id: string, label: string) => {
+        if (selected.includes(label)) {
+            setSelected(selected.filter((x) => x !== label));
         } else {
-            setSelected([...selected, id]);
+            if (selected.length < 5) {
+                setSelected([...selected, label]);
+            } else {
+                Alert.alert("Limit Reached", "You can select a maximum of 5 interests.");
+            }
         }
     };
+
+
+    const nextScreen = () => {
+        navigate("RegisterScreen6", {userData: {...userData, interests: selected}});
+    }    
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -72,13 +97,13 @@ const RegisterScreen5 = () => {
                         </View>
                         <ScrollView contentContainerStyle={styles.container2}>
                             {INTERESTS.map((item) => {
-                                const isSelected = selected.includes(item.id);
+                                const isSelected = selected.includes(item.label);
 
                                 return (
                                     <TouchableOpacity
                                         key={item.id}
                                         style={[styles.chip, isSelected && styles.chipSelected]}
-                                        onPress={() => toggle(item.id)}
+                                        onPress={() => toggle(item.id, item.label)}
                                     >
                                         <Icon
                                             name={item.icon}
@@ -101,7 +126,7 @@ const RegisterScreen5 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen6')}
+                        onPress={nextScreen}
                         disabled={selected.length < 3}
                         style={[
                             styles.shadowpink,

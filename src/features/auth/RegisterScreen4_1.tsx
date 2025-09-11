@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
 import { navigate } from '@utils/NavigationUtils';
@@ -7,8 +7,36 @@ import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import InputField from '@components/global/InputField';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+
+
+type UserData = {
+  uid: string;
+  email: string;
+  firstName: string;
+  lastName: string | null;
+  photoURL: string | null;
+  birthdate: string;
+  gender: string;
+  city: string;
+  pincode: string | null;
+  provider: string;
+};
+
 
 const RegisterScreen4_1 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
+    const [city, setCity] = useState(userData.city);
+    const [pincode, setPincode] = useState(userData.pincode || "");
+
+    const nextScreen = () => {
+        navigate("RegisterScreen5", {userData: {...userData, city, pincode}});
+    }    
+    
+
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -45,6 +73,8 @@ const RegisterScreen4_1 = () => {
                         </TextComponent>
                         <InputField
                             placeholder="City"
+                            value={city}
+                            onChangeText={setCity}
                         />
                         <View style={{ height: 20 }}>
 
@@ -54,6 +84,8 @@ const RegisterScreen4_1 = () => {
                         </TextComponent>
                         <InputField
                             placeholder="Pincode"
+                            value={pincode}
+                            onChangeText={setPincode}
                         />
 
 
@@ -63,11 +95,11 @@ const RegisterScreen4_1 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen4_2')}
-                        // disabled={!birthday}
+                        onPress={nextScreen}
                         style={[
                             styles.shadowpink,
                         ]}
+                        disabled={!city || !pincode}
                     />
 
                 </View>

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions, Animated, Easing, Platform, PermissionsAndroid } from 'react-native'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack, navigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
@@ -7,9 +7,27 @@ import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import LocationAnimation from '@components/auth_components/LocationAnimation';
 import Geolocation from 'react-native-geolocation-service';
+import GetLocation from 'react-native-get-location'
+import { RouteProp, useRoute } from '@react-navigation/native';
 
+type UserData = {
+  uid: string;
+  email: string;
+  firstName: string;
+  lastName: string | null;
+  photoURL: string | null;
+  birthdate: string;
+  gender: string;
+  provider: string;
+};
 
 const RegisterScreen4 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+    
+
+    const [locationPermission, setLocationPermission] = useState(false)
+   
 
     async function requestLocationPermission(): Promise<boolean> {
         if (Platform.OS !== 'android') return true;
@@ -24,7 +42,7 @@ const RegisterScreen4 = () => {
             );
             return granted === PermissionsAndroid.RESULTS.GRANTED;
         } catch (err) {
-            console.warn('Permission error', err);
+            console.log('Permission error', err);
             return false;
         }
     }
@@ -32,19 +50,57 @@ const RegisterScreen4 = () => {
     const getPosition = async () => {
         const hasPermission = await requestLocationPermission();
         if (!hasPermission) {
-            console.warn('Location permission not granted');
+            console.warn("Location permission not granted");
+            setLocationPermission(false);
             return;
-        }
+        } 
+        
+        setLocationPermission(true);
 
-        Geolocation.getCurrentPosition(
-            (position) => {
-                console.log('Coords:', position.coords);
-            },
-            (error) => {
-                console.log('Error:', error.code, error.message);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-        );
+        try {
+
+            GetLocation.getCurrentPosition({
+                enableHighAccuracy: true,
+                timeout: 60000,
+            })
+                .then(async location => {
+                    const { latitude, longitude } = location;
+
+                    try {
+                        // const api = "http://10.0.2.2:3000/api/location/getLocation";
+                        const api = "http://192.168.117.133:3000/api/location/getLocation";
+
+                        const res = await fetch(api, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ latitude, longitude }),
+                        });
+                        const data = await res.json();
+                        
+                        const city = data?.response?.city;
+                        const pincode = data?.response?.pincode || null;
+
+                        console.log(city, pincode);
+                        console.log(data);
+                        
+                        
+
+                        navigate("RegisterScreen4_1", {userData: {...userData, city, pincode}});
+
+                    } catch (error) {
+                        console.log("error in getting location:", error);
+                        
+                    }
+
+                })
+                .catch(error => {
+                    const { code, message } = error;
+                    console.log(code, message);
+                })
+
+        } catch (error) {
+            console.log("Location fetch error:", error);
+        }
     };
 
     useEffect(() => {
@@ -74,13 +130,32 @@ const RegisterScreen4 = () => {
                         <TextComponent style={styles.title1}>
                             Fetching Location
                         </TextComponent>
-                        <TextComponent style={styles.title2}>
-                            Please wait while we fetch your current location.
-                        </TextComponent>
+                            {
+                                locationPermission ? (
+                                    <TextComponent style={styles.title2}>
+                                        Please wait while we fetch your current location.
+                                    </TextComponent>
+                                ) : (
+                                    <TextComponent style={styles.title2}>
+                                        Unable to fetch location please turn on location permission.
+                                    </TextComponent>
+                                )
+                            }
+                            
 
                         {/* <View style={{ height: 32 }} /> */}
                         <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                            <LocationAnimation />
+                            {
+                                locationPermission ? (
+                                    <LocationAnimation />
+                                ) : (
+                                    <Image
+                                        source={require("@assets/icons/noloc.png")}
+                                        style={styles.pin}
+                                        resizeMode="contain"
+                                    />
+                                )
+                            }
                         </View>
 
                     </View>
@@ -89,13 +164,13 @@ const RegisterScreen4 = () => {
 
 
                 {/* Bottom Button */}
-                <View style={styles.buttonsection}>
+                {/* <View style={styles.buttonsection}>
                     <PinkButton
                         text="Next"
                         onPress={() => navigate('RegisterScreen4_1')}
                         style={[styles.shadowpink]}
                     />
-                </View>
+                </View> */}
             </CustomSafeAreaView>
         </View>
     )
@@ -150,6 +225,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 8,
+    },
+    pin: {
+        width: 80,
+        height: 80,
     },
 
 
