@@ -117,7 +117,7 @@ const RegisterScreen7 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('InterestsScreen')}
+                        onPress={() => navigate('RegisterScreen8')}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,

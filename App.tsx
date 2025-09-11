@@ -18,6 +18,7 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import HomeScreen from '@features/home_screen/HomeScreen';
 import { ActivityIndicator } from 'react-native';
+import RegisterScreen8 from '@features/auth/RegisterScreen8';
 
 const Stack = createNativeStackNavigator();
 
@@ -101,6 +102,7 @@ const App = () => {
         <Stack.Screen name="RegisterScreen5" component={RegisterScreen5}/>
         <Stack.Screen name="RegisterScreen6" component={RegisterScreen6}/>
         <Stack.Screen name="RegisterScreen7" component={RegisterScreen7}/>
+        <Stack.Screen name="RegisterScreen8" component={RegisterScreen8}/>
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
       </Stack.Navigator>
       
