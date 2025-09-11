@@ -7,8 +7,55 @@ import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
 import { Fonts } from '@utils/Constants';
 import PhotoBody from '@components/global/PhotoBody';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+type PersonalData = {
+    feet: string | null;
+    inch: string | null;
+    looking: string | null;
+    smoking: string | null;
+    drinking: string | null;
+    workout: string | null;
+    religion: string;
+    sign: string | null;
+    status: string | null;
+    kids: string | null;
+    genderPreference: string;
+    workingAt: string | null;
+    profession: string | null;
+    education: string | null;
+};
+
+type UserData = {
+    uid: string;
+    email: string;
+    firstName: string;
+    lastName: string | null;
+    photoURL: string | null;
+    birthdate: string;
+    gender: string;
+    city: string;
+    pincode: string | null;
+    interests: string[];
+    personalData: PersonalData;
+    provider: string;
+};
 
 const RegisterScreen8 = () => {
+    const route = useRoute<RouteProp<{ params: { userData: UserData } }, 'params'>>();
+    const { userData } = route.params;
+
+    console.log(userData);
+
+    const [photos, setPhotos] = useState<(string | null)[]>([null, null, null, null, null, null]);
+
+    const handleImageChange = (index: number, uri: string | null) => {
+        const updated = [...photos];
+        updated[index] = uri;
+        setPhotos(updated);
+    };
+
+
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -41,13 +88,20 @@ const RegisterScreen8 = () => {
                         </View>
 
                         <View style={styles.uploadphotosection}>
-                            <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
+                            {photos.map((uri, idx) => (
+                                <PhotoBody
+                                    key={idx}
+                                    imageUri={uri || undefined}
+                                    onChange={(newUri) => handleImageChange(idx, newUri)}
+                                />
+                            ))}
+                            {/* <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
                             <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} />
                             <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
                             <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} />
                             <PhotoBody initialState={true} onToggle={(isAdd) => console.log("Now:", isAdd)} />
-                            <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} />
-                            </View>
+                            <PhotoBody initialState={false} onToggle={(isAdd) => console.log("Now:", isAdd)} /> */}
+                        </View>
 
 
 

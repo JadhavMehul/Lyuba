@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native'
 import React, { useState } from "react";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
@@ -22,6 +22,9 @@ type PersonalData = {
     status: string | null;
     kids: string | null;
     genderPreference: string;
+    workingAt?: string | null;
+    profession?: string | null;
+    education?: string | null;
 };
 
 type UserData = {
@@ -46,6 +49,27 @@ const RegisterScreen7 = () => {
     console.log(userData);
 
     const [selectedValue, setSelectedValue] = useState<string | undefined>();
+    const [working, setWorking] = useState("");
+    const [profession, setProfession] = useState("");
+
+
+    const nextScreen = () => {
+        if (!working || !profession || !selectedValue) {
+            Alert.alert("Please enter details");
+            return;
+        }
+
+        navigate("RegisterScreen8", {
+            userData: {
+                ...userData, personalData: {
+                    ...userData.personalData,
+                    workingAt: working,
+                    profession: profession,
+                    education: selectedValue
+                },
+            }
+        });
+    }
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
@@ -83,8 +107,9 @@ const RegisterScreen7 = () => {
                                 Working
                             </TextComponent>
                             <InputField
-                                placeholder=" Working"
-
+                                placeholder="TCS / Wipro"
+                                value={working}
+                                onChangeText={setWorking}
                             />
                             <View style={{ height: 20 }}>
 
@@ -94,6 +119,8 @@ const RegisterScreen7 = () => {
                             </TextComponent>
                             <InputField
                                 placeholder="Profession"
+                                value={profession}
+                                onChangeText={setProfession}
                             />
                             <View style={{ height: 20 }}>
 
@@ -102,8 +129,22 @@ const RegisterScreen7 = () => {
                                 Education
                             </TextComponent>
                             <DropdownField
-                                options={["Apple", "Banana", "Mango", "Orange"]}
-                                placeholder="Select a fruit"
+                                options={[
+                                    "No formal education",
+                                    "Primary School",
+                                    "Middle School",
+                                    "High School / Secondary",
+                                    "Higher Secondary (HSC)",
+                                    "Diploma / Polytechnic",
+                                    "Undergraduate (Bachelor's Degree)",
+                                    "Graduate (Post Graduation / Master's Degree)",
+                                    "Doctorate (PhD)",
+                                    "Post Doctorate",
+                                    "Professional Certification (CA, CS, CFA, etc.)",
+                                    "Vocational Training",
+                                    "Other",
+                                ]}
+                                placeholder="Select your education"
                                 value={selectedValue}
                                 onSelect={(val) => setSelectedValue(val)}
                             />
@@ -117,7 +158,7 @@ const RegisterScreen7 = () => {
 
                     <PinkButton
                         text="Next"
-                        onPress={() => navigate('RegisterScreen8')}
+                        onPress={nextScreen}
                         // disabled={!birthday}
                         style={[
                             styles.shadowpink,
