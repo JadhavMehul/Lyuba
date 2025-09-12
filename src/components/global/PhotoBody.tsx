@@ -1,37 +1,49 @@
 import React from "react";
-import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
-import { launchImageLibrary, ImageLibraryOptions } from "react-native-image-picker";
+import { View, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
+import ImagePicker, { ImageOrVideo } from "react-native-image-crop-picker";
 
 type Props = {
-  imageUri?: string;
+  imageUri?: string | null;
   onChange: (uri: string | null) => void;
 };
 
-const PhotoBody: React.FC<Props> = ({ imageUri, onChange }) => {
+const PhotoBody: React.FC<Props> = ({ imageUri = null, onChange }) => {
   const pickImage = async () => {
-    const options: ImageLibraryOptions = {
-      mediaType: "photo",
-      quality: 0.8,
-    };
+    try {
+      const options: any = {
+        cropping: true,
+        freeStyleCropEnabled: false, // disable free crop
+        compressImageQuality: 0.9,
+        mediaType: "photo",
+        multiple: false,
+        // Force 9:16 ratio (e.g. 900x1600)
+        width: 900,
+        height: 1600,
+        cropperToolbarTitle: "Crop to 9:16",
+      };
 
-    launchImageLibrary(options, (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        console.log("ImagePicker Error: ", response.errorMessage);
-        return;
+      const result: ImageOrVideo | ImageOrVideo[] = await ImagePicker.openPicker(options);
+
+      if (!Array.isArray(result) && result?.path) {
+        onChange(result.path);
+      } else {
+        onChange(null);
       }
-      if (response.assets && response.assets.length > 0) {
-        onChange(response.assets[0].uri || null);
-      }
-    });
+    } catch (err: any) {
+      if (err?.code === "E_PICKER_CANCELLED") return; // user cancelled
+      console.error("ImagePicker error:", err);
+      Alert.alert("Error", "Unable to pick image.");
+    }
   };
+
+  const removeImage = () => onChange(null);
 
   return (
     <View style={styles.container}>
       {imageUri ? (
         <>
           <Image source={{ uri: imageUri }} style={styles.image} />
-          <TouchableOpacity style={styles.deleteBtn} onPress={() => onChange(null)}>
+          <TouchableOpacity style={styles.deleteBtn} onPress={removeImage}>
             <Image
               source={require("@assets/icons/deleteicon.png")}
               style={{ width: 20, height: 20 }}
@@ -42,7 +54,7 @@ const PhotoBody: React.FC<Props> = ({ imageUri, onChange }) => {
         <TouchableOpacity style={styles.addBtn} onPress={pickImage}>
           <Image
             source={require("@assets/icons/addicon.png")}
-            style={{ width: 24, height: 24 }}
+            style={{ width: 28, height: 28 }}
           />
         </TouchableOpacity>
       )}
@@ -55,29 +67,29 @@ export default PhotoBody;
 const styles = StyleSheet.create({
   container: {
     width: 100,
-    height: 130,
+    height: 160,
     backgroundColor: "#ffe6eb",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    margin: 5,
+    margin: 6,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 10,
+    resizeMode: "cover",
   },
   addBtn: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   deleteBtn: {
     position: "absolute",
-    bottom: 8,
-    alignSelf: "center",
-    backgroundColor: "rgba(255,255,255,0.8)",
-    padding: 5,
+    top: 6,
+    right: 6,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    padding: 6,
     borderRadius: 20,
   },
 });

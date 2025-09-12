@@ -54,7 +54,7 @@ const RegisterScreen7 = () => {
 
 
     const nextScreen = () => {
-        if (!working || !profession || !selectedValue) {
+        if (!selectedValue) {
             Alert.alert("Please enter details");
             return;
         }
