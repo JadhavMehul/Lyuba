@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import CustomSafeAreaView from "@components/global/CustomSafeAreaView";
-import { goBack } from "@utils/NavigationUtils";
+import { goBack, resetAndNavigate } from "@utils/NavigationUtils";
 import { navigate } from "@utils/NavigationUtils";
 import TextComponent from "@components/global/TextComponent";
 import PinkButton from "@components/global/PinkButton";
@@ -46,6 +46,7 @@ const RegisterScreen8 = () => {
     const { userData } = route.params;
 
     const [photos, setPhotos] = useState<(string | null)[]>([null, null, null, null, null, null]);
+    const [loading, setLoading] = useState(false);
 
     const handleImageChange = (index: number, uri: string | null) => {
         const updated = [...photos];
@@ -53,24 +54,64 @@ const RegisterScreen8 = () => {
         setPhotos(updated);
     };
 
-    const nextScreen = () => {
+    const nextScreen = async () => {
         const hasPhoto = photos.some((p) => p !== null);
         if (!hasPhoto) {
             Alert.alert("Please upload at least one photo");
             return;
         }
-        console.log({
-            userData: {
-                ...userData, pictures: photos
-            }
-        });
+        try {
+            setLoading(true);
 
-        // navigate("RegisterScreen9", {
-        //     userData: {
-        //         ...userData, pictures: photos
-        //     }
-        // });
-    }
+            const api = "http://192.168.117.133:3000/api/auth/register";
+            const formData = new FormData();
+
+            // append userData text fields
+            Object.entries(userData).forEach(([key, value]) => {
+                if (typeof value === "object" && value !== null) {
+                    // nested object -> flatten (e.g. personalData)
+                    Object.entries(value).forEach(([k, v]) => {
+                        formData.append(`${key}[${k}]`, v ?? "");
+                    });
+                } else {
+                    formData.append(key, value ?? "");
+                }
+            });
+
+            // append photos
+            photos.forEach((uri, idx) => {
+                if (uri) {
+                    formData.append("pictures", {
+                        uri,
+                        type: "image/jpeg",
+                        name: `photo_${idx}.jpg`,
+                    } as any);
+                }
+            });
+
+            const res = await fetch(api, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                body: formData,
+            });
+
+            const data = await res.json();
+            console.log("Register response:", data);
+
+            if (data.success) {
+                resetAndNavigate("HomeScreen");
+            } else {
+                Alert.alert("Error", data.message || "Something went wrong");
+            }
+        } catch (error) {
+            console.log("Upload error:", error);
+            Alert.alert("Error", `${error}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -110,7 +151,8 @@ const RegisterScreen8 = () => {
 
                 <View style={styles.buttonsection}>
                     <PinkButton
-                        text="Next"
+                        // text="Next"
+                        text={loading ? "Uploading..." : "Next"}
                         onPress={nextScreen}
                         style={styles.shadowpink}
                     />
