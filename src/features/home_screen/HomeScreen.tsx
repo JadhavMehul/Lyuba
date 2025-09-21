@@ -25,7 +25,7 @@ export default function HomeScreen() {
             navigate("LoginScreen");
 
         } catch (error) {
-            console.error("Logout error: ", error);
+            console.log("Logout error: ", error);
         }
     };
   return (
