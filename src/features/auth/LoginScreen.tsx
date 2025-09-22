@@ -47,7 +47,7 @@ const LoginScreen = () => {
 
       // Send to backend 
       // const api = "http://10.0.2.2:3000/api/auth/social";
-      const api = "http://192.168.117.133:3000/api/auth/social";
+      const api = "http://192.168.0.109:3000/api/auth/social";
       const res = await fetch(api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -197,7 +197,7 @@ const LoginScreen = () => {
       console.log("Firebase ID Token:", firebaseIdToken);
 
       // 7️⃣ Send token to backend
-      const api = "http://192.168.117.133:3000/api/auth/social";
+      const api = "http://192.168.0.109:3000/api/auth/social";
       const res = await fetch(api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

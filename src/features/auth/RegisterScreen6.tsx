@@ -170,6 +170,7 @@ const RegisterScreen6 = () => {
                             <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Religion
+                                <TextComponent style={{ color: "red" }}> *</TextComponent>
                             </TextComponent>
                             <DropdownField
                                 options={[
@@ -226,6 +227,7 @@ const RegisterScreen6 = () => {
                             <View style={{ height: 20 }} />
                             <TextComponent style={styles.inputtitle}>
                                 Gender Preference
+                                <TextComponent style={{ color: "red" }}> *</TextComponent>
                             </TextComponent>
                             <DropdownField
                                 options={["Male", "Female", "Both"]}
@@ -262,6 +264,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         paddingBottom: 24,
         paddingHorizontal: 24,
+        backgroundColor: "#fff",
     },
     backcon: {
         paddingVertical: 8,
@@ -273,6 +276,7 @@ const styles = StyleSheet.create({
     buttonsection: {
         paddingHorizontal: 24,
         paddingVertical: 12,
+        backgroundColor: "#fff",
     },
     inputtitle: {
         fontFamily: Fonts.Poppins_Medium_500,

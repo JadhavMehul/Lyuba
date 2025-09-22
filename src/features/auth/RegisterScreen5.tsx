@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         paddingBottom: 24,
         paddingHorizontal: 24,
+        backgroundColor: "#fff",
     },
     backcon: {
         paddingVertical: 8,
@@ -173,6 +174,7 @@ const styles = StyleSheet.create({
     buttonsection: {
         paddingHorizontal: 24,
         paddingVertical: 12,
+        backgroundColor: "#fff",
     },
     inputtitle: {
         fontFamily: Fonts.Poppins_Medium_500,

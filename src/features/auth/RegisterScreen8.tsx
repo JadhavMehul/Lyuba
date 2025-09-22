@@ -63,7 +63,7 @@ const RegisterScreen8 = () => {
         try {
             setLoading(true);
 
-            const api = "http://192.168.117.133:3000/api/auth/register";
+            const api = "http://192.168.0.109:3000/api/auth/register";
             const formData = new FormData();
 
             // append userData text fields
@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         paddingBottom: 24,
         paddingHorizontal: 24,
+        backgroundColor: "#fff",
     },
     backcon: {
         paddingVertical: 8,
@@ -182,6 +183,7 @@ const styles = StyleSheet.create({
     buttonsection: {
         paddingHorizontal: 24,
         paddingVertical: 12,
+        backgroundColor: "#fff",
     },
     title2: {
         fontFamily: Fonts.Poppins_Light_300,
@@ -209,7 +211,8 @@ const styles = StyleSheet.create({
     uploadphotosection: {
         flexWrap: "wrap",
         flexDirection: "row",
-        gap: 24,
+        // gap: 24,
+        rowGap: 16, columnGap: 20,
         width: "100%",
         justifyContent: "center",
     },

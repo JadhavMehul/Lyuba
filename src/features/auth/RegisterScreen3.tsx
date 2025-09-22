@@ -33,7 +33,7 @@ const RegisterScreen3 = () => {
     return (
         <View style={styles.container}>
             <CustomSafeAreaView>
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1,backgroundColor: "#fff", }}>
 
                     <View style={styles.inner_container}>
                         <View style={styles.backcon}>
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         padding: 16,
+        backgroundColor: "#fff",
     },
     gendertext: {
         fontSize: 28,
@@ -206,6 +207,7 @@ const styles = StyleSheet.create({
     buttonsection: {
         paddingHorizontal: 24,
         paddingVertical: 12,
+        backgroundColor: "#fff",
     },
     inputtitle: {
         fontFamily: Fonts.Poppins_Medium_500,

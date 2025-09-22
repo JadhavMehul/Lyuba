@@ -68,7 +68,7 @@ const RegisterScreen4 = () => {
 
                     try {
                         // const api = "http://10.0.2.2:3000/api/location/getLocation";
-                        const api = "http://192.168.117.133:3000/api/location/getLocation";
+                        const api = "http://192.168.0.109:3000/api/location/getLocation";
 
                         const res = await fetch(api, {
                             method: "POST",
@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         paddingBottom: 24,
         paddingHorizontal: 24,
+        backgroundColor: "#fff",
     },
     backcon: {
         paddingVertical: 8,
