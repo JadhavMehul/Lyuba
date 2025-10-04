@@ -67,8 +67,8 @@ const RegisterScreen4 = () => {
                     const { latitude, longitude } = location;
 
                     try {
-                        // const api = "http://10.0.2.2:3000/api/location/getLocation";
-                        const api = "http://192.168.0.109:3000/api/location/getLocation";
+                        const api = "http://10.0.2.2:3000/api/location/getLocation";
+                        // const api = "http://192.168.0.109:3000/api/location/getLocation";
 
                         const res = await fetch(api, {
                             method: "POST",
