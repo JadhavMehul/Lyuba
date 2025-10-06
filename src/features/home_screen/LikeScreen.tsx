@@ -7,6 +7,8 @@ import {
     Animated,
     Dimensions,
     PanResponder,
+    ScrollView,
+    Image,
 } from 'react-native';
 
 import auth from "@react-native-firebase/auth";
@@ -16,6 +18,8 @@ import PinkButton from '@components/global/PinkButton';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import { Fonts } from '@utils/Constants';
+import TextComponent from '@components/global/TextComponent';
+import ProfileCard from '@components/global/ProfileCard';
 
 const { width } = Dimensions.get('window');
 
@@ -129,14 +133,69 @@ export default function LikeScreen() {
                         ]}
                     >
                         {/* Page 1: Liked Me */}
-                        <View style={[styles.page, { backgroundColor: '#FFF5F5' }]}>
-                            
-                            
+                        <View style={[styles.page, {  padding: 24 }]}>
+
+                            <ScrollView
+
+                                showsVerticalScrollIndicator={false}
+
+                            >
+                                <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 16, justifyContent: 'center', }}>
+                                    <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+                                    <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+                                    <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+                                    <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+
+                                </View>
+                            </ScrollView>
+
+
+
                         </View>
 
                         {/* Page 2: Matched */}
-                        <View style={[styles.page, { backgroundColor: '#F5FFF7' }]}>
-                            
+                        <View style={[styles.page, {  padding: 24 }]}>
+
+                            <ScrollView
+
+                                showsVerticalScrollIndicator={false}
+
+                            >
+                                <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 16, justifyContent: 'center', }}>
+                                <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+                                    <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+                                    <ProfileCard
+                                        image={require("@assets/images/person.png")}
+                                        name="Sai Tamankar"
+                                        role="UI/UX Designer"
+                                    />
+                                </View>
+                            </ScrollView>
+
                         </View>
                     </Animated.View>
                 </View>
