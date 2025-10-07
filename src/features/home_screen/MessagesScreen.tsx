@@ -40,7 +40,7 @@ export default function MessagesScreen() {
                             role="UI/UX Designer"
                             time="23 mins"
                             messageCount={1}
-                            onPress={() => console.log("Message tapped")}
+                            onPress={() => navigate("MessageScreen2")}
                         />
 
                         <MessageCard

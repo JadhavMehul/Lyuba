@@ -22,6 +22,7 @@ import RegisterScreen8 from '@features/auth/RegisterScreen8';
 import MessagesScreen from '@features/home_screen/MessagesScreen';
 import LikeScreen from '@features/home_screen/LikeScreen';
 import ProfileScreen from '@features/home_screen/ProfileScreen';
+import MessageScreen2 from '@features/home_screen/MessageScreen2';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,6 +111,7 @@ const App = () => {
         <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
         <Stack.Screen name="LikeScreen" component={LikeScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+        <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
       </Stack.Navigator>
       
     </NavigationContainer>
