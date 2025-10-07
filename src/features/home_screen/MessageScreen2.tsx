@@ -1,10 +1,14 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React from 'react'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import { Fonts } from '@utils/Constants';
 import InputField from '@components/global/InputField';
+import MessageLeftComponent from '@components/global/MessageLeftComponent';
+import MessageRightComponent from '@components/global/MessageRightComponent';
+
+const { width } = Dimensions.get('window');
 const MessageScreen2 = () => {
     return (
         <View style={styles.container}>
@@ -33,7 +37,28 @@ const MessageScreen2 = () => {
                         </View>
 
                     </View>
-                    <View style={{ flex: 1,padding: 16 }}>
+                    <View style={{ flex: 1, padding: 16 }}>
+                        <View style={styles.wrapper}>
+                            <View style={styles.line} />
+                            <Text style={styles.text}>Today</Text>
+                            <View style={styles.line} />
+                        </View>
+
+                        <MessageLeftComponent
+                            message="Hi Jake, how are you? I saw on the app that we’ve crossed paths several times this week 😄"
+                            time="2:55 PM"
+                        />
+
+
+                        <MessageRightComponent
+                            message="Hey! Yes, I’ve noticed that too 😄 How’s your week been?Hey! Yes, I’ve noticed that too 😄 How’s your week been?Hey! Yes, I’ve noticed that too 😄 How’s your week been?Hey! Yes, I’ve noticed that too 😄 How’s your week been?"
+                            time="2:57 PM"
+                        />
+
+
+
+
+
 
                     </View>
                     <View style={{ backgroundColor: 'white', paddingHorizontal: 24, flexDirection: 'row', gap: 10 }}>
@@ -43,16 +68,16 @@ const MessageScreen2 = () => {
                             placeholderTextColor="#000000"
                         />
                         <TouchableOpacity style={styles.sendmessage} activeOpacity={0.6}>
-                        <View >
-                            <Image
-                                source={require("@assets/icons/send.png")}
-                                style={styles.image2}
-                            />
+                            <View >
+                                <Image
+                                    source={require("@assets/icons/send.png")}
+                                    style={styles.image2}
+                                />
 
-                        </View>
+                            </View>
 
                         </TouchableOpacity>
-                        
+
                     </View>
                 </View>
             </CustomSafeAreaView>
@@ -123,5 +148,27 @@ const styles = StyleSheet.create({
         // padding: 24,
         width: 54,
         borderRadius: 12,
-    }
+    },
+
+    wrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        marginBottom: 10,
+    },
+    line: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#E0E0E0',
+    },
+    text: {
+        marginHorizontal: 10,
+        color: '#444',
+        fontSize: 14,
+        fontWeight: '500',
+        textAlign: 'center',
+        includeFontPadding: false,
+        textAlignVertical: 'center',
+    },
 })
