@@ -17,27 +17,39 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import TextComponent from '@components/global/TextComponent';
 import { Fonts } from '@utils/Constants';
+import ReadMoreText from '@components/global/ReadMoreText';
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const CARD_SHRUNK = SCREEN_H * 0.4; // 40% target
 const CARD_FULL = SCREEN_H * 0.77; // initial 
 const SWIPE_THRESHOLD = 120;
 
+const { width: screenWidth } = Dimensions.get("window");
+const INTERESTS = [
+    { id: "1", label: "Movie", icon: "film" },
+    { id: "2", label: "Cycling", icon: "bicycle" },
+    { id: "3", label: "Cooking", icon: "cutlery" },
+    { id: "4", label: "Swimming", icon: "life-ring" },
+    { id: "5", label: "Coding", icon: "code" },
+
+
+];
+
 type Person = {
   id: string;
   name: string;
   title: string;
   image: any;
-  bio?: string;
 };
 
 const PEOPLE: Person[] = [
-  { id: '1', name: 'Sai Tamankar', title: 'UI/UX Designer', image: require('@assets/images/person.png'), bio: 'Loves design and coffee.' },
-  { id: '2', name: 'Aisha Khan', title: 'Frontend Dev', image: require('@assets/images/person.png'), bio: 'React enthusiast.' },
-  { id: '3', name: 'Rohit Patel', title: 'Product Manager', image: require('@assets/images/person.png'), bio: 'Builds with data.' },
-  { id: '4', name: 'Maya Rao', title: 'Photographer', image: require('@assets/images/person.png'), bio: 'Capturing moments.' },
-  { id: '5', name: 'Karan Mehta', title: 'Android Dev', image: require('@assets/images/person.png'), bio: 'Kotlin > Java.' },
-  { id: '6', name: 'Nisha Verma', title: 'Data Scientist', image: require('@assets/images/person.png'), bio: 'ML curious.' },
+  { id: '1', name: 'Sai Tamankar', title: 'UI/UX Designer', image: require('@assets/images/person.png') },
+  { id: '2', name: 'Aisha Khan', title: 'Frontend Dev', image: require('@assets/images/person.png') },
+  { id: '3', name: 'Rohit Patel', title: 'Product Manager', image: require('@assets/images/person.png') },
+  { id: '4', name: 'Maya Rao', title: 'Photographer', image: require('@assets/images/person.png') },
+  { id: '5', name: 'Karan Mehta', title: 'Android Dev', image: require('@assets/images/person.png') },
+  { id: '6', name: 'Nisha Verma', title: 'Data Scientist', image: require('@assets/images/person.png') },
 ];
 
 export default function HomeScreen() {
@@ -302,21 +314,120 @@ export default function HomeScreen() {
 
                   <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
                     <Image source={person.image} style={styles.image} resizeMode="cover" />
-                    <View style={styles.textofcard}>
-                      <TextComponent style={styles.tt1}>{person.name}</TextComponent>
-                      <TextComponent style={styles.tt2}>{person.title}</TextComponent>
-                    </View>
+                    {!isShrunk && (
+      <View style={styles.textofcard}>
+        <TextComponent style={styles.tt1}>{person.name}</TextComponent>
+        <TextComponent style={styles.tt2}>{person.title}</TextComponent>
+      </View>
+    )}
                   </Pressable>
                 </Animated.View>
               </Animated.View>
 
               <View style={styles.detailsContainer}>
-                <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                  <TextComponent style={{ fontFamily: Fonts.Poppins_SemiBold_600, fontSize: 18 }}>
-                    {person.name}
-                  </TextComponent>
-                  <Text style={{ marginTop: 8 }}>{person.bio}</Text>
-                  <View style={{ height: 500 }} />
+                <ScrollView contentContainerStyle={{  }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                <View style={styles.bottomprofile}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'column' }}>
+                                    <TextComponent style={styles.title1}>
+                                        Sai Tamankar
+                                    </TextComponent>
+                                    <TextComponent style={styles.title2}>
+                                        UI/UX Designer
+                                    </TextComponent>
+
+                                </View>
+                                <TouchableOpacity>
+                                    <Image
+                                        source={require("@assets/icons/message.png")}
+                                        style={styles.image2}
+                                    />
+
+                                </TouchableOpacity>
+
+
+                            </View>
+                            <View style={styles.line}>
+
+                            </View>
+                            <View>
+                                <TextComponent style={styles.title1}>
+                                    Sai Tamankar
+                                </TextComponent>
+                                <ReadMoreText
+                                text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry "}
+                                numberOfChars={100}
+                                textStyle={styles.title3}
+                                readMoreTextStyle={{ color: '#FF7F7F' }}
+                              />
+                                {/* <TextComponent style={styles.title3}>
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry te ...Read More
+                                </TextComponent> */}
+                            </View>
+                            <View style={styles.line}>
+
+                            </View>
+                            <View>
+                                <TextComponent style={styles.title1}>
+                                    Location
+                                </TextComponent>
+                                <TextComponent style={styles.title3}>
+                                    Mumbai, Maharashtra, India
+                                </TextComponent>
+                            </View>
+                            <View style={styles.line}>
+
+                            </View>
+                            <View>
+                                <TextComponent style={styles.title1}>
+                                    Interset
+                                </TextComponent>
+                                <View style={styles.container2}>
+                                    {INTERESTS.map((item) => {
+
+
+                                        return (
+                                            <View
+                                                key={item.id}
+                                                style={[styles.chip]}
+                                            >
+                                                <Icon
+                                                    name={item.icon}
+                                                    size={18}
+                                                    color={"#000"}
+                                                    style={{ marginRight: 6 }}
+                                                />
+                                                <TextComponent style={[styles.text]}>
+                                                    {item.label}
+                                                </TextComponent>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            </View>
+                            <View style={styles.line}>
+
+                            </View>
+                            <View>
+                                <TextComponent style={styles.title1}>
+                                    Gallery
+                                </TextComponent>
+                                <View>
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false} 
+
+                                    >
+                                        <View style={styles.imagecontainer}></View>
+                                        <View style={styles.imagecontainer}></View>
+                                        <View style={styles.imagecontainer}></View>
+                                        <View style={styles.imagecontainer}></View>
+                                        <View style={styles.imagecontainer}></View>
+                                    </ScrollView>
+                                </View>
+
+                            </View>
+                        </View>
                 </ScrollView>
               </View>
 
@@ -348,7 +459,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   tt1: { fontFamily: Fonts.Poppins_SemiBold_600, fontSize: 24, color: '#FFFFFF' },
   tt2: { fontFamily: Fonts.Poppins_Medium_500, fontSize: 20, color: '#FFFFFF' },
-  mainbg: { backgroundColor: 'red', flex: 1, paddingTop: 24, paddingHorizontal: 24 },
+  mainbg: {  flex: 1, paddingTop: 24, paddingHorizontal: 24 },
   cardWrapper: { width: '100%', marginBottom: 8 },
   carddiv: { flex: 1, backgroundColor: 'white', borderRadius: 20, overflow: 'hidden', position: 'relative' },
   image: { width: '100%', height: '100%' },
@@ -392,4 +503,77 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 8,
   },
+
+  bottomprofile: {
+    padding: 24,
+    gap: 16,
+    paddingTop: 12,
+},
+title3: {
+    fontFamily: Fonts.Poppins_Regular_400,
+    fontSize: 16,
+    color: '#333333',
+    textAlign: 'left',
+
+},
+title2: {
+    fontFamily: Fonts.Poppins_SemiBold_600,
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'left',
+},
+title1: {
+    fontFamily: Fonts.Poppins_SemiBold_600,
+    fontSize: 24,
+    color: '#000000',
+    textAlign: 'left',
+},
+line: {
+    height: 1,
+    backgroundColor: '#FFC0CB',
+    width: '100%',
+},
+container2: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: 'flex-start',
+},
+chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFC0CB",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    margin: 5,
+},
+chipSelected: {
+    backgroundColor: "#FFE3E8",
+    borderColor: "#FFC0CB",
+},
+text: {
+    fontSize: 18,
+    color: "#000",
+    fontFamily: Fonts.Poppins_Medium_500,
+},
+textSelected: {
+    color: "#FF6F61",
+},
+imagecontainer: {
+    zIndex: 1,
+    width: 100,
+    height: 129,
+    backgroundColor: "#ffe6eb",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+    overflow: "hidden",
+
+},
+image2: {
+  width: 30,
+  height: 30,
+},
 });
