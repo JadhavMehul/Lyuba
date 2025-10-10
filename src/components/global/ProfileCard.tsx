@@ -2,6 +2,7 @@ import React from "react";
 import { View, Image, StyleSheet, ImageSourcePropType } from "react-native";
 import TextComponent from "@components/global/TextComponent";
 import { Fonts } from "@utils/Constants";
+import LinearGradient from 'react-native-linear-gradient';
 
 interface ProfileCardProps {
   image: ImageSourcePropType;
@@ -20,10 +21,15 @@ export default function ProfileCard({ image, name, role }: ProfileCardProps) {
     <View style={styles.imagecontainer}>
       <Image source={image} style={styles.image} resizeMode="cover" />
 
-      <View style={styles.textofcard}>
+      <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.6)']} // fade from transparent → dark black
+                        start={{ x: 0, y: 0 }} // top (transparent)
+                        end={{ x: 0, y: 1.2 }}   // bottom (black)
+                        style={styles.textofcard}
+                      >
         <TextComponent style={styles.tt1}>{truncateText(name)}</TextComponent>
         <TextComponent style={styles.tt2}>{truncateText(role)}</TextComponent>
-      </View>
+      </LinearGradient>
     </View>
   );
 }
@@ -48,5 +54,5 @@ const styles = StyleSheet.create({
     },
     tt1: { fontFamily: Fonts.Poppins_SemiBold_600, fontSize: 18, color: '#FFFFFF' },
     tt2: { fontFamily: Fonts.Poppins_Medium_500, fontSize: 14, color: '#FFFFFF' },
-    textofcard: { position: 'absolute', bottom: 0, width: '100%', paddingLeft: 10, paddingBottom: 10 },
+    textofcard: { position: 'absolute', bottom: 0, width: '100%', paddingLeft: 10, paddingBottom: 10,paddingTop: 10, },
 });
