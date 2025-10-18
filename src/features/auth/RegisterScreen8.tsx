@@ -8,6 +8,7 @@ import PinkButton from "@components/global/PinkButton";
 import { Fonts } from "@utils/Constants";
 import PhotoBody from "@components/global/PhotoBody";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { API_IP } from "@env";
 
 type PersonalData = {
     feet: string | null;
@@ -63,7 +64,9 @@ const RegisterScreen8 = () => {
         try {
             setLoading(true);
 
-            const api = "http://192.168.0.109:3000/api/auth/register";
+            let api_ip = API_IP;
+            const api = `${api_ip}:3000/api/auth/register`;
+
             const formData = new FormData();
 
             // append userData text fields

@@ -1,9 +1,9 @@
 import { Image, StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity, Alert } from 'react-native'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { navigate } from '@utils/NavigationUtils';
+import { navigate, resetAndNavigate } from '@utils/NavigationUtils';
 import PinkButton from '@components/global/PinkButton';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
@@ -11,6 +11,7 @@ import TextComponent from '@components/global/TextComponent';
 import { Fonts } from '@utils/Constants';
 import Icon from "react-native-vector-icons/FontAwesome";
 import ReadMoreText from '@components/global/ReadMoreText';
+import { API_IP } from '@env';
 
 const { width: screenWidth } = Dimensions.get("window");
 const INTERESTS = [
@@ -24,13 +25,77 @@ const INTERESTS = [
 ];
 
 
+type PersonalData = {
+    feet: string | null;
+    inch: string | null;
+    looking: string | null;
+    smoking: string | null;
+    drinking: string | null;
+    workout: string | null;
+    religion: string;
+    sign: string | null;
+    status: string | null;
+    kids: string | null;
+    genderPreference: string;
+    workingAt: string | null;
+    profession: string | null;
+    education: string | null;
+};
+
+type UserData = {
+    uid: string;
+    email: string;
+    firstName: string;
+    lastName: string | null;
+    photoURL: string | null;
+    birthdate: string;
+    gender: string;
+    city: string;
+    pincode: string | null;
+    interests: string[];
+    pictures: string[];
+    personalData: PersonalData;
+    provider: string;
+};
 
 export default function ProfileScreen() {
 
-   
+    const [userData, setUserData] = useState<UserData>()
+
+    const getUserDetails = async () => {
+        const userDetails = auth().currentUser;
+        if (!userDetails) {
+            Alert.alert("User Not found", "Error getting user")
+        }
+        const userId = userDetails?.uid;
+        console.log(userId);
+        
+        // const api = 'http://10.0.2.2:3000/api/userDetails/profile';
+        let api_ip = API_IP;
+        const api = `${api_ip}:3000/api/userDetails/profile`;
+
+        const res = await fetch(api, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+        })
+
+        const userInfo = await res.json();
+        
+        if (userInfo.foundData) {
+            setUserData(userInfo.response.user);
+        } else {
+            Alert.alert("User Not Found", "",[
+                {text: 'OK', onPress: () => resetAndNavigate("HomeScreen")},
+            ]);
+        }
+    }
+
+    useEffect(() => {
+        getUserDetails();
+    }, [])
+    
     return (
-
-
         <CustomSafeAreaView>
             <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <ScrollView>
@@ -38,7 +103,7 @@ export default function ProfileScreen() {
                         <View style={styles.imagecont}>
 
                             <Image
-                                source={require("@assets/images/person.png")}
+                                source={{ uri: userData?.pictures[0] }}
                                 style={styles.image}
                                 resizeMode='cover'
                             />
@@ -47,11 +112,25 @@ export default function ProfileScreen() {
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <View style={{ flexDirection: 'column' }}>
                                     <TextComponent style={styles.title1}>
-                                        Sai Tamankar
+                                        {
+                                            userData?.firstName && userData?.lastName ? (
+                                                `${userData.firstName} ${userData.lastName}`
+                                            ) : (
+                                                userData?.firstName
+                                            ) ? (
+                                                userData.firstName
+                                            ) : (
+                                                ""
+                                            )
+                                        }
                                     </TextComponent>
-                                    <TextComponent style={styles.title2}>
-                                        UI/UX Designer
-                                    </TextComponent>
+                                    
+                                    {
+                                        userData?.personalData.profession && 
+                                        <TextComponent style={styles.title2}>
+                                            {userData?.personalData.profession}
+                                        </TextComponent>
+                                    }
 
                                 </View>
                                 <TouchableOpacity>
@@ -69,7 +148,7 @@ export default function ProfileScreen() {
                             </View>
                             <View>
                                 <TextComponent style={styles.title1}>
-                                    Sai Tamankar
+                                    About
                                 </TextComponent>
                                 <ReadMoreText
                                 text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry "}
@@ -89,7 +168,7 @@ export default function ProfileScreen() {
                                     Location
                                 </TextComponent>
                                 <TextComponent style={styles.title3}>
-                                    Mumbai, Maharashtra, India
+                                    {userData?.city}.
                                 </TextComponent>
                             </View>
                             <View style={styles.line}>
@@ -100,22 +179,22 @@ export default function ProfileScreen() {
                                     Interset
                                 </TextComponent>
                                 <View style={styles.container2}>
-                                    {INTERESTS.map((item) => {
+                                    {userData?.interests.map((item,index) => {
 
 
                                         return (
                                             <View
-                                                key={item.id}
+                                                key={index}
                                                 style={[styles.chip]}
                                             >
-                                                <Icon
+                                                {/* <Icon
                                                     name={item.icon}
                                                     size={18}
                                                     color={"#000"}
                                                     style={{ marginRight: 6 }}
-                                                />
+                                                /> */}
                                                 <TextComponent style={[styles.text]}>
-                                                    {item.label}
+                                                    {item}
                                                 </TextComponent>
                                             </View>
                                         );
@@ -135,11 +214,24 @@ export default function ProfileScreen() {
                                         showsHorizontalScrollIndicator={false} 
 
                                     >
+                                        {
+                                            userData?.pictures.map((item, index) => {
+                                                return (
+                                                    <View key={index} style={styles.imagecontainer}>
+                                                        <Image
+                                                            source={{ uri: item }}
+                                                            style={styles.image}
+                                                            resizeMode='cover'
+                                                        />
+                                                    </View>
+                                                )
+                                            })
+                                        }
+                                        {/* <View style={styles.imagecontainer}></View>
                                         <View style={styles.imagecontainer}></View>
                                         <View style={styles.imagecontainer}></View>
                                         <View style={styles.imagecontainer}></View>
-                                        <View style={styles.imagecontainer}></View>
-                                        <View style={styles.imagecontainer}></View>
+                                        <View style={styles.imagecontainer}></View> */}
                                     </ScrollView>
                                 </View>
 

@@ -8,6 +8,7 @@ import { navigate } from '@utils/NavigationUtils';
 import auth, { FacebookAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
+import { API_IP } from '@env';
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -20,208 +21,249 @@ const LoginScreen = () => {
     });
   }, []);
 
-  const signInWithGoogle = async () => {
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  //     const signInResult = (await GoogleSignin.signIn()) as {
+  //       data?: { idToken?: string; accessToken?: string };
+  //     };
+
+  //     // v13+ returns tokens inside signInResult.data
+  //     const idToken = signInResult.data?.idToken;
+  //     const accessToken = signInResult.data?.accessToken ?? undefined;
+
+  //     if (!idToken) {
+  //       Alert.alert('Google Sign-In failed', 'No ID token received.');
+  //       return;
+  //     }
+
+  //     const googleCredential = auth.GoogleAuthProvider.credential(idToken, accessToken);
+  //     const userCredential = await auth().signInWithCredential(googleCredential);
+  //     const firebaseUser = userCredential.user;
+
+  //     // Check if email exists with other providers
+  //     const methods = await auth().fetchSignInMethodsForEmail(firebaseUser.email!);
+  //     if (methods.length > 0 && !methods.includes("google.com")) {
+  //       return Alert.alert(
+  //         "Account exists",
+  //         `This email is already registered with ${methods.join(", ")}. Please login with that provider.`
+  //       );
+  //     }
+
+  //     // Get Firebase ID token
+  //     const firebaseIdToken = await firebaseUser.getIdToken();
+
+  //     console.log("idToken: ", firebaseIdToken);
+
+  //     // Send to backend 
+  //     // const api = "http://10.0.2.2:3000/api/auth/social";
+  //     const api = "http://192.168.0.109:3000/api/auth/social";
+  //     const res = await fetch(api, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ idToken: firebaseIdToken }),
+  //     });
+  //     const data = await res.json();
+  //     console.log(data);
+      
+
+  //     if (data.response.profileComplete === false) {
+  //       Alert.alert("Welcome!", "New user registered");
+  //       navigate("RegisterScreen1", {userData: data.response.user}); // New user → register flow
+  //     } else if (data.response.profileComplete === true) {
+  //       Alert.alert("Welcome back!", "Login successful");
+  //       if (data.response.profileComplete === true) {
+  //         navigate("HomeScreen"); // Existing user → main app
+  //       } else {
+  //         navigate("RegisterScreen1"); // Existing user but data incomplete → register flow
+  //       }
+  //     } else {
+  //       Alert.alert("Auth error", data?.error ?? "Unknown error");
+  //     }
+  //   } catch (e: any) {
+  //     Alert.alert('Google Sign-In error', e?.message ?? String(e));
+  //   }
+  // };
+  const handleFirebaseUser = async (user: any) => {
     try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      const signInResult = (await GoogleSignin.signIn()) as {
-        data?: { idToken?: string; accessToken?: string };
-      };
+      const firebaseIdToken = await user.getIdToken();
+      console.log("Firebase ID Token:", firebaseIdToken);
 
-      // v13+ returns tokens inside signInResult.data
-      const idToken = signInResult.data?.idToken;
-      const accessToken = signInResult.data?.accessToken ?? undefined;
-
-      if (!idToken) {
-        Alert.alert('Google Sign-In failed', 'No ID token received.');
-        return;
-      }
-
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken, accessToken);
-      const userCredential = await auth().signInWithCredential(googleCredential);
-      const firebaseUser = userCredential.user;
-
-      // Get Firebase ID token
-      const firebaseIdToken = await firebaseUser.getIdToken();
-
-      console.log("idToken: ", firebaseIdToken);
-
-      // Send to backend 
-      // const api = "http://10.0.2.2:3000/api/auth/social";
-      const api = "http://192.168.0.109:3000/api/auth/social";
+      let api_ip = API_IP;
+      const api = `${api_ip}:3000/api/auth/social`; // Update to your backend
       const res = await fetch(api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken: firebaseIdToken }),
       });
       const data = await res.json();
-      console.log(data);
-      
 
       if (data.response.profileComplete === false) {
         Alert.alert("Welcome!", "New user registered");
-        navigate("RegisterScreen1", {userData: data.response.user}); // New user → register flow
-      } else if (data.response.profileComplete === true) {
-        Alert.alert("Welcome back!", "Login successful");
-        if (data.response.profileComplete === true) {
-          navigate("HomeScreen"); // Existing user → main app
-        } else {
-          navigate("RegisterScreen1"); // Existing user but data incomplete → register flow
-        }
+        navigate("RegisterScreen1", { userData: data.response.user });
       } else {
-        Alert.alert("Auth error", data?.error ?? "Unknown error");
+        Alert.alert("Welcome back!", "Login successful");
+        navigate("HomeScreen");
       }
-    } catch (e: any) {
-      Alert.alert('Google Sign-In error', e?.message ?? String(e));
+    } catch (error) {
+      console.log("Backend error:", error);
+      Alert.alert("Error", "Failed to communicate with backend");
     }
   };
 
-  // const signInWithFacebook = async () => {
-  //   try {
-  //     // This opens the native FB dialog
-  //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+  const signInWithGoogle = async () => {
+  try {
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    const signInResult = (await GoogleSignin.signIn()) as {
+      data?: { idToken?: string; accessToken?: string; user?: { email: string;}};
+    };
+    
 
-  //     if (result.isCancelled) return;
+    const idToken = signInResult.data?.idToken;
+    const accessToken = signInResult.data?.accessToken;
+    const email = signInResult.data?.user?.email;
 
-  //     const data = await AccessToken.getCurrentAccessToken();
-  //     if (!data?.accessToken) {
-  //       Alert.alert('Facebook Sign-In failed', 'No access token received.');
-  //       return;
-  //     }
+    if (!idToken || !email) return Alert.alert("Google Sign-In failed", "No ID token received.");
 
-  //     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+    
+    // Decode token to get email
+    // const email = googleUser.user.email;
 
-  //     console.log("**********************************");
-      
-  //     console.log(result);
-  //     console.log(data);
-  //     console.log(facebookCredential);
-      
-  //     // await auth().signInWithCredential(facebookCredential);
-  //   } catch (e: any) {
-  //     Alert.alert('Facebook Sign-In error', e?.message ?? String(e));
-  //   }
-  // };
+    // Check if email exists with other providers
+    console.log(idToken);
+    console.log(email);
+    
+    const methods = await auth().fetchSignInMethodsForEmail(email);
+    console.log(methods);
+    
+    if (methods.length > 0 && !methods.includes("google.com")) {
+      return Alert.alert(
+        "Account exists",
+        `This email is already registered with ${methods.join(", ")}, Please login with that  ${methods.join(", ")}.`
+      );
+    }
+
+    const googleUser = await auth().signInWithCredential(auth.GoogleAuthProvider.credential(idToken, accessToken));
+
+
+    // Proceed with sign-in
+    const firebaseIdToken = await googleUser.user.getIdToken();
+    console.log(firebaseIdToken);
+    
+    handleFirebaseUser(googleUser.user);
+
+  } catch (e: any) {
+    Alert.alert("Google Sign-In error", e?.message ?? "Unknown error");
+  }
+};
+
+const signInWithFacebook = async () => {
+  try {
+    const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+    if (result.isCancelled) return;
+
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data?.accessToken) return Alert.alert("Facebook Sign-In failed", "No access token received.");
+
+    // Fetch email from Facebook Graph API
+    const fbResponse = await fetch(`https://graph.facebook.com/me?access_token=${data.accessToken}&fields=email`);
+    const fbData = await fbResponse.json();
+    const email = fbData.email;
+
+    if (!email) return Alert.alert("Facebook Sign-In failed", "Unable to retrieve email from Facebook.");
+
+    // Check if email exists with other providers
+    const methods = await auth().fetchSignInMethodsForEmail(email);
+    if (methods.length > 0 && !methods.includes("facebook.com")) {
+      return Alert.alert(
+        "Account exists",
+        `This email is already registered with ${methods.join(", ")}. Please login with that provider.`
+      );
+    }
+
+    // Proceed to sign in
+    const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+    const userCredential = await auth().signInWithCredential(facebookCredential);
+    console.log(userCredential.user.getIdToken());
+    
+    handleFirebaseUser(userCredential.user);
+
+  } catch (e: any) {
+    Alert.alert("Facebook Sign-In error", e?.message ?? "Unknown error");
+  }
+};
+
 
 
 //   const signInWithFacebook = async () => {
 //   try {
-//     // Attempt login with permissions
-//     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+//     const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+//     if (result.isCancelled) return;
 
-//     if (result.isCancelled) {
-//       console.log('User cancelled the login process');
+//     const data = await AccessToken.getCurrentAccessToken();
+//     if (!data?.accessToken) {
+//       Alert.alert("Facebook Sign-In failed", "No access token received.");
 //       return;
 //     }
 
-//     // Get the users AccessToken
-//     const data = await AccessToken.getCurrentAccessToken();
-//     if (!data) {
-//       throw 'Something went wrong obtaining access token';
+//     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+
+//     let userCredential;
+//     try {
+//       userCredential = await auth().signInWithCredential(facebookCredential);
+//     } catch (rawError: any) {
+//       const code = rawError?.code ?? "unknown";
+//       const message = rawError?.message ?? "Unknown error";
+//       const email = rawError?.customData?.email;
+//       const pendingCredential = rawError?.credential;
+
+//       if (code === "auth/account-exists-with-different-credential" && email) {
+//         const methods = await auth().fetchSignInMethodsForEmail(email);
+
+//         if (methods.includes("google.com")) {
+//           Alert.alert(
+//             "Account exists",
+//             "This email is already registered with Google. Please sign in with Google to link Facebook."
+//           );
+//         } else {
+//           Alert.alert("Account exists", "This email is registered with another provider.");
+//         }
+//       } else {
+//         console.log("Facebook sign-in error:", rawError);
+//         Alert.alert(`Facebook Sign-In error [${code}]`, message);
+//       }
+//       return;
 //     }
 
-//     // Create a Firebase credential and sign in
-//     const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-//     const userCredential = await signInWithCredential(getAuth(), facebookCredential);
+//     const firebaseUser = userCredential.user;
+//     const firebaseIdToken = await firebaseUser.getIdToken();
 
-//     console.log('Firebase user signed in:', userCredential.user);
+//     console.log("Firebase ID Token:", firebaseIdToken);
 
-//     // Fetch user info from Facebook Graph API
-//     const response = await fetch(
-//       `https://graph.facebook.com/me?fields=id,first_name,last_name,email&access_token=${data.accessToken}`
-//     );
-//     const userInfo = await response.json();
+//     const api = "http://192.168.117.133:3000/api/auth/social";
+//     const res = await fetch(api, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ idToken: firebaseIdToken }),
+//     });
+//     const dataFromBackend = await res.json();
 
-//     console.log('Facebook User Info:', userInfo);
-//     // Example output: { id: '12345', first_name: 'John', last_name: 'Doe', email: 'john@example.com' }
-
-//   } catch (error) {
-//     console.error('Facebook login error:', error);
+//     if (dataFromBackend.response.profileComplete === false) {
+//       Alert.alert("Welcome!", "New user registered");
+//       navigate("RegisterScreen1", { userData: dataFromBackend.response.user });
+//     } else if (dataFromBackend.response.profileComplete === true) {
+//       Alert.alert("Welcome back!", "Login successful");
+//       navigate("HomeScreen");
+//     } else {
+//       Alert.alert("Auth error", dataFromBackend?.error ?? "Unknown error");
+//     }
+//   } catch (e: any) {
+//     const message = e?.message ?? "Unknown error";
+//     console.log("Facebook Sign-In catch error:", e);
+//     Alert.alert("Facebook Sign-In error", message);
 //   }
-// }
+// };
 
-
-  const signInWithFacebook = async () => {
-    try {
-      // 1️⃣ Open native FB dialog
-      const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
-      if (result.isCancelled) return;
-
-      // 2️⃣ Get Facebook access token
-      console.log(result);
-      
-      const data = await AccessToken.getCurrentAccessToken();
-      if (!data?.accessToken) {
-        Alert.alert("Facebook Sign-In failed", "No access token received.");
-        return;
-      }
-
-      console.log("FB AccessToken:", data.accessToken);
-
-      // 3️⃣ Create Firebase credential
-      const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-
-      let userCredential;
-      try {
-        // 4️⃣ Attempt to sign in with Firebase
-        userCredential = await auth().signInWithCredential(facebookCredential);
-      } catch (rawError) {
-        // 5️⃣ Defensive error handling
-        const error = rawError as { code?: string; customData?: any; credential?: any } | undefined;
-
-        if (error && error.code === "auth/account-exists-with-different-credential") {
-          const email = error.customData?.email;
-          const pendingCredential = error.credential;
-
-          const methods = await auth().fetchSignInMethodsForEmail(email);
-
-          if (methods.includes("google.com")) {
-            Alert.alert(
-              "Account exists",
-              "This email is already registered with Google. Please sign in with Google to link Facebook."
-            );
-          } else {
-            Alert.alert("Account exists", "This email is registered with another provider.");
-          }
-          return;
-        } else {
-          console.log("Facebook sign-in error:", rawError);
-          Alert.alert("Facebook Sign-In error", (rawError as any)?.message ?? "Unknown error");
-          return;
-        }
-      }
-
-      // 6️⃣ Get Firebase ID token
-      const firebaseUser = userCredential.user;
-      const firebaseIdToken = await firebaseUser.getIdToken();
-
-      console.log("Firebase ID Token:", firebaseIdToken);
-
-      // 7️⃣ Send token to backend
-      const api = "http://192.168.0.109:3000/api/auth/social";
-      const res = await fetch(api, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken: firebaseIdToken }),
-      });
-      const dataFromBackend = await res.json();
-
-      console.log("Backend response:", dataFromBackend);
-
-      // 8️⃣ Navigate based on backend response
-      if (dataFromBackend.response.profileComplete === false) {
-        Alert.alert("Welcome!", "New user registered");
-        navigate("RegisterScreen1", { userData: dataFromBackend.response.user });
-      } else if (dataFromBackend.response.profileComplete === true) {
-        Alert.alert("Welcome back!", "Login successful");
-        navigate("HomeScreen");
-      } else {
-        Alert.alert("Auth error", dataFromBackend?.error ?? "Unknown error");
-      }
-    } catch (e: any) {
-      Alert.alert("Facebook Sign-In error", e?.message ?? String(e));
-      console.log("Facebook Sign-In catch error:", e);
-    }
-  };
 
 
 

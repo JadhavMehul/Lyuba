@@ -9,6 +9,7 @@ import LocationAnimation from '@components/auth_components/LocationAnimation';
 import Geolocation from 'react-native-geolocation-service';
 import GetLocation from 'react-native-get-location'
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { API_IP } from '@env';
 
 type UserData = {
   uid: string;
@@ -68,7 +69,10 @@ const RegisterScreen4 = () => {
 
                     try {
                         // const api = "http://10.0.2.2:3000/api/location/getLocation";
-                        const api = "http://192.168.0.109:3000/api/location/getLocation";
+                        // console.log(API_IP);
+
+                        let api_ip = API_IP;
+                        const api = `${api_ip}:3000/api/location/getLocation`;
 
                         const res = await fetch(api, {
                             method: "POST",

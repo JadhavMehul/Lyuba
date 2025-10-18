@@ -21,7 +21,8 @@ import { ActivityIndicator } from 'react-native';
 import RegisterScreen8 from '@features/auth/RegisterScreen8';
 import MessagesScreen from '@features/home_screen/MessagesScreen';
 import LikeScreen from '@features/home_screen/LikeScreen';
-import ProfileScreen from '@features/home_screen/ProfileScreen';
+import ProfileScreen from '@features/profile_screen/ProfileScreen';
+import { API_IP } from '@env';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,7 +51,8 @@ const App = () => {
           try {
             const idToken = await u.getIdToken()
             // const api = 'http://10.0.2.2:3000/api/auth/authenticateUser';
-            const api = 'http://192.168.0.109:3000/api/auth/authenticateUser';
+            let api_ip = API_IP;
+            const api = `${api_ip}:3000/api/auth/authenticateUser`;
             const res = await fetch(api, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
