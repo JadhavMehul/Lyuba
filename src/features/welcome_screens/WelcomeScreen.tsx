@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, PanResponder, GestureResponderEvent, PanResponderGestureState } from 'react-native'
 import React, { useRef, useState } from "react";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import TextComponent from '@components/global/TextComponent'
@@ -7,6 +7,7 @@ import PinkButton from '@components/global/PinkButton'
 import { navigate } from '@utils/NavigationUtils';
 
 const { width } = Dimensions.get("window");
+
 
 type Slide = {
   id: string;
@@ -40,6 +41,7 @@ const slides: Slide[] = [
 ];
 
 const WelcomeScreen = () => {
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList<Slide>>(null);
 
@@ -47,7 +49,7 @@ const WelcomeScreen = () => {
     if (currentIndex < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      navigate('loginScreen')
+      navigate('LoginScreen')
     }
   };
 
@@ -56,6 +58,37 @@ const WelcomeScreen = () => {
       setCurrentIndex(viewableItems[0].index);
     }
   }).current;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderRelease: (_evt: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+        if (gestureState.dx > 50) {
+          setCurrentIndex(prevIndex => {
+            if (prevIndex > 0) {
+              const newIndex = prevIndex - 1;
+              flatListRef.current?.scrollToIndex({ index: newIndex });
+              console.log("Updated index:", newIndex);
+              return newIndex;
+            }
+            return prevIndex; 
+          });
+        } else if (gestureState.dx < -50) {
+          setCurrentIndex(prevIndex => {
+            if (prevIndex < slides.length - 1) {
+              const newIndex = prevIndex + 1;
+              flatListRef.current?.scrollToIndex({ index: newIndex });
+              console.log("Updated index:", newIndex);
+              return newIndex;
+            }
+            return prevIndex; 
+          });
+        }
+      },
+    })
+  ).current;
+  
+  
+
 
 
   return (
@@ -67,6 +100,7 @@ const WelcomeScreen = () => {
             source={slides[currentIndex].image}
             style={styles.image}
             resizeMode="contain"
+            {...panResponder.panHandlers}
           />
 
 
@@ -123,8 +157,8 @@ const WelcomeScreen = () => {
 
 
     </View>
-  )
-}
+  );
+};
 
 export default WelcomeScreen
 
@@ -207,7 +241,6 @@ const styles = StyleSheet.create({
   },
 
 })
-
 
 
 
