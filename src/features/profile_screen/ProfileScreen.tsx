@@ -8,7 +8,7 @@ import PinkButton from '@components/global/PinkButton';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import TextComponent from '@components/global/TextComponent';
-import { Fonts } from '@utils/Constants';
+import { ENV, Fonts } from '@utils/Constants';
 import Icon from "react-native-vector-icons/FontAwesome";
 import ReadMoreText from '@components/global/ReadMoreText';
 import { API_IP } from '@env';
@@ -71,8 +71,9 @@ export default function ProfileScreen() {
         console.log(userId);
         
         // const api = 'http://10.0.2.2:3000/api/userDetails/profile';
-        let api_ip = API_IP;
-        const api = `${api_ip}:3000/api/userDetails/profile`;
+        console.log(ENV.API_IP);
+        
+        const api = `${ENV.API_IP}:3000/api/userDetails/profile`;
 
         const res = await fetch(api, {
             method: 'POST',
@@ -83,7 +84,9 @@ export default function ProfileScreen() {
         const userInfo = await res.json();
         
         if (userInfo.foundData) {
+            console.log(userInfo.response.user);
             setUserData(userInfo.response.user);
+            
         } else {
             Alert.alert("User Not Found", "",[
                 {text: 'OK', onPress: () => resetAndNavigate("HomeScreen")},

@@ -1,14 +1,13 @@
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import TextComponent from '@components/global/TextComponent'
-import { Fonts } from '@utils/Constants'
+import { ENV, Fonts } from '@utils/Constants'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import AuthButton from '@components/auth_components/AuthButton'
 import { navigate } from '@utils/NavigationUtils';
 import auth, { FacebookAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
-import { API_IP } from '@env';
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -89,8 +88,9 @@ const LoginScreen = () => {
       const firebaseIdToken = await user.getIdToken();
       console.log("Firebase ID Token:", firebaseIdToken);
 
-      let api_ip = API_IP;
-      const api = `${api_ip}:3000/api/auth/social`; // Update to your backend
+      console.log(ENV.API_IP);
+      const api = `${ENV.API_IP}:3000/api/auth/social`; // Update to your backend
+      
       const res = await fetch(api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

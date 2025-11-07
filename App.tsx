@@ -22,7 +22,8 @@ import RegisterScreen8 from '@features/auth/RegisterScreen8';
 import MessagesScreen from '@features/home_screen/MessagesScreen';
 import LikeScreen from '@features/home_screen/LikeScreen';
 import ProfileScreen from '@features/profile_screen/ProfileScreen';
-import { API_IP } from '@env';
+import MessageScreen2 from '@features/home_screen/MessageScreen2';
+import { ENV } from '@utils/Constants';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,8 +52,9 @@ const App = () => {
           try {
             const idToken = await u.getIdToken()
             // const api = 'http://10.0.2.2:3000/api/auth/authenticateUser';
-            let api_ip = API_IP;
-            const api = `${api_ip}:3000/api/auth/authenticateUser`;
+            
+            console.log(ENV.API_IP);
+            const api = `${ENV.API_IP}:3000/api/auth/authenticateUser`;
             const res = await fetch(api, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -112,6 +114,7 @@ const App = () => {
         <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
         <Stack.Screen name="LikeScreen" component={LikeScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+        <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
       </Stack.Navigator>
       
     </NavigationContainer>

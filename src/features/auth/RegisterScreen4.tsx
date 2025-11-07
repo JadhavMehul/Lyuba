@@ -4,7 +4,7 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack, navigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
-import { Fonts } from '@utils/Constants';
+import { ENV, Fonts } from '@utils/Constants';
 import LocationAnimation from '@components/auth_components/LocationAnimation';
 import Geolocation from 'react-native-geolocation-service';
 import GetLocation from 'react-native-get-location'
@@ -71,8 +71,9 @@ const RegisterScreen4 = () => {
                         // const api = "http://10.0.2.2:3000/api/location/getLocation";
                         // console.log(API_IP);
 
-                        let api_ip = API_IP;
-                        const api = `${api_ip}:3000/api/location/getLocation`;
+                        
+                        console.log(ENV.API_IP);
+                        const api = `${ENV.API_IP}:3000/api/location/getLocation`;
 
                         const res = await fetch(api, {
                             method: "POST",
