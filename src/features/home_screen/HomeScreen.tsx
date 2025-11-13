@@ -102,39 +102,49 @@ export default function HomeScreen() {
   const animateOff = useCallback(
     (direction: 'left' | 'right' | 'up') => {
       if (finished) return;
-
+  
       let toValue = { x: 0, y: 0 };
-      if (direction === 'left') {
-        toValue = { x: -SCREEN_W * 1.2, y: 0 };
-        console.log('reject');
-      }
-      if (direction === 'right') {
-        toValue = { x: SCREEN_W * 1.2, y: 0 };
-        console.log('accepted');
-      }
-      if (direction === 'up') {
-        toValue = { x: 0, y: -SCREEN_H * 1.2 };
-        console.log('superlike');
-      }
-
-      Animated.timing(pos, { toValue, duration: 280, useNativeDriver: false }).start(() => {
-        pos.setValue({ x: 0, y: 0 });
-        Animated.timing(cardHeight, { toValue: CARD_FULL, duration: 220, useNativeDriver: false }).start(() => {
-          setIsShrunk(false);
-          setIndex(prev => {
-            const next = prev + 1;
-            if (next < PEOPLE.length) {
-              return next;
-            } else {
-              setFinished(true);
-              return prev;
-            }
+      if (direction === 'left') toValue = { x: -SCREEN_W * 1.2, y: 0 };
+      else if (direction === 'right') toValue = { x: SCREEN_W * 1.2, y: 0 };
+      else if (direction === 'up') toValue = { x: 0, y: -SCREEN_H * 1.2 };
+  
+      // Animate the top card off-screen
+      Animated.timing(pos, {
+        toValue,
+        duration: 280,
+        useNativeDriver: false,
+      }).start(() => {
+        // 1) Advance index immediately so React renders the nextPerson
+        setIndex(prev => {
+          const next = prev + 1;
+          if (next < PEOPLE.length) return next;
+          setFinished(true);
+          return prev;
+        });
+  
+        // 2) Reset pos on the next frame (lets React commit the new card first)
+        //    Using requestAnimationFrame reduces flicker vs immediate setValue or animated spring.
+        requestAnimationFrame(() => {
+          // instant reset to center (no animation) — avoids "the card comes back" effect
+          pos.setValue({ x: 0, y: 0 });
+  
+          // 3) Restore card height (keeps the shrink/expand animation)
+          Animated.timing(cardHeight, {
+            toValue: CARD_FULL,
+            duration: 220,
+            useNativeDriver: false,
+          }).start(() => {
+            setIsShrunk(false);
           });
         });
       });
     },
     [cardHeight, pos, finished],
   );
+  
+  
+  
+  
 
   const panResponder = useMemo(
     () =>
@@ -226,8 +236,12 @@ export default function HomeScreen() {
     [animateOff],
   );
 
-  const person = PEOPLE[index];
-  const nextPerson = PEOPLE[index + 1];
+  const person = useMemo(() => PEOPLE[index], [index]);
+const nextPerson = useMemo(() => PEOPLE[index + 1], [index]);
+
+
+  
+
 
   return (
     <CustomSafeAreaView>
@@ -250,85 +264,91 @@ export default function HomeScreen() {
           ) : (
             <>
               <Animated.View style={[styles.cardWrapper, { height: cardHeight }]}>
-                {nextPerson && (
-                  <Animated.View
-                    style={[
-                      styles.carddiv,
-                      {
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        // 👇 next card starts slightly smaller and hidden
-                        transform: [
-                          {
-                            scale: pos.x.interpolate({
-                              inputRange: [-SCREEN_W, 0, SCREEN_W],
-                              outputRange: [1, 0.95, 1], // 0.95 by default, grows to 1 as swipe happens
-                              extrapolate: 'clamp',
-                            }),
-                          },
-                          {
-                            scale: pos.y.interpolate({
-                              inputRange: [-SCREEN_H, 0, SCREEN_H],
-                              outputRange: [1, 0.95, 1],
-                              extrapolate: 'clamp',
-                            }),
-                          },
-                        ],
-                        opacity: pos.x.interpolate({
-                          inputRange: [-SCREEN_W, 0, SCREEN_W],
-                          outputRange: [0.3, 0.1, 1], // a bit faint, brightens as swipe progresses
-                          extrapolate: 'clamp',
-                        }),
-                      },
-                    ]}
-                  >
-                    <Image source={nextPerson.image} style={styles.image} resizeMode="cover" />
-                    <View style={styles.textofcard}>
-                      <TextComponent style={styles.tt1}>{nextPerson.name}</TextComponent>
-                      <TextComponent style={styles.tt2}>{nextPerson.title}</TextComponent>
-                    </View>
-                  </Animated.View>
-                )}
+              {nextPerson && (
+  <Animated.View
+    key={`next-${nextPerson.id}`}
+    style={[
+      styles.carddiv,
+      {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        transform: [
+          {
+            scale: pos.x.interpolate({
+              inputRange: [-SCREEN_W, 0, SCREEN_W],
+              outputRange: [1, 0.95, 1],
+              extrapolate: 'clamp',
+            }),
+          },
+          {
+            scale: pos.y.interpolate({
+              inputRange: [-SCREEN_H, 0, SCREEN_H],
+              outputRange: [1, 0.95, 1],
+              extrapolate: 'clamp',
+            }),
+          },
+        ],
+        opacity: pos.x.interpolate({
+          inputRange: [-SCREEN_W, 0, SCREEN_W],
+          outputRange: [0.3, 0.1, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ]}
+  >
+    <Image source={nextPerson.image} style={styles.image} resizeMode="cover" />
+    <LinearGradient
+      colors={['transparent', 'rgba(0,0,0,0.6)']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1.2 }}
+      style={styles.textofcard}
+    >
+      <TextComponent style={styles.tt1}>{nextPerson.name}</TextComponent>
+      <TextComponent style={styles.tt2}>{nextPerson.title}</TextComponent>
+    </LinearGradient>
+  </Animated.View>
+)}
 
 
+  {person && (
+    <Animated.View
+      key={`current-${person.id}`}
+      {...(!isShrunk ? panResponder.panHandlers : {})}
+      style={[
+        styles.carddiv,
+        {
+          borderTopLeftRadius: isShrunk ? 0 : 20,
+          borderTopRightRadius: isShrunk ? 0 : 20,
+          transform: [
+            { translateX: pos.x },
+            { translateY: pos.y },
+            { rotate },
+          ],
+        },
+      ]}
+    >
+      <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
+        <Image source={person.image} style={styles.image} resizeMode="cover" />
+        {!isShrunk && (
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.6)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1.2 }}
+            style={styles.textofcard}
+          >
+            <TextComponent style={styles.tt1}>{person.name}</TextComponent>
+            <TextComponent style={styles.tt2}>{person.title}</TextComponent>
+          </LinearGradient>
+        )}
+      </Pressable>
+    </Animated.View>
+  )}
+</Animated.View>
 
 
-
-                <Animated.View
-                  {...(!isShrunk ? panResponder.panHandlers : {})}
-                  style={[
-                    styles.carddiv,
-                    {
-                      borderTopLeftRadius: isShrunk ? 0 : 20,
-                      borderTopRightRadius: isShrunk ? 0 : 20,
-                      transform: [
-                        { translateX: pos.x },
-                        { translateY: pos.y },
-                        { rotate },
-                      ],
-                    },
-                  ]}
-                >
-
-                  <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
-                    <Image source={person.image} style={styles.image} resizeMode="cover" />
-                    {!isShrunk && (
-                      <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.6)']} // fade from transparent → dark black
-                        start={{ x: 0, y: 0 }} // top (transparent)
-                        end={{ x: 0, y: 1.2 }}   // bottom (black)
-                        style={styles.textofcard}
-                      >
-                        <TextComponent style={styles.tt1}>{person.name}</TextComponent>
-                        <TextComponent style={styles.tt2}>{person.title}</TextComponent>
-                      </LinearGradient>
-                    )}
-                  </Pressable>
-                </Animated.View>
-              </Animated.View>
 
               <View style={styles.detailsContainer}>
                 <ScrollView contentContainerStyle={{}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
