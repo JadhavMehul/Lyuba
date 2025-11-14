@@ -13,7 +13,6 @@ import {
   View,
   Image,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import auth from "@react-native-firebase/auth";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
@@ -23,6 +22,7 @@ import { ENV, Fonts } from '@utils/Constants';
 import ReadMoreText from '@components/global/ReadMoreText';
 import Icon from "react-native-vector-icons/FontAwesome";
 import LinearGradient from 'react-native-linear-gradient';
+import PinkButton from '@components/global/PinkButton';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const CARD_SHRUNK = SCREEN_H * 0.4; // 40% target
@@ -31,21 +31,23 @@ const SWIPE_THRESHOLD = 120;
 
 const { width: screenWidth } = Dimensions.get("window");
 const INTERESTS = [
-  { id: "1", label: "Movie", icon: "film" },
-  { id: "2", label: "Cycling", icon: "bicycle" },
-  { id: "3", label: "Cooking", icon: "cutlery" },
-  { id: "4", label: "Swimming", icon: "life-ring" },
-  { id: "5", label: "Coding", icon: "code" },
-
-
+    { id: "1", label: "Movie", icon: "film" },
+    { id: "2", label: "Cycling", icon: "bicycle" },
+    { id: "3", label: "Cooking", icon: "cutlery" },
+    { id: "4", label: "Swimming", icon: "life-ring" },
+    { id: "5", label: "Coding", icon: "code" },
+    { id: "6", label: "Gaming", icon: "gamepad" },
+    { id: "7", label: "Yoga", icon: "heartbeat" },
+    { id: "8", label: "Dinner Dates", icon: "glass" },
+    { id: "9", label: "Gambling", icon: "money" },
+    { id: "10", label: "Poker", icon: "spade" },
+    { id: "11", label: "Crypto", icon: "bitcoin" },
+    { id: "12", label: "Stock Market", icon: "line-chart" },
+    { id: "13", label: "Football", icon: "futbol-o" },
+    { id: "14", label: "Cricket", icon: "trophy" },
+    { id: "15", label: "Tennis", icon: "circle-o" },
+    { id: "16", label: "Travelling", icon: "plane" },
 ];
-
-// type Person = {
-//   id: string;
-//   name: string;
-//   title: string;
-//   image: any;
-// };
 
 type Person = {
   id: string;
@@ -81,64 +83,36 @@ type Person = {
     genderPreference: string;
   };
 }
+// type Person = {
+//   id: string;
+//   name: string;
+//   title: string;
+//   image: any;
+// };
 
-
-const PEOPLE: Person[] = [
-  {
-    id: "k1Tn5aUks8WWTq5m8aYc4thWI8z2",
-    lastName: "Jadhav",
-    pincode: "400063",
-    birthdate: "19/11/2000",
-    gender: "male",
-    city: "Mumbai",
-    pictures: [
-      "https://firebasestorage.googleapis.com/v0/b/lyuba-dating-app.firebasestorage.app/o/users%2Fk1Tn5aUks8WWTq5m8aYc4thWI8z2%2Fphotos%2Fphoto_0.jpg?alt=media&token=f0105f13-7b54-4eac-96e7-c237d5542984"
-    ],
-    createdAt: {
-      _seconds: 1760809849,
-      _nanoseconds: 511000000
-    },
-    firstName: "Mehul",
-    uid: "k1Tn5aUks8WWTq5m8aYc4thWI8z2",
-    provider: "facebook.com",
-    interests: [
-      "Movie",
-      "Swimming",
-      "Coding",
-      "Gaming"
-    ],
-    email: "jadhavmehuljadhav.mj@gmail.com",
-    personalData: {
-      profession: "",
-      feet: "",
-      drinking: "",
-      education: "No formal education",
-      sign: "",
-      workingAt: "",
-      religion: "Hinduism",
-      workout: "",
-      smoking: "",
-      looking: "",
-      inch: "",
-      kids: "",
-      status: "",
-      genderPreference: "male"
-    }
-  },
-];
-
+// const PEOPLE: Person[] = [
+//   { id: '1', name: 'Sai Tamankar', title: 'UI/UX Designer', image: require('@assets/images/person.png') },
+//   { id: '2', name: 'Aisha Khan', title: 'Frontend Dev', image: require('@assets/images/person.png') },
+//   { id: '3', name: 'Rohit Patel', title: 'Product Manager', image: require('@assets/images/person.png') },
+//   { id: '4', name: 'Maya Rao', title: 'Photographer', image: require('@assets/images/person.png') },
+//   { id: '5', name: 'Karan Mehta', title: 'Android Dev', image: require('@assets/images/person.png') },
+//   { id: '6', name: 'Nisha Verma', title: 'Data Scientist', image: require('@assets/images/person.png') },
+// ];
 
 
 export default function HomeScreen() {
-
-  // const [PEOPLE, setPEOPLE] = useState([]);
-  const [index, setIndex] = useState(0);
+  // 👇 CHANGE 1: Converted static PEOPLE array to dynamic state
+  const [people, setPeople] = useState < Person[] > ([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [index, setIndex] = useState(0); // Keeping index, but its value should remain 0 now
   const [isShrunk, setIsShrunk] = useState(false);
   const [finished, setFinished] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   const cardHeight = useRef(new Animated.Value(CARD_FULL)).current;
-  const pos = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const pos = useRef(new Animated.ValueXY({
+    x: 0,
+    y: 0
+  })).current;
   const paddingAnim = useRef(new Animated.Value(24)).current;
 
   const rotate = pos.x.interpolate({
@@ -162,9 +136,12 @@ export default function HomeScreen() {
     ]).start(() => setIsShrunk(false));
   }, [cardHeight, paddingAnim]);
 
-
   const shrinkCard = useCallback(() => {
-    Animated.timing(cardHeight, { toValue: CARD_SHRUNK, duration: 300, useNativeDriver: false }).start(() => {
+    Animated.timing(cardHeight, {
+      toValue: CARD_SHRUNK,
+      duration: 300,
+      useNativeDriver: false
+    }).start(() => {
       setIsShrunk(true);
     });
   }, [cardHeight]);
@@ -172,74 +149,135 @@ export default function HomeScreen() {
   const restartList = useCallback(() => {
     setFinished(false);
     setIndex(0);
-    pos.setValue({ x: 0, y: 0 });
-    Animated.timing(cardHeight, { toValue: CARD_FULL, duration: 250, useNativeDriver: false }).start(() => {
+    pos.setValue({
+      x: 0,
+      y: 0
+    });
+    Animated.timing(cardHeight, {
+      toValue: CARD_FULL,
+      duration: 250,
+      useNativeDriver: false
+    }).start(() => {
       setIsShrunk(false);
     });
+    // Re-fetch data on restart if necessary
+    swipingData();
   }, [pos, cardHeight]);
 
+  // 👇 CHANGE 3: Updated animateOff to remove the first element from 'people' state
   const animateOff = useCallback(
     (direction: 'left' | 'right' | 'up') => {
-      if (finished) return;
+      if (finished || people.length === 0) return;
 
-      const currentPerson = PEOPLE[index];
-      let toValue = { x: 0, y: 0 };
+      const swipedPerson = people[0]; // Now, current person is always people[0]
+
+      let toValue = {
+        x: 0,
+        y: 0
+      };
       if (direction === 'left') {
-        toValue = { x: -SCREEN_W * 1.2, y: 0 };
-        console.log(currentPerson.firstName, currentPerson.uid);
-        console.log('reject');
-      }
-      if (direction === 'right') {
-        toValue = { x: SCREEN_W * 1.2, y: 0 };
-        console.log('accepted');
-      }
-      if (direction === 'up') {
-        toValue = { x: 0, y: -SCREEN_H * 1.2 };
-        console.log('superlike');
+        toValue = {
+          x: -SCREEN_W * 1.2,
+          y: 0
+        };
+      } else if (direction === 'right') {
+        toValue = {
+          x: SCREEN_W * 1.2,
+          y: 0
+        };
+      } else if (direction === 'up') {
+        toValue = {
+          x: 0,
+          y: -SCREEN_H * 1.2
+        };
       }
 
-      Animated.timing(pos, { toValue, duration: 280, useNativeDriver: false }).start(() => {
-        pos.setValue({ x: 0, y: 0 });
-        Animated.timing(cardHeight, { toValue: CARD_FULL, duration: 220, useNativeDriver: false }).start(() => {
-          setIsShrunk(false);
-          setIndex(prev => {
-            const next = prev + 1;
-            if (next < PEOPLE.length) {
-              return next;
-            } else {
-              setFinished(true);
-              return prev;
-            }
+      console.log(
+        "👉 Swiped person:",
+        swipedPerson.firstName,
+        "| ID:", swipedPerson.id,
+        "| Direction:", direction
+      );
+
+      // Log swipe action to server (You should implement this here!)
+      // e.g., sendSwipeAction(swipedPerson.id, direction);
+      Animated.timing(pos, {
+        toValue,
+        duration: 280,
+        useNativeDriver: false,
+      }).start(() => {
+        // Remove the swiped card (the first element)
+        setPeople(prevPeople => {
+          const nextPeople = prevPeople.slice(1);
+          if (nextPeople.length === 0) {
+            setFinished(true);
+          }
+          return nextPeople;
+        });
+        // The index state is effectively reset/ignored, but we ensure it's not incremented.
+        setIndex(0);
+
+        requestAnimationFrame(() => {
+          pos.setValue({
+            x: 0,
+            y: 0
+          });
+
+          Animated.timing(cardHeight, {
+            toValue: CARD_FULL,
+            duration: 220,
+            useNativeDriver: false,
+          }).start(() => {
+            setIsShrunk(false);
           });
         });
       });
     },
-    [cardHeight, pos, finished],
+    [cardHeight, pos, finished, people], // Dependencies updated to include 'people'
   );
+
+
+
 
   const panResponder = useMemo(
     () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {
-          (pos as any).extractOffset();
-        },
-        onPanResponderMove: Animated.event([null, { dx: pos.x, dy: pos.y }], { useNativeDriver: false }),
-        onPanResponderRelease: (_e, gesture) => {
-          (pos as any).flattenOffset();
-          const { dx, dy } = gesture;
-          if (dx > SWIPE_THRESHOLD) {
-            animateOff('right');
-          } else if (dx < -SWIPE_THRESHOLD) {
-            animateOff('left');
-          } else if (dy < -SWIPE_THRESHOLD) {
-            animateOff('up');
-          } else {
-            Animated.spring(pos, { toValue: { x: 0, y: 0 }, useNativeDriver: false, tension: 40, friction: 6 }).start();
-          }
-        },
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        (pos as any).extractOffset();
+      },
+      onPanResponderMove: Animated.event([null, {
+        dx: pos.x,
+        dy: pos.y
+      }], {
+        useNativeDriver: false
       }),
+      onPanResponderRelease: (_e, gesture) => {
+        (pos as any).flattenOffset();
+        const {
+          dx,
+          dy
+        } = gesture;
+        if (dx > SWIPE_THRESHOLD) {
+          animateOff('right');
+        } else if (dx < -SWIPE_THRESHOLD) {
+          animateOff('left');
+        } else if (dy < -SWIPE_THRESHOLD) {
+          animateOff('up');
+        } else {
+          Animated.spring(pos, {
+            toValue: {
+              x: 0,
+              y: 0
+            },
+            useNativeDriver: false,
+            tension: 40,
+            friction: 6
+          }).start();
+        }
+      },
+    }),
     [pos, animateOff],
   );
 
@@ -307,10 +345,12 @@ export default function HomeScreen() {
     [animateOff],
   );
 
-  const person = PEOPLE[index];
-  const nextPerson = PEOPLE[index + 1];
+  // 👇 CHANGE 4: Reference the first and second elements in the dynamic array
+  const person = useMemo(() => people[0], [people]);
+  const nextPerson = useMemo(() => people[1], [people]);
 
 
+  // 👇 CHANGE 2: Updated swipingData to populate 'people' state
   const swipingData = async () => {
 
     setIsLoading(true);
@@ -318,6 +358,7 @@ export default function HomeScreen() {
       const userDetails = auth().currentUser;
       if (!userDetails) {
         Alert.alert("User Not found", "Error getting current user")
+        return;
       }
       const userId = userDetails?.uid;
       console.log(userId);
@@ -326,34 +367,35 @@ export default function HomeScreen() {
 
       const res = await fetch(api, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId
+        }),
       })
 
       const swipingData = await res.json();
-              
-      if (swipingData) {
-          // setPEOPLE(swipingData.matches);
-          PEOPLE.length = 0;
-          swipingData.matches.forEach((object: { user: Person; }) => {
-            PEOPLE.push(object.user)
-            console.log(object.user);
-          });
 
-
-          // console.log(swipingData.matches[1].user.firstName);
-          // console.log(typeof(swipingData));
-          
-          
+      if (swipingData && Array.isArray(swipingData.matches)) {
+        const newPeople = swipingData.matches.map((match: {
+          user: Person;
+        }) => match.user);
+        setPeople(newPeople);
+        setIndex(0); // Ensure index is reset
+        if (newPeople.length === 0) setFinished(true);
       } else {
-          Alert.alert("Users Data Not Found", "");
+        Alert.alert("Users Data Not Found", "");
+        setPeople([]);
+        setFinished(true);
       }
     } catch (error) {
       console.log("errrrrrror", error);
+      setPeople([]);
+      setFinished(true);
     } finally {
       setIsLoading(false);
     }
-    
   }
 
 
@@ -361,254 +403,271 @@ export default function HomeScreen() {
     swipingData();
   }, [])
 
+
   return (
     <CustomSafeAreaView>
-      {
-        isLoading ? (
-          <ActivityIndicator />
-        ) : (
-          <View style={{ flex: 1, backgroundColor: 'white' }}>
-            <Animated.View
-              style={[
-                styles.mainbg,
-                { paddingTop: paddingAnim, paddingHorizontal: paddingAnim }
-              ]}
-            >
-              {finished ? (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  <View style={[styles.carddiv, { width: '100%', height: CARD_FULL, justifyContent: 'center', alignItems: 'center' }]}>
-                    <TextComponent style={{ fontFamily: Fonts.Poppins_SemiBold_600, fontSize: 20 }}>No more people left</TextComponent>
-                    <TouchableOpacity onPress={restartList} style={{ marginTop: 18, padding: 12, borderRadius: 10, backgroundColor: '#EFEFEF' }}>
-                      <Text>Restart</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ) : (
-                <>
-                  <Animated.View style={[styles.cardWrapper, { height: cardHeight }]}>
-                    {nextPerson && (
-                      <Animated.View
-                        style={[
-                          styles.carddiv,
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <Animated.View
+          style={[
+            styles.mainbg,
+            { paddingTop: paddingAnim, paddingHorizontal: paddingAnim }
+          ]}
+        >
+          {finished ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={[styles.carddiv, { width: '100%', height: CARD_FULL, justifyContent: 'center', alignItems: 'center' }]}>
+                <TextComponent style={{ fontFamily: Fonts.Poppins_SemiBold_600, fontSize: 20 }}>No more people left</TextComponent>
+                <TouchableOpacity onPress={restartList} style={{ marginTop: 18, padding: 12, borderRadius: 10, backgroundColor: '#EFEFEF' }}>
+                  <Text>Restart</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <>
+              <Animated.View style={[styles.cardWrapper, { height: cardHeight }]}>
+                {nextPerson && (
+                  <Animated.View
+                    key={`next-${nextPerson.id}`}
+                    style={[
+                      styles.carddiv,
+                      {
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        transform: [
                           {
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            // 👇 next card starts slightly smaller and hidden
-                            transform: [
-                              {
-                                scale: pos.x.interpolate({
-                                  inputRange: [-SCREEN_W, 0, SCREEN_W],
-                                  outputRange: [1, 0.95, 1], // 0.95 by default, grows to 1 as swipe happens
-                                  extrapolate: 'clamp',
-                                }),
-                              },
-                              {
-                                scale: pos.y.interpolate({
-                                  inputRange: [-SCREEN_H, 0, SCREEN_H],
-                                  outputRange: [1, 0.95, 1],
-                                  extrapolate: 'clamp',
-                                }),
-                              },
-                            ],
-                            opacity: pos.x.interpolate({
+                            scale: pos.x.interpolate({
                               inputRange: [-SCREEN_W, 0, SCREEN_W],
-                              outputRange: [0.3, 0.1, 1], // a bit faint, brightens as swipe progresses
+                              outputRange: [1, 0.95, 1],
                               extrapolate: 'clamp',
                             }),
                           },
-                        ]}
-                      >
-                        <Image source={{ uri : person.pictures[0] }} style={styles.image} resizeMode="cover" />
-                        <View style={styles.textofcard}>
-                          <TextComponent style={styles.tt1}>{nextPerson.firstName}</TextComponent>
-                          <TextComponent style={styles.tt2}>{nextPerson.personalData.profession}</TextComponent>
-                        </View>
-                      </Animated.View>
-                    )}
-
-
-
-
-
-                    <Animated.View
-                      {...(!isShrunk ? panResponder.panHandlers : {})}
-                      style={[
-                        styles.carddiv,
-                        {
-                          borderTopLeftRadius: isShrunk ? 0 : 20,
-                          borderTopRightRadius: isShrunk ? 0 : 20,
-                          transform: [
-                            { translateX: pos.x },
-                            { translateY: pos.y },
-                            { rotate },
-                          ],
-                        },
-                      ]}
+                          {
+                            scale: pos.y.interpolate({
+                              inputRange: [-SCREEN_H, 0, SCREEN_H],
+                              outputRange: [1, 0.95, 1],
+                              extrapolate: 'clamp',
+                            }),
+                          },
+                        ],
+                        opacity: pos.x.interpolate({
+                          inputRange: [-SCREEN_W, 0, SCREEN_W],
+                          outputRange: [0.3, 0.1, 1],
+                          extrapolate: 'clamp',
+                        }),
+                      },
+                    ]}
+                  >
+                    <Image source={{ uri: nextPerson?.pictures[0] }} style={styles.image} resizeMode="cover" />
+                    <LinearGradient
+                      colors={['transparent', 'rgba(0,0,0,0.6)']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0, y: 1.2 }}
+                      style={styles.textofcard}
                     >
-
-                      <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
-                        <Image source={{ uri : person.pictures[0] }} style={styles.image} resizeMode="cover" />
-                        {!isShrunk && (
-                          <LinearGradient
-                            colors={['transparent', 'rgba(0,0,0,0.6)']} // fade from transparent → dark black
-                            start={{ x: 0, y: 0 }} // top (transparent)
-                            end={{ x: 0, y: 1.2 }}   // bottom (black)
-                            style={styles.textofcard}
-                          >
-                          <>
-                            <TextComponent style={styles.tt1}>{person.firstName}</TextComponent>
-                            <TextComponent style={styles.tt2}>{person.personalData.profession}</TextComponent>
-                          </>
-                          </LinearGradient>
-                        )}
-                      </Pressable>
-                    </Animated.View>
+                      <TextComponent style={styles.tt1}>{`${nextPerson.firstName} ${nextPerson.lastName}`} </TextComponent>
+                      <TextComponent style={styles.tt2}>{nextPerson.personalData?.profession}</TextComponent>
+                    </LinearGradient>
                   </Animated.View>
+                )}
 
-                  <View style={styles.detailsContainer}>
-                    <ScrollView contentContainerStyle={{}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                      <View style={styles.bottomprofile}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <View style={{ flexDirection: 'column' }}>
+
+                {person && (
+                  <Animated.View
+                    key={`current-${person.id}`}
+                    {...(!isShrunk ? panResponder.panHandlers : {})}
+                    style={[
+                      styles.carddiv,
+                      {
+                        borderTopLeftRadius: isShrunk ? 0 : 20,
+                        borderTopRightRadius: isShrunk ? 0 : 20,
+                        transform: [
+                          { translateX: pos.x },
+                          { translateY: pos.y },
+                          { rotate },
+                        ],
+                      },
+                    ]}
+                  >
+                    <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
+                      <Image source={{ uri: person?.pictures[0] }} style={styles.image} resizeMode="cover" />
+                      {!isShrunk && (
+                        <LinearGradient
+                          colors={['transparent', 'rgba(0,0,0,0.6)']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 0, y: 1.2 }}
+                          style={styles.textofcard}
+                        >
+                          <TextComponent style={styles.tt1}>{`${person.firstName} ${person.lastName}`}</TextComponent>
+                          <TextComponent style={styles.tt2}>{person.personalData?.profession}</TextComponent>
+                        </LinearGradient>
+                      )}
+                    </Pressable>
+                  </Animated.View>
+                )}
+              </Animated.View>
+
+
+
+              <View style={styles.detailsContainer}>
+                <ScrollView contentContainerStyle={{}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+                  <View style={styles.bottomprofile}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <View style={{ flexDirection: 'column' }}>
+                        {person && (
+                          <>
                             <TextComponent style={styles.title1}>
-                              {person.firstName} {person.lastName}
+                              {`${person.firstName} ${person.lastName}`}
                             </TextComponent>
                             {
                               person.personalData?.profession && (
                                 <TextComponent style={styles.title2}>
-                                  {person.personalData?.profession}
+                                  {`${person.personalData?.profession}`}
                                 </TextComponent>
                               )
                             }
-                            
+                          </>
+                        )}
+                        
 
-                          </View>
-                          <TouchableOpacity>
-                            <Image
-                              source={require("@assets/icons/message.png")}
-                              style={styles.image2}
-                            />
+                      </View>
+                      <TouchableOpacity>
+                        <Image
+                          source={require("@assets/icons/message.png")}
+                          style={styles.image2}
+                        />
 
-                          </TouchableOpacity>
+                      </TouchableOpacity>
 
 
-                        </View>
-                        <View style={styles.line}>
+                    </View>
+                    <View style={styles.line}>
 
-                        </View>
-                        <View>
-                          <TextComponent style={styles.title1}>
-                            About
+                    </View>
+                    <View>
+                      <TextComponent style={styles.title1}>
+                        About
+                      </TextComponent>
+                      <ReadMoreText
+                        text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry "}
+                        numberOfChars={100}
+                        textStyle={styles.title3}
+                        readMoreTextStyle={{ color: '#FF7F7F' }}
+                      />
+                      {/* <TextComponent style={styles.title3}>
+                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry te ...Read More
+                                </TextComponent> */}
+                    </View>
+                    <View style={styles.line}>
+
+                    </View>
+                    <View>
+                      <TextComponent style={styles.title1}>
+                        Location
+                      </TextComponent>
+                      {
+                        person && (
+                          <TextComponent style={styles.title3}>
+                            {person.city}
                           </TextComponent>
-                          <ReadMoreText
-                            text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry "}
-                            numberOfChars={100}
-                            textStyle={styles.title3}
-                            readMoreTextStyle={{ color: '#FF7F7F' }}
-                          />
-                          
-                        </View>
-                        <View style={styles.line}></View>
-                        <View>
-                          <TextComponent style={styles.title1}>
-                            Location
-                          </TextComponent>
-                            {person.city && (
-                              <TextComponent style={styles.title3}>
-                                {person.city}
-                              </TextComponent>
-                            )}
-                        </View>
-                        <View style={styles.line}></View>
-                        <View>
-                          <TextComponent style={styles.title1}>
-                            Interset
-                          </TextComponent>
-                          <View style={styles.container2}>
-                            {person.interests.map((item, index) => {
+                        )
+                      }
+                      
+                    </View>
+                    <View style={styles.line}>
 
+                    </View>
+                    <View>
+                      <TextComponent style={styles.title1}>
+                        Interset
+                      </TextComponent>
+                      <View style={styles.container2}>
+                        {
+                          person && (
+                            person.interests.map((interestLabel, index) => {
+                              const interestItem = INTERESTS.find(i => i.label === interestLabel);
 
                               return (
                                 <View
                                   key={index}
                                   style={[styles.chip]}
                                 >
-                                  {/* <Icon
-                                    name={item.icon}
-                                    size={18}
-                                    color={"#000"}
-                                    style={{ marginRight: 6 }}
-                                  /> */}
+                                  {interestItem?.icon && (
+                                    <Icon
+                                      name={interestItem.icon}
+                                      size={18}
+                                      color={"#000"}
+                                      style={{ marginRight: 6 }}
+                                    />
+                                  )}
                                   <TextComponent style={[styles.text]}>
-                                    {item}
+                                    {interestLabel}
                                   </TextComponent>
                                 </View>
                               );
-                            })}
-                          </View>
-                        </View>
-                        <View style={styles.line}>
-
-                        </View>
-                        <View>
-                          <TextComponent style={styles.title1}>
-                            Gallery
-                          </TextComponent>
-                          <View>
-                            <ScrollView
-                              horizontal
-                              showsHorizontalScrollIndicator={false}
-
-                            >
-                              {
-                                person.pictures.map((item, index) => {
-                                    return (
-                                        <View key={index} style={styles.imagecontainer}>
-                                            <Image
-                                                source={{ uri: item }}
-                                                style={styles.image}
-                                                resizeMode='cover'
-                                            />
-                                        </View>
-                                    )
-                                })
-                              }
-                            </ScrollView>
-                          </View>
-
-                        </View>
+                            })
+                          )
+                        }
+                        
                       </View>
-                    </ScrollView>
-                  </View>
-
-                  {!isShrunk && (
-                    <View style={styles.buttonsdiv}>
-                      <TouchableOpacity activeOpacity={0.8} onPress={() => onButtonAction('left')}>
-                        <View style={styles.rejectdiv}><Text>r</Text></View>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity activeOpacity={0.8} onPress={() => onButtonAction('center')}>
-                        <View style={styles.superdiv}><Text>s</Text></View>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity activeOpacity={0.8} onPress={() => onButtonAction('right')}>
-                        <View style={styles.acceptdiv}><Text>a</Text></View>
-                      </TouchableOpacity>
                     </View>
-                  )}
-                </>
+                    <View style={styles.line}>
+
+                    </View>
+                    <View>
+                      <TextComponent style={styles.title1}>
+                        Gallery
+                      </TextComponent>
+                      <View>
+                        <ScrollView
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+
+                        >
+                          {
+                            person?.pictures.map((item, index) => {
+                                return (
+                                    <View key={index} style={styles.imagecontainer}>
+                                        <Image
+                                            source={{ uri: item }}
+                                            style={styles.image}
+                                            resizeMode='cover'
+                                        />
+                                    </View>
+                                )
+                            })
+                          }
+                        </ScrollView>
+                      </View>
+
+                    </View>
+                  </View>
+                </ScrollView>
+              </View>
+
+              {!isShrunk && (
+                <View style={styles.buttonsdiv}>
+                  <TouchableOpacity activeOpacity={0.8} onPress={() => onButtonAction('left')}>
+                    <View style={styles.rejectdiv}><Text>r</Text></View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity activeOpacity={0.8} onPress={() => onButtonAction('center')}>
+                    <View style={styles.superdiv}><Text>s</Text></View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity activeOpacity={0.8} onPress={() => onButtonAction('right')}>
+                    <View style={styles.acceptdiv}><Text>a</Text></View>
+                  </TouchableOpacity>
+                </View>
               )}
-            </Animated.View>
+            </>
+          )}
+        </Animated.View>
 
-            <BottomNav />
-          </View>
-        )
-      }
-
-      
+        <BottomNav />
+      </View>
     </CustomSafeAreaView>
   );
 }
