@@ -103,18 +103,25 @@ export default function HomeScreen() {
     (direction: 'left' | 'right' | 'up') => {
       if (finished) return;
   
+      const swipedPerson = PEOPLE[index];  // <- CURRENT PERSON
+  
+      console.log(
+        "👉 Swiped person:",
+        swipedPerson.name,
+        "| ID:", swipedPerson.id,
+        "| Direction:", direction
+      );
+  
       let toValue = { x: 0, y: 0 };
       if (direction === 'left') toValue = { x: -SCREEN_W * 1.2, y: 0 };
       else if (direction === 'right') toValue = { x: SCREEN_W * 1.2, y: 0 };
       else if (direction === 'up') toValue = { x: 0, y: -SCREEN_H * 1.2 };
   
-      // Animate the top card off-screen
       Animated.timing(pos, {
         toValue,
         duration: 280,
         useNativeDriver: false,
       }).start(() => {
-        // 1) Advance index immediately so React renders the nextPerson
         setIndex(prev => {
           const next = prev + 1;
           if (next < PEOPLE.length) return next;
@@ -122,13 +129,9 @@ export default function HomeScreen() {
           return prev;
         });
   
-        // 2) Reset pos on the next frame (lets React commit the new card first)
-        //    Using requestAnimationFrame reduces flicker vs immediate setValue or animated spring.
         requestAnimationFrame(() => {
-          // instant reset to center (no animation) — avoids "the card comes back" effect
           pos.setValue({ x: 0, y: 0 });
   
-          // 3) Restore card height (keeps the shrink/expand animation)
           Animated.timing(cardHeight, {
             toValue: CARD_FULL,
             duration: 220,
@@ -139,8 +142,9 @@ export default function HomeScreen() {
         });
       });
     },
-    [cardHeight, pos, finished],
+    [cardHeight, pos, finished, index],
   );
+  
   
   
   
