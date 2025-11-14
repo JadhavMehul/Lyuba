@@ -9,7 +9,7 @@ import LocationAnimation from '@components/auth_components/LocationAnimation';
 import Geolocation from 'react-native-geolocation-service';
 import GetLocation from 'react-native-get-location'
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { API_IP } from '@env';
+
 
 type UserData = {
   uid: string;

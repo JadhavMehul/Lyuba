@@ -11,7 +11,7 @@ import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
 import Icon from "react-native-vector-icons/FontAwesome";
 import ReadMoreText from '@components/global/ReadMoreText';
-import { API_IP } from '@env';
+
 
 const { width: screenWidth } = Dimensions.get("window");
 const INTERESTS = [
