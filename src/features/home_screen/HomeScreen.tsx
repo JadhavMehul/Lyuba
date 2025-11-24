@@ -101,6 +101,7 @@ type Person = {
 
 
 export default function HomeScreen() {
+  const userDetails = auth().currentUser;
   // 👇 CHANGE 1: Converted static PEOPLE array to dynamic state
   const [people, setPeople] = useState < Person[] > ([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -164,6 +165,42 @@ export default function HomeScreen() {
     swipingData();
   }, [pos, cardHeight]);
 
+
+  const swypedUser = async (swypedUid: string, swypedStatus: string) => {
+    const userId = userDetails?.uid;
+
+    if (!userId || !swypedUid || !swypedStatus) {
+      console.log('Error in fetching userId, swypedUid, swypedStatus');
+      return; 
+    }
+
+    const payload = {
+      userId,
+      swipedUserId: swypedUid,
+      swypedStatus
+    };
+
+    const api = `${ENV.API_IP}:3000/api/userDetails/swypedUser`;
+
+    try {
+      const res = await fetch(api, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload), 
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+    } catch (error) {
+      console.log("Error in swypedUser API:", error);
+    }
+  };
+
+
+
   // 👇 CHANGE 3: Updated animateOff to remove the first element from 'people' state
   const animateOff = useCallback(
     (direction: 'left' | 'right' | 'up') => {
@@ -180,24 +217,27 @@ export default function HomeScreen() {
           x: -SCREEN_W * 1.2,
           y: 0
         };
+        swypedUser(swipedPerson.id, 'Rejected');
       } else if (direction === 'right') {
         toValue = {
           x: SCREEN_W * 1.2,
           y: 0
         };
+        swypedUser(swipedPerson.id, 'Liked');
       } else if (direction === 'up') {
         toValue = {
           x: 0,
           y: -SCREEN_H * 1.2
         };
+        swypedUser(swipedPerson.id, 'SuperLiked');
       }
 
-      console.log(
-        "👉 Swiped person:",
-        swipedPerson.firstName,
-        "| ID:", swipedPerson.id,
-        "| Direction:", direction
-      );
+      // console.log(
+      //   "👉 Swiped person:",
+      //   swipedPerson.firstName,
+      //   "| ID:", swipedPerson.id,
+      //   "| Direction:", direction
+      // );
 
       // Log swipe action to server (You should implement this here!)
       // e.g., sendSwipeAction(swipedPerson.id, direction);
