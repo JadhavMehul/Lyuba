@@ -24,6 +24,7 @@ import LikeScreen from '@features/home_screen/LikeScreen';
 import ProfileScreen from '@features/profile_screen/ProfileScreen';
 import MessageScreen2 from '@features/home_screen/MessageScreen2';
 import { ENV } from '@utils/Constants';
+import OthersProfileScreen from '@features/profile_screen/OthersProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -114,6 +115,7 @@ const App = () => {
         <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
         <Stack.Screen name="LikeScreen" component={LikeScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+        <Stack.Screen name="OthersProfileScreen" component={OthersProfileScreen}/>
         <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
       </Stack.Navigator>
       

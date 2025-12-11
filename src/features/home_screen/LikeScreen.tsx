@@ -16,6 +16,7 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import { ENV, Fonts } from '@utils/Constants';
 import ProfileCard from '@components/global/ProfileCard';
+import { navigate } from '@utils/NavigationUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -61,7 +62,7 @@ export default function LikeScreen() {
     const scrollX = useRef(new Animated.Value(0)).current;
 
     const [likedMeData, setLikedMeData] = useState< Person[] >([]);
-    const [matchedData, setMatchedData] = useState([]);
+    const [matchedData, setMatchedData] = useState< Person[] >([]);
     const [loading, setLoading] = useState(false);
 
 
@@ -99,6 +100,34 @@ export default function LikeScreen() {
         }
     }
 
+    const getMatched = async (userId: string) => {
+        try {
+            if (!userId) {
+                Alert.alert("User Not found", "Error getting current user please try again later")
+                return;
+            }
+
+            const api = `${ENV.API_IP}:3000/api/userDetails/matched`;
+
+            const res = await fetch(api, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId
+                }),
+            })
+
+            const matchedData = await res.json();
+
+            return matchedData;
+            
+        } catch (error) {
+            console.log("errrrrrror", error);
+        }
+    }
+
     const fetchData = async (tabIndex: number) => {
         try {
             setLoading(true);
@@ -114,10 +143,9 @@ export default function LikeScreen() {
                 setLikedMeData(res?.data || []);
                 
             } else {
-                // const res = await getMatched(userId);
-                // setMatchedData(res?.data || []);
-                console.log("call matched api");
-                
+                const res = await getMatched(userId);
+                setMatchedData(res?.data || []);
+
             }
         } catch (err) {
             console.log("Error fetching:", err);
@@ -136,6 +164,8 @@ export default function LikeScreen() {
         }).start(() => {
             currentOffset.current = -index * width;
         });
+
+        fetchData(index);
     };
 
     // PanResponder: allow horizontal drag but only in the allowed direction.
@@ -244,12 +274,14 @@ export default function LikeScreen() {
                             >
                                 <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 16, justifyContent: 'center', }}>
                                     {likedMeData.map((item, index) => (
-                                        <ProfileCard
-                                            key={index}
-                                            image={{ uri: item.pictures[0] }}
-                                            name={`${item.firstName} ${item.lastName}`}
-                                            role={item.personalData?.profession ?? ''}
-                                        />
+                                        <TouchableOpacity key={index} onPress={() => navigate("OthersProfileScreen", {userData: item})}>
+                                            <ProfileCard
+                                                key={index}
+                                                image={{ uri: item.pictures[0] }}
+                                                name={`${item.firstName} ${item.lastName}`}
+                                                role={item.personalData?.profession ?? ''}
+                                            />
+                                        </TouchableOpacity>
                                     ))}
                                 </View>
                             </ScrollView>
@@ -266,23 +298,19 @@ export default function LikeScreen() {
                                 showsVerticalScrollIndicator={false}
 
                             >
-                                <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 16, justifyContent: 'center', }}>
-                                <ProfileCard
-                                        image={require("@assets/images/person.png")}
-                                        name="Sai Tamankar"
-                                        role="UI/UX Designer"
-                                    />
-                                    <ProfileCard
-                                        image={require("@assets/images/person.png")}
-                                        name="Sai Tamankar"
-                                        role="UI/UX Designer"
-                                    />
-                                    <ProfileCard
-                                        image={require("@assets/images/person.png")}
-                                        name="Sai Tamankar"
-                                        role="UI/UX Designer"
-                                    />
+                                <View style={{ flexWrap: "wrap", flexDirection: "row", gap: 16, justifyContent: "center" }}>
+                                    {matchedData.map((item, index) => (
+                                        <TouchableOpacity key={index} onPress={() => navigate("OthersProfileScreen", {userData: item})}>
+                                            <ProfileCard
+                                                key={index}
+                                                image={{ uri: item.pictures[0] }}
+                                                name={`${item.firstName} ${item.lastName}`}
+                                                role={item.personalData?.profession ?? ''}
+                                            />
+                                        </TouchableOpacity>
+                                    ))}
                                 </View>
+
                             </ScrollView>
 
                         </View>
