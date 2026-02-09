@@ -1,15 +1,211 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, FlatList } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
-import { Fonts } from '@utils/Constants';
+import { ENV, Fonts } from '@utils/Constants';
 import InputField from '@components/global/InputField';
 import MessageLeftComponent from '@components/global/MessageLeftComponent';
 import MessageRightComponent from '@components/global/MessageRightComponent';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { getTime, isToday, isSameDay, getFullDate } from "@utils/ChatHelper";
+import { socket } from '@utils/Socket';
+
+
 
 const { width } = Dimensions.get('window');
+
+
+type RouteParams = {
+  myId: string;
+  otherUserId: string;
+};
+
+type FirestoreTimestamp = {
+  _seconds: number;
+  _nanoseconds: number;
+};
+
+type MessageType = {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  text: string;
+  createdAt: FirestoreTimestamp | string;
+};
+
+
 const MessageScreen2 = () => {
+    const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
+    const { myId, otherUserId } = route.params;
+
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState<MessageType[]>([]);
+    const flatListRef = React.useRef<FlatList>(null);
+
+    
+
+    const fetchMessages = async (myId: string, otherUserId: string) => {
+
+        const payload = {
+            userA: myId, 
+            userB: otherUserId
+        }
+
+        try {
+            const api = `${ENV.API_IP}:3000/api/message/getMessage`;
+            const res = await fetch(api, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload), 
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                setMessages(data || []);
+            }
+        } catch (error) {
+            console.log("Error loading messages:", error);
+        }
+    };
+
+    const snedMessageFunction = async (myId: string, otherUserId: string, message: string) => {
+
+        const chatId = myId < otherUserId ? `${myId}_${otherUserId}` : `${otherUserId}_${myId}`;
+
+
+        const payload = {
+            senderId: myId,
+            receiverId: otherUserId,
+            text: message,
+            chatId
+        }
+
+        try {
+            const api = `${ENV.API_IP}:3000/api/message/sendMessage`;
+
+            const res = await fetch(api, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload), 
+            });
+
+            // if (res.status === 200) {
+            //     setMessage('')
+
+            //     const newMsg: MessageType = {
+            //         id: Date.now().toString(), // temporary id
+            //         senderId: myId,
+            //         receiverId: otherUserId,
+            //         text: message,
+            //         createdAt: new Date().toISOString(),
+            //     };
+
+            //     setMessages(prev => [...prev, newMsg]);
+            //     // 🔥 send via socket to receiver
+            //     socket.emit("sendMessage", {
+            //         id: Date.now().toString(),
+            //         senderId: myId,
+            //         receiverId: otherUserId,
+            //         text: message,
+            //         chatId,
+            //         createdAt: new Date().toISOString(),
+            //     });
+
+            // }
+
+            if (res.status === 200) {
+                setMessage('');
+
+                const msgPayload = {
+                    id: Date.now().toString(),
+                    senderId: myId,
+                    receiverId: otherUserId,
+                    text: message,
+                    chatId,
+                    createdAt: new Date().toISOString(),
+                };
+
+                // ❗ DO NOT setMessages here
+                // Let socket event handle UI update
+
+                socket.emit("sendMessage", msgPayload);
+            }
+
+
+            const data = await res.json();
+            console.log(data);
+
+
+        } catch (error) {
+            console.log("Error in swypedUser API:", error);
+        }
+    }
+
+    const renderItem = ({ item, index }: { item: MessageType; index: number }) => {
+        const isMine = item.senderId === myId;
+
+        const prevMessage = messages[index - 1];
+
+        const showDateLabel =
+            index === 0 || !isSameDay(item.createdAt, prevMessage?.createdAt);
+
+        const label = isToday(item.createdAt) ? "Today" : getFullDate(item.createdAt);
+
+        const time = getTime(item.createdAt);
+
+        return (
+            <>
+            {showDateLabel && (
+                <View style={styles.wrapper}>
+                <View style={styles.line} />
+                <Text style={styles.text}>{label}</Text>
+                <View style={styles.line} />
+                </View>
+            )}
+
+            {isMine ? (
+                <MessageRightComponent message={item.text} time={time} />
+            ) : (
+                <MessageLeftComponent message={item.text} time={time} />
+            )}
+            </>
+        );
+    };
+
+    
+
+    useEffect(() => {
+        fetchMessages(myId, otherUserId);
+
+        const chatId =
+            myId < otherUserId
+                ? `${myId}_${otherUserId}`
+                : `${otherUserId}_${myId}`;
+
+        // 🔹 connect once
+        socket.connect();
+
+        // 🔹 join correct room
+        socket.emit("joinChat", chatId);
+
+        // 🔹 listen BEFORE any message comes
+        socket.on("newMessage", (newMsg) => {
+            setMessages(prev => [...prev, newMsg]);
+        });
+
+        return () => {
+            socket.off("newMessage");
+            socket.disconnect();
+        };
+    }, [myId, otherUserId]);
+
+
+
     return (
         <View style={styles.container}>
 
@@ -37,14 +233,15 @@ const MessageScreen2 = () => {
                         </View>
 
                     </View>
-                    <View style={{ flex: 1, padding: 16 }}>
-                        <View style={styles.wrapper}>
+                    {/* <View style={{ flex: 1, padding: 16 }}> */}
+                        {/* <View style={styles.wrapper}>
                             <View style={styles.line} />
                             <Text style={styles.text}>Today</Text>
                             <View style={styles.line} />
-                        </View>
+                        </View> */}
 
-                        <MessageLeftComponent
+
+                        {/* <MessageLeftComponent
                             message="Hi Jake, how are you? I saw on the app that we’ve crossed paths several times this week 😄"
                             time="2:55 PM"
                         />
@@ -53,21 +250,29 @@ const MessageScreen2 = () => {
                         <MessageRightComponent
                             message="Hey! Yes, I’ve noticed that too 😄 How’s your week been?Hey! Yes, I’ve noticed that too 😄 How’s your week been?Hey! Yes, I’ve noticed that too 😄 How’s your week been?Hey! Yes, I’ve noticed that too 😄 How’s your week been?"
                             time="2:57 PM"
+                        /> */}
+
+
+                        <FlatList
+                            ref={flatListRef}
+                            data={messages}
+                            keyExtractor={(item) => item.id}
+                            renderItem={renderItem}
+                            contentContainerStyle={{ padding: 16 }}
+                            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
                         />
 
 
-
-
-
-
-                    </View>
+                    {/* </View> */}
                     <View style={{ backgroundColor: 'white', paddingHorizontal: 24, flexDirection: 'row', gap: 10 }}>
                         <InputField
                             placeholder="Message"
                             style={styles.formessage}
                             placeholderTextColor="#000000"
+                            value={message}
+                            onChangeText={setMessage}
                         />
-                        <TouchableOpacity style={styles.sendmessage} activeOpacity={0.6}>
+                        <TouchableOpacity style={styles.sendmessage} activeOpacity={0.6} onPress={()=> snedMessageFunction(myId, otherUserId, message)}>
                             <View >
                                 <Image
                                     source={require("@assets/icons/send.png")}

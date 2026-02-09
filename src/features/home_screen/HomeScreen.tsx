@@ -23,6 +23,7 @@ import ReadMoreText from '@components/global/ReadMoreText';
 import Icon from "react-native-vector-icons/FontAwesome";
 import LinearGradient from 'react-native-linear-gradient';
 import PinkButton from '@components/global/PinkButton';
+import { navigate } from '@utils/NavigationUtils';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const CARD_SHRUNK = SCREEN_H * 0.4; // 40% target
@@ -573,12 +574,11 @@ export default function HomeScreen() {
                         
 
                       </View>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: person.id})}>
                         <Image
                           source={require("@assets/icons/message.png")}
                           style={styles.image2}
                         />
-
                       </TouchableOpacity>
 
 
