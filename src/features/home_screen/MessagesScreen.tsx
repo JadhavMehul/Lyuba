@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -9,11 +9,56 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import InputField from '@components/global/InputField';
 import TextComponent from '@components/global/TextComponent';
-import { Fonts } from '@utils/Constants';
+import { ENV, Fonts } from '@utils/Constants';
 import MessageCard from '@components/global/MessageCard';
+import { formatTime } from '@utils/ChatHelper';
+
+type ChatType = {
+    name: string,
+    lastMessage: string,
+    profileImage: string,
+    updatedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+    },
+    unreadCount: number,
+    otherUserId: string
+
+}
 
 export default function MessagesScreen() {
 
+    const [chats, setChats] = useState< ChatType[] >([]);
+
+    const userDetails = auth().currentUser;
+
+    console.log(userDetails?.uid);
+    
+
+    // 🔹 Fetch chats from backend
+    const fetchChats = async () => {
+        try {
+        const api = `${ENV.API_IP}:3000/api/message/getChats`
+        
+        const res = await fetch(api, {
+            method: "POST", // you said you always send JSON
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                userId: userDetails?.uid,
+            }),
+        });
+
+        const data = await res.json();
+        setChats(data);
+        } catch (err) {
+            console.log("fetchChats error:", err);
+        }
+    };
+
+    // 🔹 Load chats on screen open
+    useEffect(() => {
+        fetchChats();
+    }, []);
 
     return (
 
@@ -21,7 +66,7 @@ export default function MessagesScreen() {
         <CustomSafeAreaView>
             <View style={{ flex: 1, backgroundColor: 'white', padding: 24 }}>
                 <InputField
-                    placeholder="Enter your first name"
+                    placeholder="Enter name to search"
                     style={styles.forsearch}
                     placeholderTextColor="#FF7F7F"
                 />
@@ -29,31 +74,24 @@ export default function MessagesScreen() {
                     <View style={{ flex: 1, gap: 20, paddingTop: 20 }}>
                         
 
+                        {
+                            chats.map((chat, index) => (
+                                <MessageCard
+                                    key={index}
+                                    image={chat.profileImage}
+                                    name={chat.name}
+                                    message={chat.lastMessage}
+                                    time={formatTime(chat.updatedAt)}
+                                    messageCount={chat.unreadCount}
+                                    onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: chat.otherUserId})}
+                                />
+                            ))
+                        }
 
 
 
 
-
-                        <MessageCard
-                            image={require("@assets/images/person.png")}
-                            name="Sai Tamankar"
-                            role="UI/UX Designer"
-                            time="23 mins"
-                            messageCount={1}
-                            onPress={() => navigate("MessageScreen2")}
-                        />
-
-                        <MessageCard
-                            image={require("@assets/images/person.png")}
-                            name="Aarav Patel"
-                            role="Frontend Developer"
-                            time="1 hr"
-                            messageCount={0} // hides red badge if 0
-                        />
-
-
-
-
+                        
 
 
 

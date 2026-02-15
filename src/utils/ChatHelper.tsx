@@ -54,3 +54,16 @@ export const getFullDate = (createdAt: CreatedAt) => {
     year: "numeric",
   });
 };
+
+
+export const formatTime = (timestamp: FirestoreTimestamp | null) => {
+  if (!timestamp) return "";
+
+  const date = new Date(timestamp._seconds * 1000);
+  const diff = Math.floor((Date.now() - date.getTime()) / 60000);
+
+  if (diff < 60) return `${diff} mins`;
+  if (diff < 1440) return `${Math.floor(diff / 60)} hr`;
+
+  return date.toLocaleDateString();
+};

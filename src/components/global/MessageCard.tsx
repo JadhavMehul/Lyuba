@@ -4,9 +4,9 @@ import TextComponent from "@components/global/TextComponent";
 import { Fonts } from "@utils/Constants";
 
 interface MessageCardProps {
-  image: ImageSourcePropType;
+  image: string;
   name: string;
-  role: string;
+  message: string;
   time: string;
   messageCount: number;
   onPress?: () => void;
@@ -15,7 +15,7 @@ interface MessageCardProps {
 export default function MessageCard({
   image,
   name,
-  role,
+  message,
   time,
   messageCount,
   onPress,
@@ -26,11 +26,11 @@ export default function MessageCard({
         {/* Left side: Profile + Name + Role */}
         <View style={styles.leftSection}>
           <View style={styles.circleprofile}>
-            <Image source={image} style={styles.image} resizeMode="cover" />
+            <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
           </View>
           <View style={styles.nameSection}>
             <TextComponent style={styles.title1}>{name}</TextComponent>
-            <TextComponent style={styles.title2}>{role}</TextComponent>
+            <TextComponent style={styles.title2}>{message}</TextComponent>
           </View>
         </View>
 
