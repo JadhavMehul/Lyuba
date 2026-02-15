@@ -103,6 +103,27 @@ export default function ProfileScreen() {
         }
     }
 
+    const logout = async () => {
+        try {
+            // 1️⃣ Sign out from Firebase
+            await auth().signOut();
+
+            // 2️⃣ Sign out from Google if still connected
+            const currentUser = await GoogleSignin.getCurrentUser();
+            if (currentUser) {
+                await GoogleSignin.signOut();
+            }
+
+            console.log("User logged out successfully");
+
+            // 3️⃣ (Optional) Navigate back to Login screen
+            navigate("LoginScreen");
+
+        } catch (error) {
+            console.error("Logout error: ", error);
+        }
+    };
+
     useEffect(() => {
         getUserDetails();
     }, [])
@@ -145,7 +166,7 @@ export default function ProfileScreen() {
                                     }
 
                                 </View>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={logout}>
                                     <Image
                                         source={require("@assets/icons/message.png")}
                                         style={styles.image2}

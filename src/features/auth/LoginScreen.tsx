@@ -84,31 +84,33 @@ const LoginScreen = () => {
   //   }
   // };
   const handleFirebaseUser = async (user: any) => {
-    try {
-      const firebaseIdToken = await user.getIdToken();
-      console.log("Firebase ID Token:", firebaseIdToken);
+    // try {
+    //   const firebaseIdToken = await user.getIdToken();
+    //   console.log("Firebase ID Token:", firebaseIdToken);
 
-      console.log(ENV.API_IP);
-      const api = `${ENV.API_IP}:3000/api/auth/social`; // Update to your backend
+    //   console.log(ENV.API_IP);
+    //   const api = `${ENV.API_IP}:3000/api/auth/social`; // Update to your backend
       
-      const res = await fetch(api, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken: firebaseIdToken }),
-      });
-      const data = await res.json();
+    //   const res = await fetch(api, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ idToken: firebaseIdToken }),
+    //   });
+    //   const data = await res.json();
 
-      if (data.response.profileComplete === false) {
-        Alert.alert("Welcome!", "New user registered");
-        navigate("RegisterScreen1", { userData: data.response.user });
-      } else {
-        Alert.alert("Welcome back!", "Login successful");
-        navigate("HomeScreen");
-      }
-    } catch (error) {
-      console.log("Backend error:", error);
-      Alert.alert("Error", "Failed to communicate with backend");
-    }
+    //   if (data.response.profileComplete === false) {
+    //     Alert.alert("Welcome!", "New user registered");
+    //     navigate("RegisterScreen1", { userData: data.response.user });
+    //   } else {
+    //     Alert.alert("Welcome back!", "Login successful");
+    //     navigate("HomeScreen");
+    //   }
+    // } catch (error) {
+    //   console.log("Backend error:", error);
+    //   Alert.alert("Error", "Failed to communicate with backend");
+    // }
+
+    console.log("Firebase Login Successful for:", user.email);
   };
 
   const signInWithGoogle = async () => {

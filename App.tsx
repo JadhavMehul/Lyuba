@@ -31,6 +31,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [isProfileComplete, setIsProfileComplete] = useState<boolean | null>(null);
 
   useEffect(() => {
     // 1️⃣ Configure Google Sign-In
@@ -42,53 +43,29 @@ const App = () => {
 
     // 2️⃣ Subscribe to auth state changes
     const unsubscribe = auth().onAuthStateChanged(async (u) => {
-      setUser(u);
-
-      if (initializing) {
-        // First time: just finish initializing, don't navigate yet
-        setInitializing(false);
-      } else {
-        // After first run: navigate based on auth state
-        if (u) {
-          try {
-            const idToken = await u.getIdToken()
-            // const api = 'http://10.0.2.2:3000/api/auth/authenticateUser';
-            
-            console.log(ENV.API_IP);
-            const api = `${ENV.API_IP}:3000/api/auth/authenticateUser`;
-            const res = await fetch(api, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ idToken }),
-            })
-
-            const data = await res.json()
-
-            if (data?.response.profileComplete === true) {
-              navigationRef.current?.reset({
-                index: 0,
-                routes: [{ name: 'HomeScreen' }],
-              })
-            } else {
-              navigationRef.current?.reset({
-                index: 0,
-                routes: [{ name: 'RegisterScreen1', params: { userData: data.response.user } }],
-              })
-            }
-          } catch (error) {
-            console.log('Profile check failed:', error)
-            navigationRef.current?.reset({
-              index: 0,
-              routes: [{ name: 'LoginScreen' }],
-            })
-          }
-        } else {
-          navigationRef.current?.reset({
-            index: 0,
-            routes: [{ name: "WelcomeScreen" }],
+      if (u) {
+        try {
+          // Check backend for profile status BEFORE showing any screens
+          const idToken = await u.getIdToken();
+          const api = `${ENV.API_IP}:3000/api/auth/authenticateUser`;
+          const res = await fetch(api, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken }),
           });
+          const data = await res.json();
+          
+          setIsProfileComplete(data?.response.profileComplete);
+          setUser(u); // Setting user triggers the screen swap
+        } catch (error) {
+          console.log("Backend check failed", error);
+          setUser(null); 
         }
+      } else {
+        setUser(null);
+        setIsProfileComplete(null);
       }
+      setInitializing(false); // Hide the loading spinner
     });
 
     return () => unsubscribe();
@@ -99,28 +76,46 @@ const App = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="WelcomeScreen" component={WelcomeScreen}/>
-        <Stack.Screen name="LoginScreen" component={LoginScreen}/>
-        <Stack.Screen name="RegisterScreen1" component={RegisterScreen1}/>
-        <Stack.Screen name="RegisterScreen2" component={RegisterScreen2}/>
-        <Stack.Screen name="RegisterScreen3" component={RegisterScreen3}/>
-        <Stack.Screen name="RegisterScreen4" component={RegisterScreen4}/>
-        <Stack.Screen name="RegisterScreen4_1" component={RegisterScreen4_1}/>
-        <Stack.Screen name="RegisterScreen4_2" component={RegisterScreen4_2}/>
-        <Stack.Screen name="RegisterScreen5" component={RegisterScreen5}/>
-        <Stack.Screen name="RegisterScreen6" component={RegisterScreen6}/>
-        <Stack.Screen name="RegisterScreen7" component={RegisterScreen7}/>
-        <Stack.Screen name="RegisterScreen8" component={RegisterScreen8}/>
-        <Stack.Screen name="HomeScreen" component={HomeScreen}/>
-        <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
-        <Stack.Screen name="LikeScreen" component={LikeScreen}/>
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
-        <Stack.Screen name="OthersProfileScreen" component={OthersProfileScreen}/>
-        <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
+
+        {!user ? (
+          // UNAUTHENTICATED ROUTES
+          <>
+            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+            <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          </>
+        ) : 
+          // AUTHENTICATED ROUTES
+          isProfileComplete === false ? (
+            <>
+              <Stack.Screen name="RegisterScreen1" component={RegisterScreen1}/>
+              <Stack.Screen name="RegisterScreen2" component={RegisterScreen2}/>
+              <Stack.Screen name="RegisterScreen3" component={RegisterScreen3}/>
+              <Stack.Screen name="RegisterScreen4" component={RegisterScreen4}/>
+              <Stack.Screen name="RegisterScreen4_1" component={RegisterScreen4_1}/>
+              <Stack.Screen name="RegisterScreen4_2" component={RegisterScreen4_2}/>
+              <Stack.Screen name="RegisterScreen5" component={RegisterScreen5}/>
+              <Stack.Screen name="RegisterScreen6" component={RegisterScreen6}/>
+              <Stack.Screen name="RegisterScreen7" component={RegisterScreen7}/>
+              <Stack.Screen name="RegisterScreen8" component={RegisterScreen8}/>
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+              <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
+              <Stack.Screen name="LikeScreen" component={LikeScreen}/>
+              <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+              <Stack.Screen name="OthersProfileScreen" component={OthersProfileScreen}/>
+              <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
+            </>
+          )
+        }
       </Stack.Navigator>
       
     </NavigationContainer>
   )
 }
+
+
+
 
 export default App
