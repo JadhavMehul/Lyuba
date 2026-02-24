@@ -73,7 +73,7 @@ type Person = {
 export default function OthersProfileScreen() {
     const route = useRoute<RouteProp<{ params: { userData: Person } }, 'params'>>();
     const { userData } = route.params;
-    
+    console.log (userData)
     const userDetails = auth().currentUser;
     console.log(userDetails);
     
@@ -118,7 +118,7 @@ export default function OthersProfileScreen() {
                                     }
 
                                 </View>
-                                <TouchableOpacity onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: userData.id})}>
+                                <TouchableOpacity onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: userData.uid})}>
                                     <Image
                                         source={require("@assets/icons/message.png")}
                                         style={styles.image2}

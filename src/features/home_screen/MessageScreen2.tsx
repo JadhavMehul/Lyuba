@@ -82,6 +82,7 @@ const MessageScreen2 = () => {
             text: message,
             chatId
         }
+        console.log("hi")
 
         try {
             const api = `${ENV.API_IP}:3000/api/message/sendMessage`;
@@ -138,7 +139,7 @@ const MessageScreen2 = () => {
 
 
             const data = await res.json();
-            console.log(data);
+            console.log("wedx",data);
 
 
         } catch (error) {

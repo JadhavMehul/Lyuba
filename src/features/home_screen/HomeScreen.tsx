@@ -24,11 +24,14 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import LinearGradient from 'react-native-linear-gradient';
 import PinkButton from '@components/global/PinkButton';
 import { navigate } from '@utils/NavigationUtils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowDimensions } from 'react-native';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const CARD_SHRUNK = SCREEN_H * 0.4; // 40% target
-const CARD_FULL = SCREEN_H * 0.77; // initial 
+const CARD_FULL = SCREEN_H * 0.795; // initial 
 const SWIPE_THRESHOLD = 120;
+
 
 const { width: screenWidth } = Dimensions.get("window");
 const INTERESTS = [
@@ -283,8 +286,12 @@ export default function HomeScreen() {
   const panResponder = useMemo(
     () =>
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => false,
+
+      onMoveShouldSetPanResponder: (_evt, gestureState) => {
+        const { dx, dy } = gestureState;
+        return Math.abs(dx) > 5 || Math.abs(dy) > 5;
+      },
       onPanResponderGrant: () => {
         (pos as any).extractOffset();
       },
@@ -552,7 +559,7 @@ export default function HomeScreen() {
 
 
 
-              <View style={styles.detailsContainer}>
+              <View style={[styles.detailsContainer,{ marginTop: isShrunk ? 10 : 80 }]}>
                 <ScrollView contentContainerStyle={{}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                   <View style={styles.bottomprofile}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -724,7 +731,7 @@ const styles = StyleSheet.create({
 
 
   },
-  detailsContainer: { flex: 1, marginTop: 20 },
+  detailsContainer: { flex: 1 },
   buttonsdiv: {
     flexDirection: 'row',
     width: SCREEN_W,
