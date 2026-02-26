@@ -295,12 +295,15 @@ export default function HomeScreen() {
       onPanResponderGrant: () => {
         (pos as any).extractOffset();
       },
-      onPanResponderMove: Animated.event([null, {
-        dx: pos.x,
-        dy: pos.y
-      }], {
-        useNativeDriver: false
-      }),
+      onPanResponderMove: (evt, gestureState) => {
+        const { dx, dy, moveX, moveY } = gestureState;
+      
+        // 🔥 Log swipe position
+        console.log("Swipe dx:", dx, "dy:", dy);
+        console.log("Finger position X:", moveX, "Y:", moveY);
+      
+        pos.setValue({ x: dx, y: dy });
+      },
       onPanResponderRelease: (_e, gesture) => {
         (pos as any).flattenOffset();
         const {
@@ -560,7 +563,20 @@ export default function HomeScreen() {
 
 
               <View style={[styles.detailsContainer,{ marginTop: isShrunk ? 10 : 80 }]}>
-                <ScrollView contentContainerStyle={{}} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+              <ScrollView
+                contentContainerStyle={{}}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                scrollEventThrottle={16}
+                onScroll={(event) => {
+                  if (isShrunk) {
+                    const { x, y } = event.nativeEvent.contentOffset;
+
+                    console.log("Scroll X:", x);
+                    console.log("Scroll Y:", y);
+                  }
+                }}
+              >
                   <View style={styles.bottomprofile}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                       <View style={{ flexDirection: 'column' }}>
