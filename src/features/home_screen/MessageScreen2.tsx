@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, FlatList, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
-import { goBack } from "@utils/NavigationUtils";
+import { goBack, resetAndNavigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
 import InputField from '@components/global/InputField';
@@ -34,6 +34,38 @@ type MessageType = {
   createdAt: FirestoreTimestamp | string;
 };
 
+type PersonalData = {
+    feet: string | null;
+    inch: string | null;
+    looking: string | null;
+    smoking: string | null;
+    drinking: string | null;
+    workout: string | null;
+    religion: string;
+    sign: string | null;
+    status: string | null;
+    kids: string | null;
+    genderPreference: string;
+    workingAt: string | null;
+    profession: string | null;
+    education: string | null;
+};
+
+type UserData = {
+    uid: string;
+    email: string;
+    firstName: string;
+    lastName: string | null;
+    photoURL: string | null;
+    birthdate: string;
+    gender: string;
+    city: string;
+    pincode: string | null;
+    interests: string[];
+    pictures: string[];
+    personalData: PersonalData;
+    provider: string;
+};
 
 const MessageScreen2 = () => {
     const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
@@ -41,6 +73,8 @@ const MessageScreen2 = () => {
 
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<MessageType[]>([]);
+    const [otherUserData, setOtherUserData] = useState<UserData>();
+
     const flatListRef = React.useRef<FlatList>(null);
 
     
@@ -178,6 +212,34 @@ const MessageScreen2 = () => {
         );
     };
 
+    const fetchOtherUserDetails = async (otherUserId: string) => {
+        const userId = otherUserId;
+        console.log(userId);
+        
+        // const api = 'http://10.0.2.2:3000/api/userDetails/profile';
+        console.log(ENV.API_IP);
+        
+        const api = `${ENV.API_IP}:3000/api/userDetails/profile`;
+
+        const res = await fetch(api, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+        })
+
+        const userInfo = await res.json();
+        
+        if (userInfo.foundData) {
+            console.log(userInfo.response.user);
+            setOtherUserData(userInfo.response.user);
+            
+        } else {
+            Alert.alert("User Not Found", "",[
+                {text: 'OK', onPress: () => resetAndNavigate("HomeScreen")},
+            ]);
+        }
+    }
+
     
 
     useEffect(() => {
@@ -205,7 +267,10 @@ const MessageScreen2 = () => {
         };
     }, [myId, otherUserId]);
 
-
+    useEffect(() => {
+      fetchOtherUserDetails(otherUserId);
+    }, [])
+    
 
     return (
         <View style={styles.container}>
@@ -226,8 +291,7 @@ const MessageScreen2 = () => {
 
                             </TouchableOpacity>
                             <TextComponent style={styles.title1}>
-                                Emelie Clark
-
+                                {otherUserData?.firstName + " " + otherUserData?.lastName}
                             </TextComponent>
 
 
