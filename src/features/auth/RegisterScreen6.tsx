@@ -230,7 +230,7 @@ const RegisterScreen6 = () => {
                                 <TextComponent style={{ color: "red" }}> *</TextComponent>
                             </TextComponent>
                             <DropdownField
-                                options={["Male", "Female", "Both"]}
+                                options={["male", "female", "both"]}
                                 placeholder="Gender preference"
                                 value={personalData.genderPreference}
                                 onSelect={(val) => updatePersonalData("genderPreference", val)}
