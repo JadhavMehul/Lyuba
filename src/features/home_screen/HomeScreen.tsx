@@ -475,6 +475,12 @@ export default function HomeScreen() {
             </View>
           ) : (
             <>
+            <ScrollView
+                scrollEnabled={isShrunk ? true : false}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                scrollEventThrottle={16}
+              >
               <Animated.View style={[styles.cardWrapper, { height: cardHeight }]}>
                 {nextPerson && (
                   <Animated.View
@@ -563,7 +569,7 @@ export default function HomeScreen() {
 
 
               <View style={[styles.detailsContainer,{ marginTop: isShrunk ? 10 : 80 }]}>
-              <ScrollView
+              {/* <ScrollView
                 contentContainerStyle={{}}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
@@ -576,7 +582,7 @@ export default function HomeScreen() {
                     console.log("Scroll Y:", y);
                   }
                 }}
-              >
+              > */}
                   <View style={styles.bottomprofile}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                       <View style={{ flexDirection: 'column' }}>
@@ -707,8 +713,9 @@ export default function HomeScreen() {
 
                     </View>
                   </View>
-                </ScrollView>
+                {/* </ScrollView> */}
               </View>
+              </ScrollView>
 
               {!isShrunk && (
                 <View style={styles.buttonsdiv}>

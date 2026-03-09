@@ -68,5 +68,5 @@ export const darkWeatherColors = [
 ];
 
 export enum ENV {
-    API_IP = 'http://10.102.220.133',
+    API_IP = 'http://10.218.11.133',
 }
