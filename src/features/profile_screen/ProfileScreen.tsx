@@ -166,7 +166,9 @@ export default function ProfileScreen() {
                                     }
 
                                 </View>
-                                <TouchableOpacity onPress={logout}>
+                                <TouchableOpacity onPress={() => navigate("SettingScreen")}>
+
+                                
                                     <Image
                                         source={require("@assets/icons/message.png")}
                                         style={styles.image2}
