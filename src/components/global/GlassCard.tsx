@@ -9,13 +9,21 @@ type Props = {
 
 export default function ShinyCard({ children, style }: Props) {
   return (
-    <View style={[styles.card, style]}>
-
+    <LinearGradient
+      colors={[
+        "rgba(255,127,127,0.25)",
+        "rgba(255,127,127,0.12)",
+        "rgba(255,127,127,0.06)"
+      ]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={[styles.card, style]}
+    >
       {/* Top Shine Effect */}
       <LinearGradient
         colors={[
-          "rgba(255,255,255,0.12)",
-          "rgba(255,255,255,0.05)",
+          "rgba(255,255,255,0.5)",
+          "rgba(255,255,255,0.1)",
           "transparent"
         ]}
         start={{ x: 0, y: 0 }}
@@ -24,26 +32,20 @@ export default function ShinyCard({ children, style }: Props) {
       />
 
       {children}
-
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-
   card: {
     width: "100%",
     borderRadius: 18,
     padding: 14,
-
     overflow: "hidden",
 
-    backgroundColor: "rgba(255,255,255,0.1)",
+    borderWidth: 1.5,
+    borderColor: "#FF7F7F",
 
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.4)",
-
-  
   },
 
   shine: {
@@ -51,7 +53,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 45
-  }
-
+    height: 60,
+  },
 });

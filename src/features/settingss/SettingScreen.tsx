@@ -12,7 +12,7 @@ const SettingScreen = () => {
         <CustomSafeAreaView style={{  }}>
 
 
-            <View style={{ flex: 1, backgroundColor: '#FFA7A6' }}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <View style={styles.topmessagebar}>
 
 
@@ -33,7 +33,7 @@ const SettingScreen = () => {
                     </View>
 
                 </View>
-                <View style={{ flex: 1, backgroundColor: '#FF7F7F', padding: 16 }}>
+                <View style={{ flex: 1, backgroundColor: 'white', padding: 16 }}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <ShinyCard>
                             <Text style={styles.title}>Account</Text>
@@ -94,20 +94,20 @@ const styles = StyleSheet.create({
         borderColor: '#666666',
     },
     title: {
-        color: "white",
+        color: "#000000",
         fontSize: 18,
         marginBottom: 10
     },
 
     item: {
-        color: "white",
+        color: "#000000",
         fontSize: 16,
         marginVertical: 5
     },
 
     divider: {
         height: 1,
-        backgroundColor: "rgba(255,255,255,0.4)",
+        backgroundColor: "#FF7F7F",
         marginVertical: 5,
     },
     icon: {
