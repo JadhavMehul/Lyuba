@@ -9,7 +9,7 @@ import ShinyCard from '@components/global/GlassCard'
 
 const SettingScreen = () => {
     return (
-        <CustomSafeAreaView style={{  }}>
+        <CustomSafeAreaView style={{}}>
 
 
             <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -36,19 +36,208 @@ const SettingScreen = () => {
                 <View style={{ flex: 1, backgroundColor: 'white', padding: 16 }}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <ShinyCard>
-                            <Text style={styles.title}>Account</Text>
+                            <View style={styles.apart}>
+                                <TextComponent style={styles.title}>Account</TextComponent>
+                                <Image
+                                    source={require('../../assets/icons/Account.png')}   // your gif path
+                                    style={styles.icon}
+                                />
+
+
+                            </View>
 
                             <View style={styles.divider} />
-                            {/* <Image
-    source={require('../../assets/icons/home_pink.png')}   // your gif path
-    style={styles.icon}
-  /> */}
-                            <Text style={styles.item}>Edit Profile</Text>
-                            <Text style={styles.item}>Account Info</Text>
-                            <Text style={styles.item}>Security</Text>
-                            <Text style={styles.item}>Privacy</Text>
+
+                            <TouchableOpacity>
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Edit.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Edit Profile</TextComponent>
+                                </View>
+
+                            </TouchableOpacity>
+
+
+
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Account_Info.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Account info</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Privacy.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Privacy</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Security.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Security</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+
+                            
+
+
+
+
+
+
+
+
+
+
+
+
                         </ShinyCard>
 
+                        <ShinyCard>
+                            <View style={styles.apart}>
+                                <TextComponent style={styles.title}>Content</TextComponent>
+                                <Image
+                                    source={require('../../assets/icons/Content.png')}   // your gif path
+                                    style={styles.icon}
+                                />
+
+
+                            </View>
+
+                            <View style={styles.divider} />
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Notification.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Notification</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+
+
+
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Block.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Block</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                        </ShinyCard>
+
+
+                        <ShinyCard>
+                            <View style={styles.apart}>
+                                <TextComponent style={styles.title}>Application</TextComponent>
+                                <Image
+                                    source={require('../../assets/icons/Application.png')}   // your gif path
+                                    style={styles.icon}
+                                />
+
+
+                            </View>
+
+                            <View style={styles.divider} />
+
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Theme.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Theme</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/About.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>About</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/help.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Help</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Logout.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Logout</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+
+                        </ShinyCard>
 
                     </ScrollView>
 
@@ -94,27 +283,42 @@ const styles = StyleSheet.create({
         borderColor: '#666666',
     },
     title: {
-        color: "#000000",
-        fontSize: 18,
-        marginBottom: 10
+        fontFamily: Fonts.Poppins_SemiBold_600,
+        fontSize: 20,
+        color: '#000000',
+        textAlign: 'left',
+        marginBottom: 0,
     },
 
     item: {
-        color: "#000000",
+        fontFamily: Fonts.Poppins_Regular_400,
         fontSize: 16,
-        marginVertical: 5
+        color: '#000000',
+        textAlign: 'left',
+        marginBottom: 0,
     },
 
     divider: {
         height: 1,
         backgroundColor: "#FF7F7F",
-        marginVertical: 5,
+        marginVertical: 10,
     },
     icon: {
         width: 20,
         height: 20,
-        marginRight: 8,
-      },
+    },
+    apart: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        gap: 10,
+        alignItems: "center",
+    },
+    together: {
+        flexDirection: "row",
+        gap: 10,
+        alignItems: "center",
+        marginBottom: 6,
+    }
 })
 
 export default SettingScreen

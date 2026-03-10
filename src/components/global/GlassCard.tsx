@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 
     borderWidth: 1.5,
     borderColor: "#FF7F7F",
-
+    marginBottom:20,
   },
 
   shine: {
