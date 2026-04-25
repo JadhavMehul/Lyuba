@@ -3,11 +3,37 @@ import TextComponent from '@components/global/TextComponent'
 import { Fonts } from '@utils/Constants'
 import React from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { goBack, resetAndNavigate } from "@utils/NavigationUtils";
+import { goBack, navigate, resetAndNavigate } from "@utils/NavigationUtils";
 import ShinyCard from '@components/global/GlassCard'
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
+
 
 
 const SettingScreen = () => {
+
+
+  const logout = async () => {
+    try {
+        // 1️⃣ Sign out from Firebase
+        await auth().signOut();
+
+        // 2️⃣ Sign out from Google if still connected
+        const currentUser = await GoogleSignin.getCurrentUser();
+        if (currentUser) {
+            await GoogleSignin.signOut();
+        }
+
+        console.log("User logged out successfully");
+
+        // 3️⃣ (Optional) Navigate back to Login screen
+        // navigate("LoginScreen");
+
+    } catch (error) {
+        console.error("Logout error: ", error);
+    }
+  };
+
     return (
         <CustomSafeAreaView style={{}}>
 
@@ -222,7 +248,7 @@ const SettingScreen = () => {
 
 
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={logout}>
 
 
                                 <View style={styles.together}>

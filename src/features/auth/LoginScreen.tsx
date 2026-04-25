@@ -271,26 +271,6 @@ const signInWithFacebook = async () => {
 
 
 
-  const logout = async () => {
-    try {
-        // 1️⃣ Sign out from Firebase
-        await auth().signOut();
-
-        // 2️⃣ Sign out from Google if still connected
-        const currentUser = await GoogleSignin.getCurrentUser();
-        if (currentUser) {
-            await GoogleSignin.signOut();
-        }
-
-        console.log("User logged out successfully");
-
-        // 3️⃣ (Optional) Navigate back to Login screen
-        navigate("LoginScreen");
-
-    } catch (error) {
-        console.error("Logout error: ", error);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -326,11 +306,11 @@ const signInWithFacebook = async () => {
                 icon={require("@assets/icons/facebook.png")}
                 onPress={signInWithFacebook}
               />
-              <AuthButton
+              {/* <AuthButton
                 text="Facebook"
                 icon={require("@assets/icons/facebook.png")}
                 onPress={logout}
-              />
+              /> */}
 
             </View>
 
