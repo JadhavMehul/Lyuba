@@ -5,9 +5,35 @@ import React from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { goBack, resetAndNavigate } from "@utils/NavigationUtils";
 import ShinyCard from '@components/global/GlassCard'
+import AuthButton from '@components/auth_components/AuthButton'
+import { navigate } from '@utils/NavigationUtils';
+import auth, { FacebookAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
+
 
 
 const SettingScreen = () => {
+    const logout = async () => {
+        try {
+            // 1️⃣ Sign out from Firebase
+            await auth().signOut();
+    
+            // 2️⃣ Sign out from Google if still connected
+            const currentUser = await GoogleSignin.getCurrentUser();
+            if (currentUser) {
+                await GoogleSignin.signOut();
+            }
+    
+            console.log("User logged out successfully");
+    
+            // 3️⃣ (Optional) Navigate back to Login screen
+            navigate("LoginScreen");
+    
+        } catch (error) {
+            console.error("Logout error: ", error);
+        }
+      };
     return (
         <CustomSafeAreaView style={{}}>
 
@@ -48,7 +74,7 @@ const SettingScreen = () => {
 
                             <View style={styles.divider} />
 
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigate("EditProfile")}>
 
                                 <View style={styles.together}>
                                     <Image
@@ -63,7 +89,7 @@ const SettingScreen = () => {
 
 
 
-                            <TouchableOpacity>
+                            {/* <TouchableOpacity>
 
 
                                 <View style={styles.together}>
@@ -76,7 +102,7 @@ const SettingScreen = () => {
                                 </View>
 
 
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             <TouchableOpacity>
 
 
@@ -91,7 +117,7 @@ const SettingScreen = () => {
 
 
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            {/* <TouchableOpacity>
 
 
                                 <View style={styles.together}>
@@ -104,7 +130,7 @@ const SettingScreen = () => {
                                 </View>
 
 
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                             
 
@@ -222,7 +248,7 @@ const SettingScreen = () => {
 
 
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={logout}>
 
 
                                 <View style={styles.together}>
