@@ -3,37 +3,37 @@ import TextComponent from '@components/global/TextComponent'
 import { Fonts } from '@utils/Constants'
 import React from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { goBack, resetAndNavigate } from "@utils/NavigationUtils";
+import { goBack, navigate, resetAndNavigate } from "@utils/NavigationUtils";
 import ShinyCard from '@components/global/GlassCard'
-import AuthButton from '@components/auth_components/AuthButton'
-import { navigate } from '@utils/NavigationUtils';
-import auth, { FacebookAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 
 
 const SettingScreen = () => {
-    const logout = async () => {
-        try {
-            // 1️⃣ Sign out from Firebase
-            await auth().signOut();
-    
-            // 2️⃣ Sign out from Google if still connected
-            const currentUser = await GoogleSignin.getCurrentUser();
-            if (currentUser) {
-                await GoogleSignin.signOut();
-            }
-    
-            console.log("User logged out successfully");
-    
-            // 3️⃣ (Optional) Navigate back to Login screen
-            navigate("LoginScreen");
-    
-        } catch (error) {
-            console.error("Logout error: ", error);
+
+
+  const logout = async () => {
+    try {
+        // 1️⃣ Sign out from Firebase
+        await auth().signOut();
+
+        // 2️⃣ Sign out from Google if still connected
+        const currentUser = await GoogleSignin.getCurrentUser();
+        if (currentUser) {
+            await GoogleSignin.signOut();
         }
-      };
+
+        console.log("User logged out successfully");
+
+        // 3️⃣ (Optional) Navigate back to Login screen
+        // navigate("LoginScreen");
+
+    } catch (error) {
+        console.error("Logout error: ", error);
+    }
+  };
+
     return (
         <CustomSafeAreaView style={{}}>
 
@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         textAlign: 'left',
         marginBottom: 0,
+        lineHeight: 20,
     },
 
     divider: {
@@ -330,8 +331,10 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     icon: {
+        // backgroundColor: "red",
         width: 20,
         height: 20,
+        resizeMode: "contain",
     },
     apart: {
         flexDirection: "row",
@@ -343,7 +346,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 10,
         alignItems: "center",
-        marginBottom: 6,
+        marginBottom: 8,
+        // backgroundColor: "green",
     }
 })
 

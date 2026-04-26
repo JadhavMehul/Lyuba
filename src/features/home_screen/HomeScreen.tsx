@@ -26,7 +26,8 @@ import PinkButton from '@components/global/PinkButton';
 import { navigate } from '@utils/NavigationUtils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useWindowDimensions } from 'react-native';
-
+import { BlurView } from '@react-native-community/blur';
+import { Modal } from 'react-native';
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const CARD_SHRUNK = SCREEN_H * 0.4; // 40% target
 const CARD_FULL = SCREEN_H * 0.795; // initial 
@@ -35,22 +36,22 @@ const SWIPE_THRESHOLD = 120;
 
 const { width: screenWidth } = Dimensions.get("window");
 const INTERESTS = [
-    { id: "1", label: "Movie", icon: "film" },
-    { id: "2", label: "Cycling", icon: "bicycle" },
-    { id: "3", label: "Cooking", icon: "cutlery" },
-    { id: "4", label: "Swimming", icon: "life-ring" },
-    { id: "5", label: "Coding", icon: "code" },
-    { id: "6", label: "Gaming", icon: "gamepad" },
-    { id: "7", label: "Yoga", icon: "heartbeat" },
-    { id: "8", label: "Dinner Dates", icon: "glass" },
-    { id: "9", label: "Gambling", icon: "money" },
-    { id: "10", label: "Poker", icon: "spade" },
-    { id: "11", label: "Crypto", icon: "bitcoin" },
-    { id: "12", label: "Stock Market", icon: "line-chart" },
-    { id: "13", label: "Football", icon: "futbol-o" },
-    { id: "14", label: "Cricket", icon: "trophy" },
-    { id: "15", label: "Tennis", icon: "circle-o" },
-    { id: "16", label: "Travelling", icon: "plane" },
+  { id: "1", label: "Movie", icon: "film" },
+  { id: "2", label: "Cycling", icon: "bicycle" },
+  { id: "3", label: "Cooking", icon: "cutlery" },
+  { id: "4", label: "Swimming", icon: "life-ring" },
+  { id: "5", label: "Coding", icon: "code" },
+  { id: "6", label: "Gaming", icon: "gamepad" },
+  { id: "7", label: "Yoga", icon: "heartbeat" },
+  { id: "8", label: "Dinner Dates", icon: "glass" },
+  { id: "9", label: "Gambling", icon: "money" },
+  { id: "10", label: "Poker", icon: "spade" },
+  { id: "11", label: "Crypto", icon: "bitcoin" },
+  { id: "12", label: "Stock Market", icon: "line-chart" },
+  { id: "13", label: "Football", icon: "futbol-o" },
+  { id: "14", label: "Cricket", icon: "trophy" },
+  { id: "15", label: "Tennis", icon: "circle-o" },
+  { id: "16", label: "Travelling", icon: "plane" },
 ];
 
 type Person = {
@@ -105,9 +106,11 @@ type Person = {
 
 
 export default function HomeScreen() {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const userDetails = auth().currentUser;
   // 👇 CHANGE 1: Converted static PEOPLE array to dynamic state
-  const [people, setPeople] = useState < Person[] > ([]);
+  const [people, setPeople] = useState<Person[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [index, setIndex] = useState(0); // Keeping index, but its value should remain 0 now
   const [isShrunk, setIsShrunk] = useState(false);
@@ -175,7 +178,7 @@ export default function HomeScreen() {
 
     if (!userId || !swypedUid || !swypedStatus) {
       console.log('Error in fetching userId, swypedUid, swypedStatus');
-      return; 
+      return;
     }
 
     const payload = {
@@ -192,7 +195,7 @@ export default function HomeScreen() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload), 
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -285,50 +288,50 @@ export default function HomeScreen() {
 
   const panResponder = useMemo(
     () =>
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => false,
 
-      onMoveShouldSetPanResponder: (_evt, gestureState) => {
-        const { dx, dy } = gestureState;
-        return Math.abs(dx) > 5 || Math.abs(dy) > 5;
-      },
-      onPanResponderGrant: () => {
-        (pos as any).extractOffset();
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        const { dx, dy, moveX, moveY } = gestureState;
-      
-        // 🔥 Log swipe position
-        console.log("Swipe dx:", dx, "dy:", dy);
-        console.log("Finger position X:", moveX, "Y:", moveY);
-      
-        pos.setValue({ x: dx, y: dy });
-      },
-      onPanResponderRelease: (_e, gesture) => {
-        (pos as any).flattenOffset();
-        const {
-          dx,
-          dy
-        } = gesture;
-        if (dx > SWIPE_THRESHOLD) {
-          animateOff('right');
-        } else if (dx < -SWIPE_THRESHOLD) {
-          animateOff('left');
-        } else if (dy < -SWIPE_THRESHOLD) {
-          animateOff('up');
-        } else {
-          Animated.spring(pos, {
-            toValue: {
-              x: 0,
-              y: 0
-            },
-            useNativeDriver: false,
-            tension: 40,
-            friction: 6
-          }).start();
-        }
-      },
-    }),
+        onMoveShouldSetPanResponder: (_evt, gestureState) => {
+          const { dx, dy } = gestureState;
+          return Math.abs(dx) > 5 || Math.abs(dy) > 5;
+        },
+        onPanResponderGrant: () => {
+          (pos as any).extractOffset();
+        },
+        onPanResponderMove: (evt, gestureState) => {
+          const { dx, dy, moveX, moveY } = gestureState;
+
+          // 🔥 Log swipe position
+          console.log("Swipe dx:", dx, "dy:", dy);
+          console.log("Finger position X:", moveX, "Y:", moveY);
+
+          pos.setValue({ x: dx, y: dy });
+        },
+        onPanResponderRelease: (_e, gesture) => {
+          (pos as any).flattenOffset();
+          const {
+            dx,
+            dy
+          } = gesture;
+          if (dx > SWIPE_THRESHOLD) {
+            animateOff('right');
+          } else if (dx < -SWIPE_THRESHOLD) {
+            animateOff('left');
+          } else if (dy < -SWIPE_THRESHOLD) {
+            animateOff('up');
+          } else {
+            Animated.spring(pos, {
+              toValue: {
+                x: 0,
+                y: 0
+              },
+              useNativeDriver: false,
+              tension: 40,
+              friction: 6
+            }).start();
+          }
+        },
+      }),
     [pos, animateOff],
   );
 
@@ -475,101 +478,101 @@ export default function HomeScreen() {
             </View>
           ) : (
             <>
-            <ScrollView
+              <ScrollView
                 scrollEnabled={isShrunk ? true : false}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 scrollEventThrottle={16}
               >
-              <Animated.View style={[styles.cardWrapper, { height: cardHeight }]}>
-                {nextPerson && (
-                  <Animated.View
-                    key={`next-${nextPerson.id}`}
-                    style={[
-                      styles.carddiv,
-                      {
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        transform: [
-                          {
-                            scale: pos.x.interpolate({
-                              inputRange: [-SCREEN_W, 0, SCREEN_W],
-                              outputRange: [1, 0.95, 1],
-                              extrapolate: 'clamp',
-                            }),
-                          },
-                          {
-                            scale: pos.y.interpolate({
-                              inputRange: [-SCREEN_H, 0, SCREEN_H],
-                              outputRange: [1, 0.95, 1],
-                              extrapolate: 'clamp',
-                            }),
-                          },
-                        ],
-                        opacity: pos.x.interpolate({
-                          inputRange: [-SCREEN_W, 0, SCREEN_W],
-                          outputRange: [0.3, 0.1, 1],
-                          extrapolate: 'clamp',
-                        }),
-                      },
-                    ]}
-                  >
-                    <Image source={{ uri: nextPerson?.pictures[0] }} style={styles.image} resizeMode="cover" />
-                    <LinearGradient
-                      colors={['transparent', 'rgba(0,0,0,0.6)']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 0, y: 1.2 }}
-                      style={styles.textofcard}
+                <Animated.View style={[styles.cardWrapper, { height: cardHeight }]}>
+                  {nextPerson && (
+                    <Animated.View
+                      key={`next-${nextPerson.id}`}
+                      style={[
+                        styles.carddiv,
+                        {
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          transform: [
+                            {
+                              scale: pos.x.interpolate({
+                                inputRange: [-SCREEN_W, 0, SCREEN_W],
+                                outputRange: [1, 0.95, 1],
+                                extrapolate: 'clamp',
+                              }),
+                            },
+                            {
+                              scale: pos.y.interpolate({
+                                inputRange: [-SCREEN_H, 0, SCREEN_H],
+                                outputRange: [1, 0.95, 1],
+                                extrapolate: 'clamp',
+                              }),
+                            },
+                          ],
+                          opacity: pos.x.interpolate({
+                            inputRange: [-SCREEN_W, 0, SCREEN_W],
+                            outputRange: [0.3, 0.1, 1],
+                            extrapolate: 'clamp',
+                          }),
+                        },
+                      ]}
                     >
-                      <TextComponent style={styles.tt1}>{`${nextPerson.firstName} ${nextPerson.lastName}`} </TextComponent>
-                      <TextComponent style={styles.tt2}>{nextPerson.personalData?.profession}</TextComponent>
-                    </LinearGradient>
-                  </Animated.View>
-                )}
+                      <Image source={{ uri: nextPerson?.pictures[0] }} style={styles.image} resizeMode="cover" />
+                      <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.6)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0, y: 1.2 }}
+                        style={styles.textofcard}
+                      >
+                        <TextComponent style={styles.tt1}>{`${nextPerson.firstName} ${nextPerson.lastName}`} </TextComponent>
+                        <TextComponent style={styles.tt2}>{nextPerson.personalData?.profession}</TextComponent>
+                      </LinearGradient>
+                    </Animated.View>
+                  )}
 
 
-                {person && (
-                  <Animated.View
-                    key={`current-${person.id}`}
-                    {...(!isShrunk ? panResponder.panHandlers : {})}
-                    style={[
-                      styles.carddiv,
-                      {
-                        borderTopLeftRadius: isShrunk ? 0 : 20,
-                        borderTopRightRadius: isShrunk ? 0 : 20,
-                        transform: [
-                          { translateX: pos.x },
-                          { translateY: pos.y },
-                          { rotate },
-                        ],
-                      },
-                    ]}
-                  >
-                    <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
-                      <Image source={{ uri: person?.pictures[0] }} style={styles.image} resizeMode="cover" />
-                      {!isShrunk && (
-                        <LinearGradient
-                          colors={['transparent', 'rgba(0,0,0,0.6)']}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 0, y: 1.2 }}
-                          style={styles.textofcard}
-                        >
-                          <TextComponent style={styles.tt1}>{`${person.firstName} ${person.lastName}`}</TextComponent>
-                          <TextComponent style={styles.tt2}>{person.personalData?.profession}</TextComponent>
-                        </LinearGradient>
-                      )}
-                    </Pressable>
-                  </Animated.View>
-                )}
-              </Animated.View>
+                  {person && (
+                    <Animated.View
+                      key={`current-${person.id}`}
+                      {...(!isShrunk ? panResponder.panHandlers : {})}
+                      style={[
+                        styles.carddiv,
+                        {
+                          borderTopLeftRadius: isShrunk ? 0 : 20,
+                          borderTopRightRadius: isShrunk ? 0 : 20,
+                          transform: [
+                            { translateX: pos.x },
+                            { translateY: pos.y },
+                            { rotate },
+                          ],
+                        },
+                      ]}
+                    >
+                      <Pressable style={{ flex: 1 }} onPress={toggleShrink}>
+                        <Image source={{ uri: person?.pictures[0] }} style={styles.image} resizeMode="cover" />
+                        {!isShrunk && (
+                          <LinearGradient
+                            colors={['transparent', 'rgba(0,0,0,0.6)']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 0, y: 1.2 }}
+                            style={styles.textofcard}
+                          >
+                            <TextComponent style={styles.tt1}>{`${person.firstName} ${person.lastName}`}</TextComponent>
+                            <TextComponent style={styles.tt2}>{person.personalData?.profession}</TextComponent>
+                          </LinearGradient>
+                        )}
+                      </Pressable>
+                    </Animated.View>
+                  )}
+                </Animated.View>
 
 
 
-              <View style={[styles.detailsContainer,{ marginTop: isShrunk ? 10 : 80 }]}>
-              {/* <ScrollView
+                <View style={[styles.detailsContainer, { marginTop: isShrunk ? 10 : 80 }]}>
+                  {/* <ScrollView
                 contentContainerStyle={{}}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
@@ -600,10 +603,10 @@ export default function HomeScreen() {
                             }
                           </>
                         )}
-                        
+
 
                       </View>
-                      <TouchableOpacity onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: person.id})}>
+                      <TouchableOpacity onPress={() => navigate("MessageScreen2", { myId: userDetails?.uid, otherUserId: person.id })}>
                         <Image
                           source={require("@assets/icons/message.png")}
                           style={styles.image2}
@@ -643,7 +646,7 @@ export default function HomeScreen() {
                           </TextComponent>
                         )
                       }
-                      
+
                     </View>
                     <View style={styles.line}>
 
@@ -679,7 +682,7 @@ export default function HomeScreen() {
                             })
                           )
                         }
-                        
+
                       </View>
                     </View>
                     <View style={styles.line}>
@@ -690,31 +693,33 @@ export default function HomeScreen() {
                         Gallery
                       </TextComponent>
                       <View>
-                        <ScrollView
-                          horizontal
-                          showsHorizontalScrollIndicator={false}
-
-                        >
-                          {
-                            person?.pictures.map((item, index) => {
-                                return (
-                                    <View key={index} style={styles.imagecontainer}>
-                                        <Image
-                                            source={{ uri: item }}
-                                            style={styles.image}
-                                            resizeMode='cover'
-                                        />
-                                    </View>
-                                )
-                            })
-                          }
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                          {person?.pictures.map((item, index) => {
+                            return (
+                              <TouchableOpacity
+                                key={index}
+                                style={styles.imagecontainer}
+                                activeOpacity={0.9}
+                                onPress={() => {
+                                  setSelectedImage(item);
+                                  setModalVisible(true);
+                                }}
+                              >
+                                <Image
+                                  source={{ uri: item }}
+                                  style={styles.image}
+                                  resizeMode="cover"
+                                />
+                              </TouchableOpacity>
+                            );
+                          })}
                         </ScrollView>
                       </View>
 
                     </View>
                   </View>
-                {/* </ScrollView> */}
-              </View>
+                  {/* </ScrollView> */}
+                </View>
               </ScrollView>
 
               {!isShrunk && (
@@ -735,6 +740,37 @@ export default function HomeScreen() {
             </>
           )}
         </Animated.View>
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setModalVisible(false)}
+          >
+            <BlurView
+              style={styles.blurContainer}
+              blurType="dark"       // 👈 important
+              blurAmount={10}       // adjust 5–20
+              reducedTransparencyFallbackColor="black"
+            >
+
+              {/* Prevent close when clicking image */}
+              <Pressable onPress={() => {}} style={{ borderRadius: 18, overflow: 'hidden' }}>
+                {selectedImage && (
+                  <Image
+                    source={{ uri: selectedImage }}
+                    style={styles.fullImage}
+                    resizeMode="cover"
+                  />
+                )}
+              </Pressable>
+
+            </BlurView>
+          </Pressable>
+        </Modal>
 
         <BottomNav />
       </View>
@@ -865,5 +901,20 @@ const styles = StyleSheet.create({
   image2: {
     width: 30,
     height: 30,
+  },
+  modalOverlay: {
+    flex: 1,
+  },
+
+  blurContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  fullImage: {
+    width: SCREEN_W * 0.9,
+    height: SCREEN_H * 0.7,
+    borderRadius: 18,
   },
 });
