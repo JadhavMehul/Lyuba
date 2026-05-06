@@ -85,7 +85,7 @@ const BottomNav: React.FC = () => {
                         <Image
                             source={
                                 routeName === "ProfileScreen"
-                                    ? require("../../assets/icons/profile_black.png")
+                                    ? require("../../assets/icons/profile_pink.png")
                                     : require("../../assets/icons/profile_black.png")
                             }
                             style={

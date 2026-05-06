@@ -27,6 +27,8 @@ import { ENV } from '@utils/Constants';
 import OthersProfileScreen from '@features/profile_screen/OthersProfileScreen';
 import SettingScreen from '@features/settingss/SettingScreen';
 import EditProfile from '@features/settingss/EditProfile';
+import EditImage from '@features/settingss/EditImage';
+import NotificationScreen from '@features/settingss/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,6 +112,8 @@ const App = () => {
               <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
               <Stack.Screen name="SettingScreen" component={SettingScreen}/>
               <Stack.Screen name="EditProfile" component={EditProfile}/>
+              <Stack.Screen name="EditImage" component={EditImage}/>
+              <Stack.Screen name="NotificationScreen" component={NotificationScreen}/>
             </>
           )
         }
