@@ -7,6 +7,7 @@ import { goBack, navigate, resetAndNavigate } from "@utils/NavigationUtils";
 import ShinyCard from '@components/global/GlassCard'
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
+import CustomToggle from '@components/global/CustomToggle'
 
 
 
@@ -87,61 +88,24 @@ const SettingScreen = () => {
 
                             </TouchableOpacity>
 
-
-
-                            {/* <TouchableOpacity>
-
+                            <TouchableOpacity onPress={() => navigate("EditImage")}>
 
                                 <View style={styles.together}>
                                     <Image
-                                        source={require('../../assets/icons/Account_Info.png')}   // your gif path
+                                        source={require('../../assets/icons/edit_image_icon.png')}   // your gif path
                                         style={styles.icon}
                                     />
 
-                                    <TextComponent style={styles.item}>Account info</TextComponent>
+                                    <TextComponent style={styles.item}>Edit Images</TextComponent>
                                 </View>
-
-
-                            </TouchableOpacity> */}
-                            <TouchableOpacity>
-
-
-                                <View style={styles.together}>
-                                    <Image
-                                        source={require('../../assets/icons/Privacy.png')}   // your gif path
-                                        style={styles.icon}
-                                    />
-
-                                    <TextComponent style={styles.item}>Privacy</TextComponent>
-                                </View>
-
 
                             </TouchableOpacity>
-                            {/* <TouchableOpacity>
 
 
-                                <View style={styles.together}>
-                                    <Image
-                                        source={require('../../assets/icons/Security.png')}   // your gif path
-                                        style={styles.icon}
-                                    />
 
-                                    <TextComponent style={styles.item}>Security</TextComponent>
-                                </View>
-
-
-                            </TouchableOpacity> */}
-
+                          
                             
-
-
-
-
-
-
-
-
-
+                         
 
 
 
@@ -159,7 +123,7 @@ const SettingScreen = () => {
                             </View>
 
                             <View style={styles.divider} />
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigate("NotificationScreen")}>
 
 
                                 <View style={styles.together}>
@@ -169,6 +133,7 @@ const SettingScreen = () => {
                                     />
 
                                     <TextComponent style={styles.item}>Notification</TextComponent>
+                                   
                                 </View>
 
 
@@ -185,27 +150,11 @@ const SettingScreen = () => {
                                         style={styles.icon}
                                     />
 
-                                    <TextComponent style={styles.item}>Block</TextComponent>
+                                    <TextComponent style={styles.item}>Block List</TextComponent>
                                 </View>
 
 
                             </TouchableOpacity>
-                        </ShinyCard>
-
-
-                        <ShinyCard>
-                            <View style={styles.apart}>
-                                <TextComponent style={styles.title}>Application</TextComponent>
-                                <Image
-                                    source={require('../../assets/icons/Application.png')}   // your gif path
-                                    style={styles.icon}
-                                />
-
-
-                            </View>
-
-                            <View style={styles.divider} />
-
                             <TouchableOpacity>
 
 
@@ -220,6 +169,24 @@ const SettingScreen = () => {
 
 
                             </TouchableOpacity>
+                        </ShinyCard>
+                        
+
+
+                        <ShinyCard>
+                            <View style={styles.apart}>
+                                <TextComponent style={styles.title}>Contact Us</TextComponent>
+                                <Image
+                                    source={require('../../assets/icons/Application.png')}   // your gif path
+                                    style={styles.icon}
+                                />
+
+
+                            </View>
+
+                            <View style={styles.divider} />
+
+                            
                             <TouchableOpacity>
 
 
@@ -229,11 +196,12 @@ const SettingScreen = () => {
                                         style={styles.icon}
                                     />
 
-                                    <TextComponent style={styles.item}>About</TextComponent>
+                                    <TextComponent style={styles.item}>Report a problem</TextComponent>
                                 </View>
 
 
                             </TouchableOpacity>
+                          
                             <TouchableOpacity>
 
 
@@ -243,11 +211,54 @@ const SettingScreen = () => {
                                         style={styles.icon}
                                     />
 
-                                    <TextComponent style={styles.item}>Help</TextComponent>
+                                    <TextComponent style={styles.item}>Help & Support</TextComponent>
                                 </View>
 
 
                             </TouchableOpacity>
+                          
+
+                        </ShinyCard>
+                        <ShinyCard>
+                            <View style={styles.apart}>
+                                <TextComponent style={styles.title}>Share Lyuba</TextComponent>
+                                
+
+
+                            </View>
+
+                            
+                        </ShinyCard>
+
+                        <ShinyCard>
+                            <View style={styles.apart}>
+                                <TextComponent style={styles.title}>Others</TextComponent>
+                                <Image
+                                    source={require('../../assets/icons/others.png')}   // your gif path
+                                    style={styles.icon}
+                                />
+
+
+                            </View>
+
+                            <View style={styles.divider} />
+
+                           
+                            <TouchableOpacity>
+
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/delete_icon.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Delete Account</TextComponent>
+                                </View>
+
+
+                            </TouchableOpacity>
+                           
                             <TouchableOpacity onPress={logout}>
 
 
@@ -285,6 +296,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: '#000000',
         textAlign: 'left',
+        lineHeight: 30,
     },
     backcon: {
         // paddingVertical: 8,
@@ -314,6 +326,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         textAlign: 'left',
         marginBottom: 0,
+        lineHeight: 24,
     },
 
     item: {

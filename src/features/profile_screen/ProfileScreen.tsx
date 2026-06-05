@@ -170,7 +170,7 @@ export default function ProfileScreen() {
 
                                 
                                     <Image
-                                        source={require("@assets/icons/message.png")}
+                                        source={require("@assets/icons/settings.png")}
                                         style={styles.image2}
                                     />
 
