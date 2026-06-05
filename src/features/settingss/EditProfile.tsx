@@ -73,22 +73,25 @@ const EditProfile = () => {
 
   const updateSubmit = async () => {
     try {
-    //   const api = `${ENV.API_IP}:3000/api/userDetails/updateProfile`;
+      const api = `${ENV.API_IP}:3000/api/userDetails/editProfile`;
 
-    //   const res = await fetch(api, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(userEditData),
-    //   });
+      const res = await fetch(api, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userData: userEditData }),
+      });
 
-    //   const data = await res.json();
+      const data = await res.json();
 
-    //   if (data.success) {
-    //     Alert.alert('Success', 'Profile updated successfully');
-    //     goBack();
-    //   } else {
-    //     Alert.alert('Error', 'Update failed');
-    //   }
+      console.log(data);
+      
+
+      if (data.success) {
+        Alert.alert('Success', 'Profile updated successfully');
+        navigate("HomeScreen")
+      } else {
+        Alert.alert('Error', 'Update failed');
+      }
 
 
     } catch (err) {
