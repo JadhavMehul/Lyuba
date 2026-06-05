@@ -90,8 +90,6 @@ const EditProfile = () => {
     //     Alert.alert('Error', 'Update failed');
     //   }
 
-    console.log(userEditData);
-    
 
     } catch (err) {
       console.log(err);
