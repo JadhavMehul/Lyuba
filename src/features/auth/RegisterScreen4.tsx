@@ -68,11 +68,16 @@ const RegisterScreen4 = () => {
                     const { latitude, longitude } = location;
 
                     try {
+<<<<<<< HEAD
                         // const api = "http://10.0.2.2:3000/api/location/getLocation";
                         // console.log(API_IP);
 
                         let api_ip = API_IP;
                         const api = `${api_ip}:3000/api/location/getLocation`;
+=======
+                        const api = "http://10.0.2.2:3000/api/location/getLocation";
+                        // const api = "http://192.168.0.109:3000/api/location/getLocation";
+>>>>>>> 8fc6dd9 (homescreen animation done)
 
                         const res = await fetch(api, {
                             method: "POST",

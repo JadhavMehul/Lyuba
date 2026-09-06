@@ -89,8 +89,32 @@ const LoginScreen = () => {
       const firebaseIdToken = await user.getIdToken();
       console.log("Firebase ID Token:", firebaseIdToken);
 
+<<<<<<< HEAD
       let api_ip = API_IP;
       const api = `${api_ip}:3000/api/auth/social`; // Update to your backend
+=======
+      // v13+ returns tokens inside signInResult.data
+      const idToken = signInResult.data?.idToken;
+      const accessToken = signInResult.data?.accessToken ?? undefined;
+
+      if (!idToken) {
+        Alert.alert('Google Sign-In failed', 'No ID token received.');
+        return;
+      }
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken, accessToken);
+      const userCredential = await auth().signInWithCredential(googleCredential);
+      const firebaseUser = userCredential.user;
+
+      // Get Firebase ID token
+      const firebaseIdToken = await firebaseUser.getIdToken();
+
+      console.log("idToken: ", firebaseIdToken);
+
+      // Send to backend 
+      const api = "http://10.0.2.2:3000/api/auth/social";
+      // const api = "http://192.168.0.109:3000/api/auth/social";
+>>>>>>> 8fc6dd9 (homescreen animation done)
       const res = await fetch(api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

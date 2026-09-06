@@ -50,9 +50,14 @@ const App = () => {
         if (u) {
           try {
             const idToken = await u.getIdToken()
+<<<<<<< HEAD
             // const api = 'http://10.0.2.2:3000/api/auth/authenticateUser';
             let api_ip = API_IP;
             const api = `${api_ip}:3000/api/auth/authenticateUser`;
+=======
+            const api = 'http://10.0.2.2:3000/api/auth/authenticateUser';
+            // const api = 'http://192.168.0.109:3000/api/auth/authenticateUser';
+>>>>>>> 8fc6dd9 (homescreen animation done)
             const res = await fetch(api, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
