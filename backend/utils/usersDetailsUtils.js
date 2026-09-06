@@ -59,8 +59,13 @@ const profileByGender = async (targetGender, targetCity, myUserId) => {
 const getMatchScore = (userA, userB) => {
     let score = 0;
 
-    if (userA.personalData.genderPreference?.toLowerCase() === userB.gender?.toLowerCase() &&
-        userB.personalData.genderPreference?.toLowerCase() === userA.gender?.toLowerCase()
+    // personalData may not exist yet for a profile that hasn't finished
+    // onboarding — treat it as empty instead of crashing.
+    const personalA = userA.personalData || {};
+    const personalB = userB.personalData || {};
+
+    if (personalA.genderPreference?.toLowerCase() === userB.gender?.toLowerCase() &&
+        personalB.genderPreference?.toLowerCase() === userA.gender?.toLowerCase()
     ) {
         score += 30;
     }
@@ -74,8 +79,8 @@ const getMatchScore = (userA, userB) => {
     score += sameInterests.length * 10; // up to 30 points
 
     // Religion / Education
-    if (userA.personalData.religion === userB.personalData.religion) score += 5;
-    if (userA.personalData.education === userB.personalData.education) score += 5;
+    if (personalA.religion && personalA.religion === personalB.religion) score += 5;
+    if (personalA.education && personalA.education === personalB.education) score += 5;
 
     // Recency
     const diff = Math.abs((userA.createdAt?._seconds || 0) - (userB.createdAt?._seconds || 0));

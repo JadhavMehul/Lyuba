@@ -9,6 +9,7 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import Icon from "react-native-vector-icons/FontAwesome";
 import ReadMoreText from '@components/global/ReadMoreText';
 
@@ -82,12 +83,9 @@ export default function ProfileScreen() {
         // const api = 'http://10.0.2.2:3000/api/userDetails/profile';
         console.log(ENV.API_IP);
         
-        const api = `${ENV.API_IP}:3000/api/userDetails/profile`;
-
-        const res = await fetch(api, {
+        const res = await apiFetch('/api/userDetails/profile', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId }),
+            body: { userId },
         })
 
         const userInfo = await res.json();

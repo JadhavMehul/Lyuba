@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import { navigate } from '@utils/NavigationUtils';
 import { goBack, resetAndNavigate } from '@utils/NavigationUtils';
 import InputField from '@components/global/InputField';
@@ -73,12 +74,9 @@ const EditProfile = () => {
 
   const updateSubmit = async () => {
     try {
-      const api = `${ENV.API_IP}:3000/api/userDetails/editProfile`;
-
-      const res = await fetch(api, {
+      const res = await apiFetch('/api/userDetails/editProfile', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userData: userEditData }),
+        body: { userData: userEditData },
       });
 
       const data = await res.json();
@@ -111,12 +109,9 @@ const EditProfile = () => {
     // const api = 'http://10.0.2.2:3000/api/userDetails/profile';
     console.log(ENV.API_IP);
 
-    const api = `${ENV.API_IP}:3000/api/userDetails/profile`;
-
-    const res = await fetch(api, {
+    const res = await apiFetch('/api/userDetails/profile', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId }),
+      body: { userId },
     });
 
     const userInfo = await res.json();

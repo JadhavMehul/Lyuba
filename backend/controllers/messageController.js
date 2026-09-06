@@ -4,7 +4,8 @@ const { getConversationId } = require("../utils/messageUtils");
 
 exports.sendMessage = async (req, res) => {
   try {
-    const { senderId, receiverId, text } = req.body;
+    const senderId = req.user.uid; // never trust a client-supplied senderId
+    const { receiverId, text } = req.body;
 
     if (!senderId || !receiverId || !text) {
       return res.status(400).json({ message: "Missing fields" });
@@ -51,6 +52,11 @@ exports.getMessages = async (req, res) => {
       return res.status(400).json({ message: "Missing users" });
     }
 
+    // You can only read a conversation you're actually a member of.
+    if (req.user.uid !== userA && req.user.uid !== userB) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const conversationId = await getConversationId(userA, userB);
 
     const snapshot = await firestore
@@ -79,7 +85,7 @@ exports.getMessages = async (req, res) => {
  */
 exports.getChats = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user.uid; // always your own inbox, never someone else's
 
     if (!userId) {
       return res.status(400).json({ message: "userId is required" });
@@ -96,10 +102,10 @@ exports.getChats = async (req, res) => {
         const data = doc.data();
 
         const otherUserId = data.members.find((id) => id !== userId);
-        
-        const otherUserDataQuery = await firestore.collection("users").doc(otherUserId).get();
-        const otherUserData = otherUserDataQuery.data();
-        
+
+        // 👤 fetch other user's profile (once — was being fetched twice before)
+        const userDoc = await firestore.collection("users").doc(otherUserId).get();
+        const otherUserData = userDoc.data() || {};
 
         // 🔴 unread messages count
         const unreadSnap = await firestore
@@ -110,15 +116,12 @@ exports.getChats = async (req, res) => {
           .where("read", "==", false)
           .get();
 
-        // 👤 fetch other user profile
-        const userDoc = await firestore.collection("users").doc(otherUserId).get();
-        const userData = userDoc.data() || {};
-
         return {
           conversationId: doc.id,
           otherUserId,
-          name: otherUserData.firstName + " " + otherUserData.lastName || "",
-          profileImage: otherUserData.pictures[0] || "",
+          // A user with no name yet or no photos uploaded yet shouldn't crash the inbox.
+          name: `${otherUserData.firstName || ""} ${otherUserData.lastName || ""}`.trim(),
+          profileImage: otherUserData.pictures?.[0] || "",
           lastMessage: data.lastMessage || "",
           updatedAt: data.updatedAt || null,
           unreadCount: unreadSnap.size,

@@ -15,6 +15,7 @@ import auth from "@react-native-firebase/auth";
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import { ENV, Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import ProfileCard from '@components/global/ProfileCard';
 import { navigate } from '@utils/NavigationUtils';
 
@@ -79,16 +80,9 @@ export default function LikeScreen() {
                 return;
             }
 
-            const api = `${ENV.API_IP}:3000/api/userDetails/likedMe`;
-
-            const res = await fetch(api, {
+            const res = await apiFetch('/api/userDetails/likedMe', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId
-                }),
+                body: { userId },
             })
 
             const likedMeData = await res.json();
@@ -107,16 +101,9 @@ export default function LikeScreen() {
                 return;
             }
 
-            const api = `${ENV.API_IP}:3000/api/userDetails/matched`;
-
-            const res = await fetch(api, {
+            const res = await apiFetch('/api/userDetails/matched', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId
-                }),
+                body: { userId },
             })
 
             const matchedData = await res.json();

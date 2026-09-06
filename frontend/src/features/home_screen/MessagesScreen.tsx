@@ -10,6 +10,7 @@ import BottomNav from '@components/global/BottomNav';
 import InputField from '@components/global/InputField';
 import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import MessageCard from '@components/global/MessageCard';
 import { formatTime } from '@utils/ChatHelper';
 
@@ -38,14 +39,9 @@ export default function MessagesScreen() {
     // 🔹 Fetch chats from backend
     const fetchChats = async () => {
         try {
-        const api = `${ENV.API_IP}:3000/api/message/getChats`
-        
-        const res = await fetch(api, {
-            method: "POST", // you said you always send JSON
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                userId: userDetails?.uid,
-            }),
+        const res = await apiFetch('/api/message/getChats', {
+            method: "POST",
+            body: { userId: userDetails?.uid },
         });
 
         const data = await res.json();

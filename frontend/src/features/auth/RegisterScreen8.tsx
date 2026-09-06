@@ -6,6 +6,7 @@ import { navigate } from "@utils/NavigationUtils";
 import TextComponent from "@components/global/TextComponent";
 import PinkButton from "@components/global/PinkButton";
 import { ENV, Fonts } from "@utils/Constants";
+import { apiFetch } from "@utils/api";
 import PhotoBody from "@components/global/PhotoBody";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { API_IP } from "@env";
@@ -65,9 +66,6 @@ const RegisterScreen8 = () => {
             setLoading(true);
 
             
-            console.log(ENV.API_IP);
-            const api = `${ENV.API_IP}:3000/api/auth/register`;
-
             const formData = new FormData();
 
             // append userData text fields
@@ -93,11 +91,11 @@ const RegisterScreen8 = () => {
                 }
             });
 
-            const res = await fetch(api, {
+            // NOTE: no explicit Content-Type header here — apiFetch (and fetch
+            // itself) needs to set it to multipart/form-data with the
+            // generated boundary, which a hardcoded header would clobber.
+            const res = await apiFetch("/api/auth/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
                 body: formData,
             });
 

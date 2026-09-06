@@ -19,6 +19,7 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
 import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import ReadMoreText from '@components/global/ReadMoreText';
 import Icon from "react-native-vector-icons/FontAwesome";
 import LinearGradient from 'react-native-linear-gradient';
@@ -187,15 +188,10 @@ export default function HomeScreen() {
       swypedStatus
     };
 
-    const api = `${ENV.API_IP}:3000/api/userDetails/swypedUser`;
-
     try {
-      const res = await fetch(api, {
+      const res = await apiFetch('/api/userDetails/swypedUser', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload),
+        body: payload,
       });
 
       const data = await res.json();
@@ -417,16 +413,9 @@ export default function HomeScreen() {
       const userId = userDetails?.uid;
       console.log(userId);
 
-      const api = `${ENV.API_IP}:3000/api/userDetails/peopleProfile`;
-
-      const res = await fetch(api, {
+      const res = await apiFetch('/api/userDetails/peopleProfile', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          userId
-        }),
+        body: { userId },
       })
 
       const swipingData = await res.json();

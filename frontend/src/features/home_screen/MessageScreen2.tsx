@@ -4,6 +4,7 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack, resetAndNavigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import { ENV, Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import InputField from '@components/global/InputField';
 import MessageLeftComponent from '@components/global/MessageLeftComponent';
 import MessageRightComponent from '@components/global/MessageRightComponent';
@@ -87,13 +88,9 @@ const MessageScreen2 = () => {
         }
 
         try {
-            const api = `${ENV.API_IP}:3000/api/message/getMessage`;
-            const res = await fetch(api, {
+            const res = await apiFetch('/api/message/getMessage', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload), 
+                body: payload,
             });
             const data = await res.json();
 
@@ -119,14 +116,9 @@ const MessageScreen2 = () => {
         console.log("hi")
 
         try {
-            const api = `${ENV.API_IP}:3000/api/message/sendMessage`;
-
-            const res = await fetch(api, {
+            const res = await apiFetch('/api/message/sendMessage', {
                 method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload), 
+                body: payload,
             });
 
             // if (res.status === 200) {
@@ -219,12 +211,9 @@ const MessageScreen2 = () => {
         // const api = 'http://10.0.2.2:3000/api/userDetails/profile';
         console.log(ENV.API_IP);
         
-        const api = `${ENV.API_IP}:3000/api/userDetails/profile`;
-
-        const res = await fetch(api, {
+        const res = await apiFetch('/api/userDetails/profile', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId }),
+            body: { userId },
         })
 
         const userInfo = await res.json();

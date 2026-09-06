@@ -35,6 +35,10 @@ exports.editProfileData = async (req, res) => {
       return res.status(400).json({ error: "userData required" });
     }
 
+    // You can only edit your own profile.
+    if (userData.uid !== req.user.uid) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
 
     const userDocRef = firestore.collection("users").doc(userData.uid);
 
@@ -66,7 +70,7 @@ exports.editProfileData = async (req, res) => {
 
 exports.peopleProfileData = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user.uid; // the discovery feed is always "who's shown to me"
 
     if (!userId) {
       return res.status(400).json({ error: "userId required" });
@@ -201,7 +205,8 @@ exports.swypedUser = async (req, res) => {
 
   try {
 
-    const { userId, swipedUserId, swypedStatus } = req.body;
+    const userId = req.user.uid; // you can only record swipes as yourself
+    const { swipedUserId, swypedStatus } = req.body;
 
     if (!userId || !swipedUserId || !swypedStatus) {
       return res.status(400).json({ error: "unable to receive userId or swipedUserId or swypedStatus" });
@@ -243,7 +248,7 @@ exports.swypedUser = async (req, res) => {
 
 exports.likedMe = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user.uid; // only your own "who liked me" list
 
     if (!userId) {
       return res.status(400).json({ error: "unable to receive userId" });
@@ -323,7 +328,7 @@ exports.likedMe = async (req, res) => {
 
 exports.matched = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user.uid; // only your own match list
 
     if (!userId) {
       return res.status(400).json({ error: "Unable to receive userId" });

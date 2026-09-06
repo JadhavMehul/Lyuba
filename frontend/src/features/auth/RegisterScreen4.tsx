@@ -4,7 +4,8 @@ import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import { goBack, navigate } from "@utils/NavigationUtils";
 import TextComponent from '@components/global/TextComponent';
 import PinkButton from '@components/global/PinkButton';
-import { ENV, Fonts } from '@utils/Constants';
+import { Fonts } from '@utils/Constants';
+import { apiFetch } from '@utils/api';
 import LocationAnimation from '@components/auth_components/LocationAnimation';
 import Geolocation from 'react-native-geolocation-service';
 import GetLocation from 'react-native-get-location'
@@ -68,27 +69,14 @@ const RegisterScreen4 = () => {
                     const { latitude, longitude } = location;
 
                     try {
-                        // const api = "http://10.0.2.2:3000/api/location/getLocation";
-                        // console.log(API_IP);
-
-                        
-                        console.log(ENV.API_IP);
-                        const api = `${ENV.API_IP}:3000/api/location/getLocation`;
-
-                        const res = await fetch(api, {
+                        const res = await apiFetch("/api/location/getLocation", {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ latitude, longitude }),
+                            body: { latitude, longitude },
                         });
                         const data = await res.json();
-                        
+
                         const city = data?.response?.city;
                         const pincode = data?.response?.pincode || null;
-
-                        console.log(city, pincode);
-                        console.log(data);
-                        
-                        
 
                         navigate("RegisterScreen4_1", {userData: {...userData, city, pincode}});
 
