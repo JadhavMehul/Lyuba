@@ -21,8 +21,13 @@ import { ActivityIndicator } from 'react-native';
 import RegisterScreen8 from '@features/auth/RegisterScreen8';
 import MessagesScreen from '@features/home_screen/MessagesScreen';
 import LikeScreen from '@features/home_screen/LikeScreen';
+<<<<<<< HEAD
 import ProfileScreen from '@features/profile_screen/ProfileScreen';
 import { API_IP } from '@env';
+=======
+import ProfileScreen from '@features/home_screen/ProfileScreen';
+import MessageScreen2 from '@features/home_screen/MessageScreen2';
+>>>>>>> a81f9c7 (messagescreen2 layout made)
 
 const Stack = createNativeStackNavigator();
 
@@ -117,6 +122,7 @@ const App = () => {
         <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
         <Stack.Screen name="LikeScreen" component={LikeScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+        <Stack.Screen name="MessageScreen2" component={MessageScreen2}/>
       </Stack.Navigator>
       
     </NavigationContainer>
