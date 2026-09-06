@@ -1,6 +1,11 @@
 const { firestore, FieldValue } = require("../config/firebaseConfig");
 const { profileByGender, getMatchScore } = require("../utils/usersDetailsUtils");
-const { uploadUserPhoto, deleteUserPhotoByUrl } = require("../utils/storageUtils");
+const {
+  MAX_PICTURES,
+  uploadUserPhoto,
+  allocatePhotoIndexes,
+  syncUserPhotos,
+} = require("../utils/storageUtils");
 
 exports.profileData = async (req, res) => {
   try {
@@ -71,118 +76,100 @@ exports.editProfileData = async (req, res) => {
 
 exports.updatePictures = async (req, res) => {
   try {
-    const uid = req.user.uid;
+    const uid = req.user.uid; // you can only ever change your own gallery
     const files = req.files || [];
-    const MAX_PICTURES = 6;
- 
-    // --- parse ---------------------------------------------------------
+
     let slots;
     try {
-      slots = JSON.parse(req.body.slots);
+      slots = JSON.parse(req.body.slots || "[]");
     } catch {
-      // Deliberately a hard failure. Swallowing this and falling back to an
-      // empty array is how a malformed request ends up wiping a gallery.
-      return res
-        .status(400)
-        .json({ success: false, error: "slots must be a JSON array" });
+      return res.status(400).json({ success: false, message: "slots must be valid JSON" });
     }
- 
+
     if (!Array.isArray(slots)) {
-      return res
-        .status(400)
-        .json({ success: false, error: "slots must be a JSON array" });
+      return res.status(400).json({ success: false, message: "slots must be an array" });
     }
     if (slots.length === 0) {
-      return res
-        .status(400)
-        .json({ success: false, error: "At least one photo is required" });
+      return res.status(400).json({ success: false, message: "Please keep at least one picture" });
     }
     if (slots.length > MAX_PICTURES) {
       return res
         .status(400)
-        .json({ success: false, error: `At most ${MAX_PICTURES} photos are allowed` });
+        .json({ success: false, message: `You can have at most ${MAX_PICTURES} pictures` });
     }
- 
+
     const userRef = firestore.collection("users").doc(uid);
     const userDoc = await userRef.get();
-    const currentPictures = userDoc.exists ? userDoc.data().pictures || [] : [];
-    const ownedUrls = new Set(currentPictures);
- 
-    const filesByField = new Map(files.map((f) => [f.fieldname, f]));
- 
-    // --- validate everything before uploading anything -----------------
-    // Uploading first and validating later leaves orphaned files in the
-    // bucket whenever a request turns out to be malformed.
-    const seenUrls = new Set();
-    const seenFields = new Set();
- 
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const currentPictures = userDoc.data().pictures || [];
+
+    // Validate every slot before touching Storage, so a bad request can't
+    // half-overwrite the gallery.
+    const keepUrls = [];
     for (const slot of slots) {
-      if (!slot || typeof slot !== "object") {
-        return res.status(400).json({ success: false, error: "Malformed slot entry" });
-      }
- 
-      if (slot.type === "keep") {
-        if (typeof slot.url !== "string" || !ownedUrls.has(slot.url)) {
-          // Stops a client from writing an arbitrary URL into a profile.
+      if (slot?.type === "keep") {
+        // A "keep" may only name a URL that's already on this profile —
+        // otherwise anyone could paste arbitrary URLs into their gallery.
+        if (!currentPictures.includes(slot.url)) {
           return res
             .status(400)
-            .json({ success: false, error: "Cannot keep a photo that isn't yours" });
+            .json({ success: false, message: "Unknown picture in keep slot" });
         }
-        if (seenUrls.has(slot.url)) {
-          return res.status(400).json({ success: false, error: "Duplicate photo in slots" });
-        }
-        seenUrls.add(slot.url);
-      } else if (slot.type === "upload") {
-        if (typeof slot.field !== "string" || !filesByField.has(slot.field)) {
+        keepUrls.push(slot.url);
+      } else if (slot?.type === "upload") {
+        if (!files.some((f) => f.fieldname === slot.field)) {
           return res
             .status(400)
-            .json({ success: false, error: `Missing file for slot ${slot.field}` });
+            .json({ success: false, message: `Missing file for "${slot.field}"` });
         }
-        if (seenFields.has(slot.field)) {
-          return res.status(400).json({ success: false, error: "Duplicate file in slots" });
-        }
-        seenFields.add(slot.field);
       } else {
-        return res.status(400).json({ success: false, error: "Unknown slot type" });
+        return res.status(400).json({ success: false, message: "Invalid slot" });
       }
     }
- 
-    // --- build the new gallery -----------------------------------------
-    // Uploaded in parallel, not one-at-a-time: each upload is a round trip to
-    // Storage, and serialising them made a 4-photo save take 20-40s, which is
-    // long enough for a phone on flaky wifi to give up mid-request.
-    // Promise.all resolves positionally, so photo order is still preserved.
-    const finalPictures = await Promise.all(
-      slots.map((slot) =>
-        slot.type === "keep"
-          ? slot.url
-          : uploadUserPhoto(uid, filesByField.get(slot.field))
-      )
-    );
- 
-    await userRef.set({ pictures: finalPictures }, { merge: true });
- 
-    // --- clean up what's no longer referenced ---------------------------
-    // After the Firestore write, so a failed delete never leaves the profile
-    // pointing at a file that's already gone.
-    const kept = new Set(finalPictures);
-    const removed = currentPictures.filter((url) => !kept.has(url));
- 
-    await Promise.all(
-      removed.map((url) =>
-        deleteUserPhotoByUrl(url).catch((err) =>
-          console.warn("Failed to delete old photo:", url, err.message)
-        )
-      )
-    );
- 
-    return res.status(200).json({ success: true, pictures: finalPictures });
+
+    // New photos go into the slots the kept ones aren't using, so an upload
+    // can never overwrite a picture the user asked to keep.
+    const uploadCount = slots.length - keepUrls.length;
+    const freeIndexes = allocatePhotoIndexes(keepUrls, uploadCount);
+
+    // Build the new gallery in the exact order the client sent.
+    const pictures = [];
+    for (const slot of slots) {
+      if (slot.type === "keep") {
+        pictures.push(slot.url);
+      } else {
+        const file = files.find((f) => f.fieldname === slot.field);
+        pictures.push(await uploadUserPhoto(uid, file, freeIndexes.shift()));
+      }
+    }
+
+    await userRef.set({ pictures }, { merge: true });
+
+    // Only once Firestore no longer points at them: drop everything else in
+    // this user's photos folder — the pictures they removed, and any file left
+    // over from the old naming scheme — so the bucket holds these and nothing
+    // more. Cleanup must not fail a save that already committed.
+    try {
+      await syncUserPhotos(uid, pictures);
+    } catch (err) {
+      console.error("updatePictures cleanup failed:", err);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Pictures updated successfully",
+      pictures,
+    });
   } catch (error) {
     console.error("updatePictures error:", error);
     return res.status(500).json({ success: false, error: error.message });
   }
 };
- 
+
 
 exports.peopleProfileData = async (req, res) => {
   try {

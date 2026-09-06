@@ -1,5 +1,5 @@
 const { firestore, auth } = require('../config/firebaseConfig');
-const { uploadUserPhoto } = require('../utils/storageUtils');
+const { MAX_PICTURES, uploadUserPhoto, syncUserPhotos } = require('../utils/storageUtils');
 
 /**
  * Shared by socialAuth and authenticateUser: verifies the Firebase ID token
@@ -92,11 +92,21 @@ exports.registerUser = async (req, res) => {
     console.log("Received data:", req.body);
     console.log("Received files:", files?.length);
 
+    if (files && files.length > MAX_PICTURES) {
+      return res.status(400).json({
+        success: false,
+        message: `You can upload at most ${MAX_PICTURES} pictures`,
+      });
+    }
+
     const uploadedUrls = [];
 
     if (files && files.length > 0) {
-      for (const file of files) {
-        uploadedUrls.push(await uploadUserPhoto(uid, file));
+      // Stored as photo_0..photo_5 under users/<uid>/photos/ — the same slot
+      // naming the picture editor writes, so re-registering overwrites the
+      // folder instead of adding a second set of files.
+      for (const [index, file] of files.entries()) {
+        uploadedUrls.push(await uploadUserPhoto(uid, file, index));
       }
     }
 
@@ -120,6 +130,14 @@ exports.registerUser = async (req, res) => {
       },
       { merge: true }
     );
+
+    // Leaves the folder holding exactly these photos, clearing anything from
+    // an earlier, abandoned registration attempt.
+    try {
+      await syncUserPhotos(uid, uploadedUrls);
+    } catch (err) {
+      console.error("register cleanup failed:", err);
+    }
 
     return res.status(201).json({
       success: true,

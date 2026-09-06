@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import CustomSafeAreaView from "@components/global/CustomSafeAreaView";
-import { goBack } from "@utils/NavigationUtils";
+import { goBack, navigate } from "@utils/NavigationUtils";
 import TextComponent from "@components/global/TextComponent";
 import PinkButton from "@components/global/PinkButton";
 import { Fonts } from "@utils/Constants";
@@ -80,7 +80,68 @@ const EditImage = () => {
 
     // ---------- save ----------
     const savePictures = async () => {
-        console.log("saving pictures");
+        // Collapse the fixed 6 slots down to the photos actually set, in the
+        // order they're shown — that order is what the gallery is saved as.
+        const chosen = photos.filter((uri): uri is string => !!uri);
+
+        if (chosen.length === 0) {
+            Alert.alert("Atleast one photo require","Please upload at least one photo");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const formData = new FormData();
+            const slots: Slot[] = chosen.map((uri, idx) => {
+                if (!isLocalUri(uri)) return { type: "keep", url: uri };
+
+                // Freshly picked photo: goes up as a file, and the slot points
+                // at it by field name so the server can put it back in place.
+                // The stored filename is chosen server-side (photo_0..photo_5),
+                // so this name is only how the two halves find each other.
+                const field = `photo_${idx}`;
+                formData.append(field, {
+                    uri,
+                    type: "image/jpeg",
+                    name: `${field}.jpg`,
+                } as any);
+                return { type: "upload", field };
+            });
+
+            formData.append("slots", JSON.stringify(slots));
+
+            // No explicit Content-Type — fetch has to set multipart/form-data
+            // with its own boundary.
+            
+            const res = await apiFetch("/api/userDetails/updatePictures", {
+                method: "PUT",
+                body: formData,
+            });
+
+            const data = await res.json();
+            console.log("Update pictures response:", data);
+
+            if (!res.ok || !data?.success) {
+                Alert.alert("Error", data?.message || "Could not save your pictures");
+                return;
+            }
+
+            // Re-seed from the server so the local uris are replaced by their
+            // stored URLs — a second save then sends them as "keep" slots
+            // instead of re-uploading the same files.
+            const saved: string[] = data.pictures ?? [];
+            setPhotos(
+                Array.from({ length: PHOTO_SLOTS }, (_, i) => saved[i] ?? null)
+            );
+
+            navigate("HomeScreen");
+        } catch (error) {
+            console.log("Update pictures error:", error);
+            Alert.alert("Error", "Could not save your pictures. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
