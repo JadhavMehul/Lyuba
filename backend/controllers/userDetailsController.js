@@ -1,11 +1,14 @@
 const { firestore, FieldValue } = require("../config/firebaseConfig");
 const { profileByGender, getMatchScore } = require("../utils/usersDetailsUtils");
-const { uploadUserPhoto } = require("../utils/storageUtils");
+const { uploadUserPhoto, deleteUserPhotoByUrl } = require("../utils/storageUtils");
 
 exports.profileData = async (req, res) => {
   try {
-    const userId = req.user.uid;
- 
+    // Defaults to your own profile, but callers may look up someone else's
+    // (e.g. viewing a match's profile inside a chat) — any signed-in user is
+    // allowed to view another dating profile, that's the intended design.
+    const userId = req.body.userId || req.user.uid;
+
     const userDoc = await firestore.collection("users").doc(userId).get();
  
     if (!userDoc.exists) {
@@ -145,14 +148,17 @@ exports.updatePictures = async (req, res) => {
     }
  
     // --- build the new gallery -----------------------------------------
-    const finalPictures = [];
-    for (const slot of slots) {
-      if (slot.type === "keep") {
-        finalPictures.push(slot.url);
-      } else {
-        finalPictures.push(await uploadUserPhoto(uid, filesByField.get(slot.field)));
-      }
-    }
+    // Uploaded in parallel, not one-at-a-time: each upload is a round trip to
+    // Storage, and serialising them made a 4-photo save take 20-40s, which is
+    // long enough for a phone on flaky wifi to give up mid-request.
+    // Promise.all resolves positionally, so photo order is still preserved.
+    const finalPictures = await Promise.all(
+      slots.map((slot) =>
+        slot.type === "keep"
+          ? slot.url
+          : uploadUserPhoto(uid, filesByField.get(slot.field))
+      )
+    );
  
     await userRef.set({ pictures: finalPictures }, { merge: true });
  

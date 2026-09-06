@@ -1,158 +1,86 @@
-import { View, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import {
+    View,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    Alert,
+    ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import CustomSafeAreaView from "@components/global/CustomSafeAreaView";
 import { goBack } from "@utils/NavigationUtils";
 import TextComponent from "@components/global/TextComponent";
 import PinkButton from "@components/global/PinkButton";
 import { Fonts } from "@utils/Constants";
-import PhotoBody from "@components/global/PhotoBody";
 import { apiFetch } from "@utils/api";
+import PhotoBody from "@components/global/PhotoBody";
 import auth from "@react-native-firebase/auth";
 
-const SLOT_COUNT = 6;
+const PHOTO_SLOTS = 6;
 
 /**
- * A slot is either empty, a photo the server already stores (remote), or a
- * freshly picked image still living on the device (local).
+ * What updatePictures expects, in final gallery order:
+ *   keep   -> a picture already on the profile, sent back by its exact URL
+ *   upload -> a new file, matched to the FormData field of the same name
  */
-type Slot =
-    | null
-    | { kind: "remote"; url: string }
-    | { kind: "local"; uri: string };
+type Slot = { type: "keep"; url: string } | { type: "upload"; field: string };
 
-const emptySlots = (): Slot[] => Array(SLOT_COUNT).fill(null);
+/** Saved pictures are full Storage URLs; freshly picked ones are file:// / content:// / ph:// */
+const isLocalUri = (uri: string): boolean =>
+    !uri.startsWith("http://") && !uri.startsWith("https://");
 
 const EditImage = () => {
-    const [photos, setPhotos] = useState<Slot[]>(emptySlots());
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-
-    // What the server had when this screen loaded, so we can tell whether
-    // anything actually changed before firing a request.
-    const originalUrls = useRef<string[]>([]);
-
-    const applyPictures = (pictures: string[]) => {
-        const slots = emptySlots();
-        pictures.slice(0, SLOT_COUNT).forEach((url, idx) => {
-            slots[idx] = { kind: "remote", url };
-        });
-        setPhotos(slots);
-        originalUrls.current = pictures.slice(0, SLOT_COUNT);
-    };
-
-    const loadExistingPhotos = async () => {
-        try {
-            const userId = auth().currentUser?.uid;
-            if (!userId) {
-                Alert.alert("Sign in required", "Sign in again to edit your photos.");
-                return;
-            }
-
-            // The server takes the uid from the verified token; userId is sent
-            // only so this screen still works against the older endpoint.
-            const res = await apiFetch("/api/userDetails/profile", {
-                method: "POST",
-                body: { userId },
-            });
-            const data = await res.json();
-
-            if (data.foundData) {
-                applyPictures(data.response.user.pictures || []);
-            } else {
-                console.log("Profile load returned:", data);
-            }
-        } catch (error: any) {
-            console.log("Error loading photos:", error?.message || error);
-            Alert.alert("Couldn't load photos", "Check your connection and try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        loadExistingPhotos();
-    }, []);
+    const [photos, setPhotos] = useState<(string | null)[]>(
+        Array(PHOTO_SLOTS).fill(null)
+    );
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
 
     const handleImageChange = (index: number, uri: string | null) => {
-        setPhotos(prev => {
-            const updated = [...prev];
-            updated[index] = uri ? { kind: "local", uri } : null;
-            return updated;
-        });
+        const updated = [...photos];
+        updated[index] = uri;
+        setPhotos(updated);
     };
 
-    /** The gallery as the user sees it, gaps removed. */
-    const visiblePhotos = () => photos.filter(Boolean) as Exclude<Slot, null>[];
+    // ---------- load existing pictures ----------
+    useEffect(() => {
+        const loadPictures = async () => {
+            try {
+                const userId = auth().currentUser?.uid;
 
-    const hasChanges = () => {
-        const current = visiblePhotos();
-        if (current.some(s => s.kind === "local")) return true;
+                const res = await apiFetch("/api/userDetails/profile", {
+                    method: "POST",
+                    body: { userId },
+                });
+                const data = await res.json();
+                console.log("Profile response:", data);
 
-        const currentUrls = current.map(s => (s as { url: string }).url);
-        if (currentUrls.length !== originalUrls.current.length) return true;
-        return currentUrls.some((url, i) => url !== originalUrls.current[i]);
-    };
-
-    const saveChanges = async () => {
-        const current = visiblePhotos();
-
-        if (current.length === 0) {
-            Alert.alert("Add at least one photo", "Your profile needs a photo to be shown to others.");
-            return;
-        }
-
-        if (!hasChanges()) {
-            goBack();
-            return;
-        }
-
-        setSaving(true);
-        try {
-            const formData = new FormData();
-
-            // An ordered manifest of what the gallery should look like after
-            // this save. "keep" points at a photo the server already has;
-            // "upload" points at a file in this same request, by fieldname.
-            const manifest = current.map((slot, idx) =>
-                slot.kind === "remote"
-                    ? { type: "keep", url: slot.url }
-                    : { type: "upload", field: `photo_${idx}` }
-            );
-
-            formData.append("slots", JSON.stringify(manifest));
-
-            current.forEach((slot, idx) => {
-                if (slot.kind === "local") {
-                    formData.append(`photo_${idx}`, {
-                        uri: slot.uri,
-                        type: "image/jpeg",
-                        name: `photo_${idx}.jpg`,
-                    } as any);
+                if (!data?.foundData) {
+                    Alert.alert("Error", data?.message || "Could not load your profile");
+                    return;
                 }
-            });
 
-            const res = await apiFetch("/api/userDetails/updatePictures", {
-                method: "PUT",
-                body: formData,
-            });
-            const data = await res.json();
+                const pictures: string[] = data.response?.user?.pictures ?? [];
 
-            if (data.success) {
-                // Re-sync from the server's answer so screen and backend
-                // can't drift apart.
-                applyPictures(data.pictures || []);
-                Alert.alert("Photos updated", undefined, [
-                    { text: "OK", onPress: () => goBack() },
-                ]);
-            } else {
-                Alert.alert("Couldn't save photos", data.error || "Please try again.");
+                // Stored URLs are kept byte-for-byte: updatePictures matches
+                // "keep" slots against them exactly, so don't rewrite them.
+                setPhotos(
+                    Array.from({ length: PHOTO_SLOTS }, (_, i) => pictures[i] ?? null)
+                );
+            } catch (error) {
+                console.log("Profile fetch error:", error);
+                Alert.alert("Error", "Could not load your pictures. Please try again.");
+            } finally {
+                setFetching(false);
             }
-        } catch (error: any) {
-            console.log("Error saving photos:", error?.message || error);
-            Alert.alert("Couldn't save photos", "Check your connection and try again.");
-        } finally {
-            setSaving(false);
-        }
+        };
+
+        loadPictures();
+    }, []);
+
+    // ---------- save ----------
+    const savePictures = async () => {
+        console.log("saving pictures");
     };
 
     return (
@@ -160,7 +88,7 @@ const EditImage = () => {
             <View style={{ flex: 1, backgroundColor: "white" }}>
                 <View style={styles.topmessagebar}>
                     <View style={styles.backcon}>
-                        <TouchableOpacity onPress={goBack} disabled={saving}>
+                        <TouchableOpacity onPress={goBack}>
                             <Image
                                 source={require("@assets/icons/back.png")}
                                 style={styles.image}
@@ -174,26 +102,22 @@ const EditImage = () => {
                 <View style={{ flex: 1, backgroundColor: "white", padding: 16 }}>
                     <TextComponent style={styles.title1}>Upload Pictures</TextComponent>
                     <TextComponent style={styles.title2}>
-                        Tap a photo to replace it, or remove one you don't want.
+                        Please upload your pictures
                     </TextComponent>
 
                     <View style={{ height: 16 }} />
 
-                    {loading ? (
-                        <ActivityIndicator size="large" />
+                    {fetching ? (
+                        <View style={styles.loader}>
+                            <ActivityIndicator size="large" color="#FF6F61" />
+                        </View>
                     ) : (
                         <View style={styles.uploadphotosection}>
-                            {photos.map((slot, idx) => (
+                            {photos.map((uri, idx) => (
                                 <PhotoBody
                                     key={idx}
-                                    imageUri={
-                                        slot?.kind === "remote"
-                                            ? slot.url
-                                            : slot?.kind === "local"
-                                                ? slot.uri
-                                                : undefined
-                                    }
-                                    onChange={(newUri: string | null) => handleImageChange(idx, newUri)}
+                                    imageUri={uri || undefined}
+                                    onChange={(newUri) => handleImageChange(idx, newUri)}
                                 />
                             ))}
                         </View>
@@ -202,8 +126,9 @@ const EditImage = () => {
 
                 <View style={styles.buttonsection}>
                     <PinkButton
-                        text={saving ? "Saving..." : "Save changes"}
-                        onPress={saving ? () => { } : saveChanges}
+                        text={loading ? "Saving..." : "Save changes"}
+                        onPress={savePictures}
+                        disabled={loading || fetching}
                         style={styles.shadowpink}
                     />
                 </View>
@@ -258,6 +183,11 @@ const styles = StyleSheet.create({
     image: {
         width: 24,
         height: 24,
+    },
+    loader: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
     },
     uploadphotosection: {
         flexWrap: "wrap",

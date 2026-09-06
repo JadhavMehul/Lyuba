@@ -5,15 +5,22 @@ import ImagePicker, { ImageOrVideo } from "react-native-image-crop-picker";
 type Props = {
   imageUri?: string | null;
   onChange: (uri: string | null) => void;
+  /** Fires once the photo has finished loading (or failed to). */
+  onLoadEnd?: () => void;
 };
 
-const PhotoBody: React.FC<Props> = ({ imageUri = null, onChange }) => {
+const PhotoBody: React.FC<Props> = ({ imageUri = null, onChange, onLoadEnd }) => {
   const pickImage = async () => {
     try {
       const options: any = {
         cropping: true,
         freeStyleCropEnabled: false, // disable free crop
-        compressImageQuality: 0.9,
+        // Keep the file small. These get uploaded over wifi from the phone,
+        // and a multi-megabyte photo is what makes an upload drop halfway.
+        // 900x1600 is already more than a phone screen shows.
+        compressImageQuality: 0.8,
+        compressImageMaxWidth: 900,
+        compressImageMaxHeight: 1600,
         mediaType: "photo",
         multiple: false,
         // Force 9:16 ratio (e.g. 900x1600)
@@ -42,11 +49,16 @@ const PhotoBody: React.FC<Props> = ({ imageUri = null, onChange }) => {
     <View style={styles.container}>
       {imageUri ? (
         <>
-          {/* Tapping an existing photo replaces it in place — before this,
-              only the tiny delete button was tappable, so there was no way
-              to swap a single already-filled slot without deleting it first. */}
-          <TouchableOpacity onPress={pickImage} activeOpacity={0.8}>
-            <Image source={{ uri: imageUri }} style={styles.image} />
+          {/* Tapping an existing photo replaces it in place. This wrapper MUST
+              carry the full size — the image is sized in %, which resolves
+              against its direct parent, so an unstyled wrapper collapses it
+              to 0x0 and the photo silently doesn't render. */}
+          <TouchableOpacity style={styles.imageWrapper} onPress={pickImage} activeOpacity={0.8}>
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.image}
+              onLoadEnd={onLoadEnd}
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.deleteBtn} onPress={removeImage}>
             <Image
@@ -80,6 +92,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 6,
     // overflow: "hidden",
+  },
+  imageWrapper: {
+    width: "100%",
+    height: "100%",
   },
   image: {
     borderRadius: 10,
