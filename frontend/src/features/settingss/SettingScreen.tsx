@@ -75,6 +75,19 @@ const SettingScreen = () => {
 
                             <View style={styles.divider} />
 
+                            <TouchableOpacity onPress={() => navigate("AccountInfo")}>
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Edit.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Account Information</TextComponent>
+                                </View>
+
+                            </TouchableOpacity>
+
                             <TouchableOpacity onPress={() => navigate("EditProfile")}>
 
                                 <View style={styles.together}>
@@ -97,6 +110,19 @@ const SettingScreen = () => {
                                     />
 
                                     <TextComponent style={styles.item}>Edit Images</TextComponent>
+                                </View>
+
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => navigate("EditProfile")}>
+
+                                <View style={styles.together}>
+                                    <Image
+                                        source={require('../../assets/icons/Edit.png')}   // your gif path
+                                        style={styles.icon}
+                                    />
+
+                                    <TextComponent style={styles.item}>Privacy</TextComponent>
                                 </View>
 
                             </TouchableOpacity>
