@@ -29,6 +29,7 @@ import SettingScreen from '@features/settingss/SettingScreen';
 import EditProfile from '@features/settingss/EditProfile';
 import EditImage from '@features/settingss/EditImage';
 import NotificationScreen from '@features/settingss/NotificationScreen';
+import BlockListScreen from '@features/settingss/BlockListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -114,6 +115,7 @@ const App = () => {
               <Stack.Screen name="EditProfile" component={EditProfile}/>
               <Stack.Screen name="EditImage" component={EditImage}/>
               <Stack.Screen name="NotificationScreen" component={NotificationScreen}/>
+              <Stack.Screen name="BlockListScreen" component={BlockListScreen}/>
             </>
           )
         }

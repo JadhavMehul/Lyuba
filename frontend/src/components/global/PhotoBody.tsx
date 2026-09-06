@@ -42,7 +42,12 @@ const PhotoBody: React.FC<Props> = ({ imageUri = null, onChange }) => {
     <View style={styles.container}>
       {imageUri ? (
         <>
-          <Image source={{ uri: imageUri }} style={styles.image} />
+          {/* Tapping an existing photo replaces it in place — before this,
+              only the tiny delete button was tappable, so there was no way
+              to swap a single already-filled slot without deleting it first. */}
+          <TouchableOpacity onPress={pickImage} activeOpacity={0.8}>
+            <Image source={{ uri: imageUri }} style={styles.image} />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.deleteBtn} onPress={removeImage}>
             <Image
               source={require("@assets/icons/deleteicon.png")}

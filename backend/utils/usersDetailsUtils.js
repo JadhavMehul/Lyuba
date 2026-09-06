@@ -1,15 +1,15 @@
 const { firestore } = require("../config/firebaseConfig");
 
-const profileByGender = async (targetGender, targetCity, myUserId) => {
+const profileByGender = async (targetGender, targetCity, myUserId, myBlockedUsers = []) => {
     try {
         if (!targetGender) {
             return { status: 400, message: "The 'gender' parameter is required." };
         }
-        
+
         if (!targetCity) {
             return { status: 400, message: "The 'city' parameter is required." };
         }
-        
+
         const userRef = firestore.collection("users").where("city", "==", targetCity).where("gender", "==", targetGender);
         const snapshot = await userRef.get();
 
@@ -17,9 +17,17 @@ const profileByGender = async (targetGender, targetCity, myUserId) => {
             return { status: 404, message: "No users found with this gender" };
         }
 
+        // Hide anyone I've blocked, and anyone who's blocked me, from discovery.
+        const myBlockedSet = new Set(myBlockedUsers || []);
+        const blockedMeSnap = await firestore
+            .collection("users")
+            .where("blockedUsers", "array-contains", myUserId)
+            .get();
+        const blockedMeSet = new Set(blockedMeSnap.docs.map(doc => doc.id));
+
         const users = [];
         snapshot.forEach(doc => {
-            if (doc.id != myUserId) {
+            if (doc.id != myUserId && !myBlockedSet.has(doc.id) && !blockedMeSet.has(doc.id)) {
                 users.push({ id: doc.id, ...doc.data() });
             }
         });

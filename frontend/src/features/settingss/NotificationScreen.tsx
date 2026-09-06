@@ -1,13 +1,66 @@
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import TextComponent from '@components/global/TextComponent'
 import { Fonts } from '@utils/Constants'
-import React from 'react'
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { goBack, navigate, resetAndNavigate } from "@utils/NavigationUtils";
+import React, { useCallback, useEffect, useState } from 'react'
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { goBack } from "@utils/NavigationUtils";
 import CustomToggle from '@components/global/CustomToggle'
-
+import { checkNotifications, openSettings, requestNotifications } from 'react-native-permissions'
 
 const NotificationScreen = () => {
+    // There's no push-notification backend wired up yet, so this reflects and
+    // requests the device's actual notification permission (there's nothing
+    // else to toggle) — it's not a fake switch.
+    const [enabled, setEnabled] = useState(false);
+
+    const refreshStatus = useCallback(async () => {
+        try {
+            const { status } = await checkNotifications();
+            setEnabled(status === 'granted');
+        } catch (error) {
+            console.log('checkNotifications error:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        refreshStatus();
+    }, [refreshStatus]);
+
+    const handleToggle = async (next: boolean) => {
+        if (!next) {
+            // iOS/Android don't let an app revoke its own notification
+            // permission — the only real way to turn it off is Settings.
+            Alert.alert(
+                'Turn off notifications',
+                'To turn off notifications for Lyuba, disable them in your device settings.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Open Settings', onPress: () => openSettings().catch(() => {}) },
+                ],
+            );
+            return;
+        }
+
+        try {
+            const { status } = await requestNotifications(['alert', 'sound', 'badge']);
+
+            if (status === 'granted') {
+                setEnabled(true);
+            } else if (status === 'blocked') {
+                Alert.alert(
+                    'Notifications disabled',
+                    'Notifications are turned off in your device settings. Open settings to enable them?',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        { text: 'Open Settings', onPress: () => openSettings().catch(() => {}) },
+                    ],
+                );
+            }
+        } catch (error) {
+            console.log('requestNotifications error:', error);
+        }
+    };
+
     return (
         <CustomSafeAreaView style={{}}>
 
@@ -37,7 +90,7 @@ const NotificationScreen = () => {
 
                     <View style={styles.apart}>
                         <TextComponent style={styles.title}>Enable Notifications</TextComponent>
-                        <CustomToggle />
+                        <CustomToggle value={enabled} onValueChange={handleToggle} />
 
 
                     </View>

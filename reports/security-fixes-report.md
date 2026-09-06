@@ -86,6 +86,49 @@ location-lookup step during sign-up) now goes through the same shared
 request helper as everywhere else. Every request the app makes now goes
 through one single, consistent path.
 
+## Update — Settings Screen Fixes
+
+The Settings screen had four options: Edit Profile, Edit Images, Notification,
+and Block List. Here's what was wrong with each and what's been done.
+
+### Edit Profile
+Already worked correctly — loads your profile, lets you edit it, saves it.
+No changes needed.
+
+### Edit Images
+This screen didn't actually do anything. It never loaded your existing
+photos, and the "Save" button had no action behind it at all — tapping it
+did nothing. It now:
+- Loads your current photos when you open the screen
+- Lets you replace/remove individual photos like before
+- Actually uploads your changes and saves them when you tap Save
+
+A new "update pictures" endpoint was added to the server to support this,
+reusing the same photo-upload logic the sign-up screen already had (instead
+of duplicating it).
+
+### Notification
+The on/off switch was decorative — flipping it didn't do anything at all.
+There's no push-notification system built yet, so the honest, correct fix
+was to connect the switch to your phone's actual notification permission:
+turning it on asks your phone for permission (or sends you to Settings if
+you'd previously said no); turning it off explains that only your phone's
+Settings can actually revoke that permission, and offers to open them.
+
+### Block List
+This didn't exist — no screen, and tapping "Block List" did nothing. Added:
+- A real Block List screen showing everyone you've blocked, with an
+  "Unblock" button for each
+- A "Block" button on someone's profile screen (there was previously no way
+  to block anyone at all, which would've made the list permanently empty)
+- Server-side support: blocking someone hides you from each other in the
+  discovery feed and blocks you from messaging each other
+
 ## Status
 
-All items from the original report are now fixed. Nothing outstanding.
+All items from the original report, and everything from the Settings
+screen, are now fixed. Nothing outstanding.
+
+One thing worth knowing: your backend dev server was already running while
+these changes were made, so it's still serving the old code — restart it
+to pick up everything above.

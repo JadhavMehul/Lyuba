@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { navigate, resetAndNavigate } from '@utils/NavigationUtils';
+import { goBack, navigate, resetAndNavigate } from '@utils/NavigationUtils';
+import { apiFetch } from '@utils/api';
 import PinkButton from '@components/global/PinkButton';
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
 import BottomNav from '@components/global/BottomNav';
@@ -76,10 +77,37 @@ export default function OthersProfileScreen() {
     console.log (userData)
     const userDetails = auth().currentUser;
     console.log(userDetails);
-    
+
+    const handleBlock = () => {
+        Alert.alert(
+            'Block user',
+            `Block ${userData?.firstName || 'this user'}? They won't be able to see your profile or message you, and you won't see them either.`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Block',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await apiFetch('/api/userDetails/blockUser', {
+                                method: 'POST',
+                                body: { blockedUserId: userData.uid },
+                            });
+                            Alert.alert('Blocked', `${userData?.firstName || 'This user'} has been blocked.`, [
+                                { text: 'OK', onPress: () => goBack() },
+                            ]);
+                        } catch (error) {
+                            console.log('Error blocking user:', error);
+                            Alert.alert('Error', 'Unable to block this user right now.');
+                        }
+                    },
+                },
+            ],
+        );
+    };
 
     // const [userData, setUserData] = useState<UserData>()
-    
+
     return (
         <CustomSafeAreaView>
             <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -118,13 +146,18 @@ export default function OthersProfileScreen() {
                                     }
 
                                 </View>
-                                <TouchableOpacity onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: userData.uid})}>
-                                    <Image
-                                        source={require("@assets/icons/message.png")}
-                                        style={styles.image2}
-                                    />
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+                                    <TouchableOpacity onPress={handleBlock}>
+                                        <Icon name="ban" size={26} color="#FF6F61" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => navigate("MessageScreen2", {myId: userDetails?.uid, otherUserId: userData.uid})}>
+                                        <Image
+                                            source={require("@assets/icons/message.png")}
+                                            style={styles.image2}
+                                        />
 
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
+                                </View>
 
 
                             </View>

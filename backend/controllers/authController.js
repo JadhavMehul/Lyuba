@@ -1,5 +1,5 @@
-const { firestore, auth, storage } = require('../config/firebaseConfig');
-const { v4: uuidv4 } = require("uuid");
+const { firestore, auth } = require('../config/firebaseConfig');
+const { uploadUserPhoto } = require('../utils/storageUtils');
 
 /**
  * Shared by socialAuth and authenticateUser: verifies the Firebase ID token
@@ -96,39 +96,10 @@ exports.registerUser = async (req, res) => {
 
     if (files && files.length > 0) {
       for (const file of files) {
-        const fileName = `users/${uid}/photos/${file.originalname}`;
-        const blob = storage.file(fileName);
-
-        // generate unique token for Firebase-style URL
-        const token = uuidv4();
-
-        const blobStream = blob.createWriteStream({
-          metadata: {
-            contentType: file.mimetype,
-            metadata: {
-              firebaseStorageDownloadTokens: token, // this is the key 🔑
-            },
-          },
-        });
-
-        await new Promise((resolve, reject) => {
-          blobStream.on("error", (err) => reject(err));
-          blobStream.on("finish", async () => {
-            // Firebase-style URL
-            const bucketName = storage.name;
-            console.log(bucketName);
-            const encodedPath = encodeURIComponent(fileName);
-            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media&token=${token}`;
-            uploadedUrls.push(publicUrl);
-            resolve();
-          });
-          blobStream.end(file.buffer);
-        });
+        uploadedUrls.push(await uploadUserPhoto(uid, file));
       }
     }
 
-    console.log(uploadedUrls);
-    
 
     // Save user in Firestore
     await firestore.collection("users").doc(uid).set(

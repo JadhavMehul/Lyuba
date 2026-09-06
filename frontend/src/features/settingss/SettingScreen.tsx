@@ -141,7 +141,7 @@ const SettingScreen = () => {
 
 
 
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigate("BlockListScreen")}>
 
 
                                 <View style={styles.together}>

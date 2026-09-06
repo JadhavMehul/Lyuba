@@ -1,18 +1,31 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, StyleSheet, Animated } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { TouchableOpacity, StyleSheet, Animated } from "react-native";
 
-const CustomToggle = () => {
-  const [isOn, setIsOn] = useState(false);
-  const translateX = new Animated.Value(isOn ? 22 : 2);
+type Props = {
+  // Omit both to get the old, purely-decorative uncontrolled behavior.
+  value?: boolean;
+  onValueChange?: (next: boolean) => void;
+};
 
-  const toggleSwitch = () => {
+const CustomToggle = ({ value, onValueChange }: Props) => {
+  const [internalOn, setInternalOn] = useState(false);
+  const isControlled = value !== undefined;
+  const isOn = isControlled ? value : internalOn;
+
+  const translateX = useRef(new Animated.Value(isOn ? 22 : 2)).current;
+
+  useEffect(() => {
     Animated.timing(translateX, {
-      toValue: isOn ? 2 : 22,
+      toValue: isOn ? 22 : 2,
       duration: 200,
       useNativeDriver: false,
     }).start();
+  }, [isOn, translateX]);
 
-    setIsOn(!isOn);
+  const toggleSwitch = () => {
+    const next = !isOn;
+    if (!isControlled) setInternalOn(next);
+    onValueChange?.(next);
   };
 
   return (

@@ -11,6 +11,17 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ message: "Missing fields" });
     }
 
+    // Don't allow messages between users who've blocked each other.
+    const [senderDoc, receiverDoc] = await Promise.all([
+      firestore.collection("users").doc(senderId).get(),
+      firestore.collection("users").doc(receiverId).get(),
+    ]);
+    const senderBlocked = senderDoc.data()?.blockedUsers || [];
+    const receiverBlocked = receiverDoc.data()?.blockedUsers || [];
+    if (senderBlocked.includes(receiverId) || receiverBlocked.includes(senderId)) {
+      return res.status(403).json({ message: "You can't message this user" });
+    }
+
     const conversationId = await getConversationId(senderId, receiverId);
     const convoRef = firestore.collection("conversations").doc(conversationId);
 

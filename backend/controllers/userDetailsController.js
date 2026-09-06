@@ -1,29 +1,27 @@
 const { firestore, FieldValue } = require("../config/firebaseConfig");
 const { profileByGender, getMatchScore } = require("../utils/usersDetailsUtils");
+const { uploadUserPhoto } = require("../utils/storageUtils");
 
 exports.profileData = async (req, res) => {
-
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: "userId required" });
-  }
-
-  const userRef = firestore.collection("users").doc(userId);
-  const userDoc = await userRef.get()
-
-  if (!userDoc.exists) {
-    return res.status(400).json({ message: "user not found" });
-  }
-  return res.status(200).json({
-    foundData: true,
-    message: "User Found",
-    response: {
-      user: userDoc.data(),
+  try {
+    const userId = req.user.uid;
+ 
+    const userDoc = await firestore.collection("users").doc(userId).get();
+ 
+    if (!userDoc.exists) {
+      return res.status(404).json({ foundData: false, message: "User not found" });
     }
-  });
-
-}
+ 
+    return res.status(200).json({
+      foundData: true,
+      message: "User Found",
+      response: { user: userDoc.data() },
+    });
+  } catch (error) {
+    console.error("profileData error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 
 exports.editProfileData = async (req, res) => {
@@ -68,6 +66,118 @@ exports.editProfileData = async (req, res) => {
 
 
 
+exports.updatePictures = async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const files = req.files || [];
+    const MAX_PICTURES = 6;
+ 
+    // --- parse ---------------------------------------------------------
+    let slots;
+    try {
+      slots = JSON.parse(req.body.slots);
+    } catch {
+      // Deliberately a hard failure. Swallowing this and falling back to an
+      // empty array is how a malformed request ends up wiping a gallery.
+      return res
+        .status(400)
+        .json({ success: false, error: "slots must be a JSON array" });
+    }
+ 
+    if (!Array.isArray(slots)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "slots must be a JSON array" });
+    }
+    if (slots.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, error: "At least one photo is required" });
+    }
+    if (slots.length > MAX_PICTURES) {
+      return res
+        .status(400)
+        .json({ success: false, error: `At most ${MAX_PICTURES} photos are allowed` });
+    }
+ 
+    const userRef = firestore.collection("users").doc(uid);
+    const userDoc = await userRef.get();
+    const currentPictures = userDoc.exists ? userDoc.data().pictures || [] : [];
+    const ownedUrls = new Set(currentPictures);
+ 
+    const filesByField = new Map(files.map((f) => [f.fieldname, f]));
+ 
+    // --- validate everything before uploading anything -----------------
+    // Uploading first and validating later leaves orphaned files in the
+    // bucket whenever a request turns out to be malformed.
+    const seenUrls = new Set();
+    const seenFields = new Set();
+ 
+    for (const slot of slots) {
+      if (!slot || typeof slot !== "object") {
+        return res.status(400).json({ success: false, error: "Malformed slot entry" });
+      }
+ 
+      if (slot.type === "keep") {
+        if (typeof slot.url !== "string" || !ownedUrls.has(slot.url)) {
+          // Stops a client from writing an arbitrary URL into a profile.
+          return res
+            .status(400)
+            .json({ success: false, error: "Cannot keep a photo that isn't yours" });
+        }
+        if (seenUrls.has(slot.url)) {
+          return res.status(400).json({ success: false, error: "Duplicate photo in slots" });
+        }
+        seenUrls.add(slot.url);
+      } else if (slot.type === "upload") {
+        if (typeof slot.field !== "string" || !filesByField.has(slot.field)) {
+          return res
+            .status(400)
+            .json({ success: false, error: `Missing file for slot ${slot.field}` });
+        }
+        if (seenFields.has(slot.field)) {
+          return res.status(400).json({ success: false, error: "Duplicate file in slots" });
+        }
+        seenFields.add(slot.field);
+      } else {
+        return res.status(400).json({ success: false, error: "Unknown slot type" });
+      }
+    }
+ 
+    // --- build the new gallery -----------------------------------------
+    const finalPictures = [];
+    for (const slot of slots) {
+      if (slot.type === "keep") {
+        finalPictures.push(slot.url);
+      } else {
+        finalPictures.push(await uploadUserPhoto(uid, filesByField.get(slot.field)));
+      }
+    }
+ 
+    await userRef.set({ pictures: finalPictures }, { merge: true });
+ 
+    // --- clean up what's no longer referenced ---------------------------
+    // After the Firestore write, so a failed delete never leaves the profile
+    // pointing at a file that's already gone.
+    const kept = new Set(finalPictures);
+    const removed = currentPictures.filter((url) => !kept.has(url));
+ 
+    await Promise.all(
+      removed.map((url) =>
+        deleteUserPhotoByUrl(url).catch((err) =>
+          console.warn("Failed to delete old photo:", url, err.message)
+        )
+      )
+    );
+ 
+    return res.status(200).json({ success: true, pictures: finalPictures });
+  } catch (error) {
+    console.error("updatePictures error:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+ 
+
 exports.peopleProfileData = async (req, res) => {
   try {
     const userId = req.user.uid; // the discovery feed is always "who's shown to me"
@@ -88,7 +198,7 @@ exports.peopleProfileData = async (req, res) => {
     const myCityPreference = userData.city;
 
 
-    const result = await profileByGender(myGenderPreference, myCityPreference, userId);
+    const result = await profileByGender(myGenderPreference, myCityPreference, userId, userData.blockedUsers);
 
     if (!result.data || result.data.length === 0) {
       return res.status(404).json({ message: "No matching users found" });
@@ -398,6 +508,76 @@ exports.matched = async (req, res) => {
 
   } catch (error) {
     console.error("Error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.blockUser = async (req, res) => {
+  try {
+    const userId = req.user.uid;
+    const { blockedUserId } = req.body;
+
+    if (!blockedUserId) {
+      return res.status(400).json({ error: "blockedUserId required" });
+    }
+    if (blockedUserId === userId) {
+      return res.status(400).json({ error: "You can't block yourself" });
+    }
+
+    await firestore.collection("users").doc(userId).set(
+      { blockedUsers: FieldValue.arrayUnion(blockedUserId) },
+      { merge: true }
+    );
+
+    return res.status(200).json({ success: true, message: "User blocked" });
+  } catch (error) {
+    console.error("blockUser error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.unblockUser = async (req, res) => {
+  try {
+    const userId = req.user.uid;
+    const { blockedUserId } = req.body;
+
+    if (!blockedUserId) {
+      return res.status(400).json({ error: "blockedUserId required" });
+    }
+
+    await firestore.collection("users").doc(userId).set(
+      { blockedUsers: FieldValue.arrayRemove(blockedUserId) },
+      { merge: true }
+    );
+
+    return res.status(200).json({ success: true, message: "User unblocked" });
+  } catch (error) {
+    console.error("unblockUser error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getBlockedUsers = async (req, res) => {
+  try {
+    const userId = req.user.uid;
+
+    const userDoc = await firestore.collection("users").doc(userId).get();
+    const blockedUserIds = userDoc.data()?.blockedUsers || [];
+
+    if (blockedUserIds.length === 0) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
+    const userPromises = blockedUserIds.map(async (blockedId) => {
+      const doc = await firestore.collection("users").doc(blockedId).get();
+      return doc.exists ? { ...doc.data(), uid: blockedId } : null;
+    });
+
+    const users = (await Promise.all(userPromises)).filter(Boolean);
+
+    return res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    console.error("getBlockedUsers error:", error);
     return res.status(500).json({ error: error.message });
   }
 };
