@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "493807442216",
+    "project_id": "lyuba-dating-app",
+    "storage_bucket": "lyuba-dating-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493807442216:android:60a87fd25af547b1c9981d",
+        "android_client_info": {
+          "package_name": "com.lyuba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493807442216-34j4k666eicmjtuptdcj2dp3te9js4es.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnaccbdKvG0uhjwKz4YK5mIHRIMNlgDF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493807442216-34j4k666eicmjtuptdcj2dp3te9js4es.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
